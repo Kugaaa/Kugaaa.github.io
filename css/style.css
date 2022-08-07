@@ -419,7 +419,7 @@ body table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 13px;
   overflow: auto;
   display: block;
 }
@@ -428,7 +428,7 @@ body th {
   border-bottom: 1px dashed #908d8d;
   color: #eee;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 14px;
 }
 body td {
   padding: 0 8px;
@@ -482,7 +482,7 @@ body {
   color: #c9cacc;
   font-display: swap;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 15px;
   font-family: "Menlo", "Meslo LG", monospace;
   line-height: 1.725;
   text-rendering: geometricPrecision;
@@ -574,7 +574,7 @@ body {
   }
 }
 .max-width {
-  max-width: 48rem;
+  max-width: 52rem;
 }
 @media (max-width: 480px) {
   .px3 {
@@ -617,10 +617,10 @@ body {
   display: inline-block;
   float: left;
   margin-right: 20px;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 5px;
-  background-size: 50px 50px;
+  background-size: 60px 60px;
   background-repeat: no-repeat;
   filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
@@ -673,7 +673,7 @@ body {
   #header #title {
     display: table;
     margin-right: 5rem;
-    min-height: 50px;
+    min-height: 60px;
   }
   #header #title h1 {
     display: table-cell;
@@ -697,7 +697,7 @@ body {
   }
   #header #nav li:not(:first-child) {
     padding-top: 1rem;
-    padding-left: 70px;
+    padding-left: 80px;
     font-size: 1rem;
   }
 }
@@ -1411,7 +1411,7 @@ article .content .caption {
   color: #1d1f21;
   font-display: swap;
   font-weight: 400;
-  font-size: 11.200000000000001px;
+  font-size: 12px;
   font-family: "Menlo", "Meslo LG", monospace;
   line-height: 1.725;
   text-rendering: geometricPrecision;
