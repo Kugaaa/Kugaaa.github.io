@@ -1,141 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>面向对象六大原则</title>
-    <url>/2022/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/</url>
-    <content><![CDATA[<h1 id="六大原则"><a href="#六大原则" class="headerlink" title="六大原则"></a>六大原则</h1><table>
+    <title>ES 折叠和聚合</title>
+    <url>/2022/12/01/ES/ES%20%E6%8A%98%E5%8F%A0%E5%92%8C%E8%81%9A%E5%90%88/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><h2 id="折叠和聚合"><a href="#折叠和聚合" class="headerlink" title="折叠和聚合"></a>折叠和聚合</h2><p>日常会有很多场景希望将平面数据按照一定的条件组合起来，并按照一定规则进行计算</p>
+<p>聚合将您的数据汇总为指标、统计或其他分析</p>
+<p>可以帮助你回答类似如下问题：</p>
+<ul>
+<li>我的网页平均加载时间是多少？</li>
+<li>根据交易量谁是我最有价值的客户？</li>
+<li>在我的网站上大文件的衡量标准是多少？</li>
+<li>每个产品类别有多少种产品？</li>
+</ul>
+<p>在关系型数据库中，聚合以 <code>GROUP BY</code> 关键字和聚合函数的方式进行实现</p>
+<p>例如统计每个班级下男生的人数</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> `classId`,<span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> <span class="string">&#x27;number&#x27;</span> <span class="keyword">FROM</span> `student` <span class="keyword">WHERE</span> `gender` <span class="operator">=</span> &quot;male&quot; <span class="keyword">GROUP</span> <span class="keyword">BY</span> `classId`;</span><br></pre></td></tr></table></figure>
+
+<p>按照班级即 <code>classId</code> 字段进行聚合，使用 <code>COUNT()</code> 聚合函数来统计数量</p>
+<h2 id="模拟"><a href="#模拟" class="headerlink" title="模拟"></a>模拟</h2><p>模拟一个场景来使用 ES 实现需求，设置这样一个索引</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">PUT /student-index/_mapping</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;properties&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;keyword&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;integer&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;keyword&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;integer&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;float&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>模拟数据</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">POST /student-index/_doc</span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;张三&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">22</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">70</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;李四&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">19</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">2</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">72.5</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;王五&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">20</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">3</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">80</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;小明&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">21</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">2</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">75</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;小红&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">19</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;female&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">50</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;小兰&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">18</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;female&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">3</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">51</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;蛋蛋&quot;</span><span class="punctuation">,</span><span class="attr">&quot;age&quot;</span><span class="punctuation">:</span><span class="number">20</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">,</span><span class="attr">&quot;class&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span><span class="attr">&quot;height&quot;</span><span class="punctuation">:</span><span class="number">90</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="折叠"><a href="#折叠" class="headerlink" title="折叠"></a>折叠</h1><p>在 ES 除了聚合 <code>aggregations</code> 外，有一种类似聚合的操作 <code>collapse</code> 折叠</p>
+<blockquote>
+<p>你可以使用 collapse 参数来基于字段值查询结果；每个折叠仅选择排序靠前的文档来完成折叠</p>
+</blockquote>
+<p>这里就可以看出折叠和聚合还是有使用上的区别的，聚合更关注的是聚合后的结果，而折叠是在原结果集基础上将字段去重，并且可以像分页一样对折叠结果进行分页</p>
+<p>例如这样一组数据</p>
+<table>
 <thead>
 <tr>
-<th>设计原则</th>
-<th>概述</th>
-<th>目的</th>
+<th align="center">name</th>
+<th align="center">class</th>
+<th align="center">time</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>开闭原则</td>
-<td>对扩展开放，对修改关闭</td>
-<td>易于维护</td>
+<td align="center">张三</td>
+<td align="center">1</td>
+<td align="center">1</td>
 </tr>
 <tr>
-<td>单一职责</td>
-<td>一个类只干一件事，实现类要单一</td>
-<td>提升可读性</td>
+<td align="center">李四</td>
+<td align="center">2</td>
+<td align="center">2</td>
 </tr>
 <tr>
-<td>里氏替换</td>
-<td>不要重写父类的方法</td>
-<td>健壮性、防止错误继承</td>
-</tr>
-<tr>
-<td>迪米特法则</td>
-<td>最少知道，对象之间少建立联系</td>
-<td>低耦合</td>
-</tr>
-<tr>
-<td>接口隔离</td>
-<td>一个接口只干一件事，接口要精简单一</td>
-<td>高内聚</td>
-</tr>
-<tr>
-<td>依赖倒置</td>
-<td>高层不应该依赖低层，要面向接口编程</td>
-<td>利于结构升级</td>
+<td align="center">王五</td>
+<td align="center">1</td>
+<td align="center">3</td>
 </tr>
 </tbody></table>
-<h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><blockquote>
-<p><em>Software entities like classes,modules and functions should be open for extension but closed for modifications.</em></p>
-<p><em>一个软件实体如类，模块和函数应该对扩展开放，对修改关闭</em></p>
-</blockquote>
-<p>随着业务发展需要增加新的方法，有几种方式：</p>
-<ul>
-<li><strong>在接口上添加新方法</strong><ul>
-<li>导致每一个实现类都需要进行实现，改动量大</li>
-<li>不一定所有的实现类都需要该方法</li>
-</ul>
-</li>
-<li><strong>修改实现类旧方法</strong><ul>
-<li>替代原有旧方法功能，如果同时需要使用旧方法则无法采用此方式 （<code>getPrice()</code> 获取的是原价格还是打折后价格？如果需要同时获取原价和打折后价格如何处理）</li>
-</ul>
-</li>
-<li><strong>面向扩展，使用新接口或者新类继承父类</strong><ul>
-<li>新接口方法接口，需要的类进行实现</li>
-<li>新类继承父类，在父类基础上增加方法</li>
-</ul>
-</li>
-</ul>
-<p><strong>明显面向扩展更容易维护，这就是开闭原则的目的</strong></p>
-<h2 id="单一职责"><a href="#单一职责" class="headerlink" title="单一职责"></a>单一职责</h2><blockquote>
-<p><em>There should never be more than one reason for a class to change. —— Robert C. Martin</em></p>
-<p><em>一个类应该有且仅有一个引起它变化的原因，否则类应该被拆分</em></p>
-</blockquote>
-<p>控制业务实现的粒度问题；一个类可以具备任意数量的方法，但都属于同一个功能簇中</p>
-<p><strong>严格控制类中方法的粒度，必要时进行分析与拆分</strong></p>
-<h2 id="里氏替换"><a href="#里氏替换" class="headerlink" title="里氏替换"></a>里氏替换</h2><blockquote>
-<p><em>Inheritance should ensure that any property proved about supertype objects also holds for subtype objects. —— Liskov</em></p>
-<p><em>继承必须确保父类所拥有的性质在子类中仍然成立</em></p>
-</blockquote>
-<p>在里氏替换原则的指导方针下，可得出：仅仅依据两个类之间有没有 “is a” 的关系，来判断两个类能不能发生继承关系是不够的</p>
-<p>应该遵守一个大原则：<strong>任何使用父类的地方，都能被透明的替换成子类，且替换成子类后，程序行为不会发生问题</strong></p>
-<p>不应该滥用继承关系，鸵鸟是否是鸟的子类（不会飞），鲸鱼是否是鱼的子类（没有腮），继承具有侵入性，当需要使用继承关系时需要辨明是否是真正的继承，<strong>父类的每个方法都必须适用于子类</strong></p>
-<ol>
-<li>子类可以实现父类的抽象方法，但是不能覆盖父类的非抽象方法</li>
-<li>子类可以增加自己特有的方法</li>
-<li>子类重载父类方法时，方法的形参要比父类方法更为宽松</li>
-<li>子类实现父类抽象方法时，方法的返回值要比父类方法更为严格</li>
-</ol>
-<h2 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h2><blockquote>
-<p><em>talk only to your immediate friends. —— Ian Holland</em></p>
-<p><em>只和直接的朋友交流</em></p>
-</blockquote>
-<p>迪米特法则也称为最少知道原则，最少知道包含两个目的：</p>
-<ul>
-<li><strong>只和直接的朋友交互</strong><ul>
-<li>例如 MVC 架构，视图层和业务层交互，业务层和持久层交互，视图层不应该和持久层产生联系</li>
-</ul>
-</li>
-<li><strong>较少对朋友的了解</strong><ul>
-<li>类门面模式（门面指暴露重要工作的简单入口，而迪米特法则在于只暴露该暴露的入口，还是有所区别）思想，对外只暴露能够满足外部需要的内容</li>
-</ul>
-</li>
-</ul>
-<p><strong>目的在于降低类之间的耦合关系</strong></p>
-<h2 id="接口隔离"><a href="#接口隔离" class="headerlink" title="接口隔离"></a>接口隔离</h2><blockquote>
-<p><em>Interface Segregation Principle, ISP</em></p>
-<p><em>低耦合、高内聚中的高内聚</em></p>
-</blockquote>
-<p>接口隔离原则中所说的接口并不是狭意的指 Java 中的 Interface，而是一切的提供方法定义的对象，例如 Java 中的接口、抽象类、实体类</p>
-<p>接口隔离的原则：</p>
-<ul>
-<li>客户端不依赖不需要的接口</li>
-<li>类间依赖关系建立在最小的接口上</li>
-<li>接口应该细化，不应该具备臃肿的方法</li>
-</ul>
-<p>例如发送方式的实现类 <code>Send</code>，此时具备两种发送方式：邮件和短信，如果将方法都放在 <code>Send</code> 类中，则应该分别定义 <code>sendEmail()</code> 和 <code>sendNotice()</code> 两个方法，不利于后面的拓展；好的解决方法应该是定义接口，然后分别创建 <code>EmailSend</code> 和 <code>NoticeSend</code> 两个实现类，这就是接口隔离的目的</p>
-<p>接口隔离和单一原则看似冲突，目标是达到二者的平衡</p>
-<p><strong>避免接口污染</strong></p>
-<h2 id="依赖倒置"><a href="#依赖倒置" class="headerlink" title="依赖倒置"></a>依赖倒置</h2><blockquote>
-<p><em>Dependence Inversion Principle,DIP</em></p>
-<p><em>不依赖于具体实现，而依赖于抽象</em></p>
-</blockquote>
-<p>不正确的依赖关系是上层调用下层，上层依赖下层</p>
-<p>面向对象其实就是依赖倒置的一种体现，依赖倒置让下层依赖上层，比如接口，接口方法的扩展会影响所有实现类，但抽象层的变动远远少于实现层，所以依赖倒置可以很好地避免频繁的修改</p>
-<p><strong>面向接口编程</strong></p>
-<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="如何满足里氏替换原则"><a href="#如何满足里氏替换原则" class="headerlink" title="如何满足里氏替换原则"></a>如何满足里氏替换原则</h2><p>里氏替换的原则指：需要使用父类的地方可以替换为子类使用，因为父类的方法在子类上应该保持一致</p>
-<p>在实际中遇到直接继承不能满足里氏替换的场景，就<strong>说明抽象不足，需要向上抽象</strong></p>
-<p>如果一个 <code>Add</code> 类的 <code>compute(int n)</code> 操作为加法，减法也想要进行实现，则继承 <code>Add</code> 类后重写了 <code>compute(int n)</code> 方法，此时则违反了里氏替换原则，整个方法的实现被重写了</p>
-<p>向上抽象出 <code>Compute</code> 接口，即可以实现里氏替换原则</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="type">int</span> n)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Add</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;加法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Subtract</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;减法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据 <code>time</code> 倒序，按照 <code>class</code> 进行折叠，<code>size</code> 为 1，返回的结果应该是 <code>class = 1</code> 的数据，因为命中了 <code>name = &quot;王五&quot;</code> 的文档</p>
+<p>当 <code>from</code> 为 1 时，返回 <code>class = 2</code>，此时所有折叠后的数据都已经查询完成</p>
+<p>折叠更像是对于查询的一种特殊操作，其参数使用也和 <code>query</code> 在同一层级，返回体中也是在 <code>hits</code> 中返回文档</p>
+<h2 id="折叠查询"><a href="#折叠查询" class="headerlink" title="折叠查询"></a>折叠查询</h2><p>对于模拟的数据，对 <code>class</code> 字段折叠，班级的顺序按照男生的年龄排序，取第二名</p>
+<p>即全校年龄第二大的男性学生所在的班级</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">POST /student-index/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;collapse&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;field&quot;</span><span class="punctuation">:</span> <span class="string">&quot;class&quot;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span> <span class="comment">// 不查询第一条</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>返回的结果，只取 hits 部分</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="attr">&quot;hits&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;_index&quot;</span><span class="punctuation">:</span> <span class="string">&quot;student-index&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;_doc&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;k-mmzoQBCTaFCHoW7hai&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;_score&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;_source&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;小明&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">21</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">75</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;fields&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="number">2</span></span><br><span class="line">            <span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="number">21</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，<code>_source</code> 结果选取了折叠所命中的第一个文档（折叠的依据）；<code>fields</code> 则是折叠的字段，说明年龄第二大的男生所在的班级是 2 班</p>
+<h2 id="扩展结果"><a href="#扩展结果" class="headerlink" title="扩展结果"></a>扩展结果</h2><p>上面折叠的简单操作可以看到，返回的 hits 中包含了一个折叠依据的文档（排序条件的第一个文档）</p>
+<p>如果需要返回折叠字段下的所有文档（我认为更像是分组操作），可以使用 <code>inner_hit</code> 参数实现</p>
+<p>取全校年龄第二大的男性学生所在的班级下面的所有学生，且按照身高正序排列</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">POST /student-index/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;collapse&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;field&quot;</span><span class="punctuation">:</span> <span class="string">&quot;class&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;inner_hits&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;student_in_class&quot;</span><span class="punctuation">,</span> <span class="comment">// 自定的结果集名字</span></span><br><span class="line">			<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">100</span><span class="punctuation">,</span> <span class="comment">// inner_hits 内文档数量</span></span><br><span class="line">			<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span> <span class="comment">// 这个排序参数是 inner hit，内部文档的排序</span></span><br><span class="line">				<span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="string">&quot;asc&quot;</span></span><br><span class="line">				<span class="punctuation">&#125;</span></span><br><span class="line">			<span class="punctuation">]</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span> <span class="comment">// 这个排序参数是查询条件的排序</span></span><br><span class="line">		<span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>返回结果前半部分和折叠查询一样，只取 <code>inner_hit</code> 字段下的结果集</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="attr">&quot;inner_hits&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;student_in_class&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;hits&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;total&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;relation&quot;</span><span class="punctuation">:</span> <span class="string">&quot;eq&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;max_score&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;hits&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;_index&quot;</span><span class="punctuation">:</span> <span class="string">&quot;student-index&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;_doc&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;kemmzoQBCTaFCHoWyxaJ&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_score&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_source&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;李四&quot;</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">19</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">72.5</span></span><br><span class="line">                    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                        <span class="number">72.5</span></span><br><span class="line">                    <span class="punctuation">]</span></span><br><span class="line">                <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;_index&quot;</span><span class="punctuation">:</span> <span class="string">&quot;student-index&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;_doc&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;k-mmzoQBCTaFCHoW7hai&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_score&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">null</span></span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;_source&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;小明&quot;</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">21</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;class&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">                        <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">75</span></span><br><span class="line">                    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                        <span class="number">75</span></span><br><span class="line">                    <span class="punctuation">]</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>inner_hits</code> 下是 <code>student_in_class</code> 自定的结果集名称，也就意味着一次 <code>inner_hits</code> 可以设置多个不同规则的结果集请求（<code>inner_hits</code> 参数是个数组）</p>
+<p>返回的结果中包含了 2 班下的两名学生，并且根据 <code>height</code> 字段进行了排序</p>
+<h2 id="search-after"><a href="#search-after" class="headerlink" title="search after"></a>search after</h2><p>折叠操作同样支持 search after 操作</p>
+<p>因为本质上 ES 也是排序后根据文档顺序对折叠字段进行操作，当 search after 字段略过该值后，继续对未折叠字段值进行折叠操作</p>
+<p>但是需要注意，<strong>只有当折叠字段和排序字段是同一字段时才能使用该方式，同时不允许二级排序</strong></p>
+<p>语法和基本查询一致</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;GET /search&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;collapse&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;field&quot;</span><span class="punctuation">:</span> <span class="string">&quot;user.id&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span> <span class="string">&quot;user.id&quot;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;search_after&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;dd5ce1ad&quot;</span><span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
 
 
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://refactoringguru.cn/design-patterns">常用设计模式有哪些？ (refactoringguru.cn)</a></p>
+<h2 id="二级折叠"><a href="#二级折叠" class="headerlink" title="二级折叠"></a>二级折叠</h2><p>对某一个字段折叠后，<code>inner_hits</code> 内还可以对其他字段再进行一次折叠</p>
+<p>但二次折叠无法使用 <code>inner_hits</code> 参数，即折叠只能支持到二级</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;match&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;collapse&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;field&quot;</span><span class="punctuation">:</span> <span class="string">&quot;class&quot;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="attr">&quot;inner_hits&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;student_in_class&quot;</span><span class="punctuation">,</span></span><br><span class="line">			<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">100</span><span class="punctuation">,</span></span><br><span class="line">			<span class="attr">&quot;collapse&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;field&quot;</span><span class="punctuation">:</span> <span class="string">&quot;height&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>根据 <code>class</code> 折叠后的内部文档，再根据 <code>height</code> 进行折叠操作</p>
+<h1 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h1><p>聚合相比折叠要复杂很多，也是 ES 的主要功能，这里只进行一些简单操作</p>
 ]]></content>
       <categories>
         <category>学习</category>
       </categories>
       <tags>
-        <tag>设计模式</tag>
-        <tag>规范</tag>
+        <tag>Elasticsearch</tag>
+        <tag>ES 碎片</tag>
       </tags>
   </entry>
   <entry>
@@ -441,6 +404,144 @@
       <tags>
         <tag>Elasticsearch</tag>
         <tag>ES 碎片</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>面向对象六大原则</title>
+    <url>/2022/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/</url>
+    <content><![CDATA[<h1 id="六大原则"><a href="#六大原则" class="headerlink" title="六大原则"></a>六大原则</h1><table>
+<thead>
+<tr>
+<th>设计原则</th>
+<th>概述</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开闭原则</td>
+<td>对扩展开放，对修改关闭</td>
+<td>易于维护</td>
+</tr>
+<tr>
+<td>单一职责</td>
+<td>一个类只干一件事，实现类要单一</td>
+<td>提升可读性</td>
+</tr>
+<tr>
+<td>里氏替换</td>
+<td>不要重写父类的方法</td>
+<td>健壮性、防止错误继承</td>
+</tr>
+<tr>
+<td>迪米特法则</td>
+<td>最少知道，对象之间少建立联系</td>
+<td>低耦合</td>
+</tr>
+<tr>
+<td>接口隔离</td>
+<td>一个接口只干一件事，接口要精简单一</td>
+<td>高内聚</td>
+</tr>
+<tr>
+<td>依赖倒置</td>
+<td>高层不应该依赖低层，要面向接口编程</td>
+<td>利于结构升级</td>
+</tr>
+</tbody></table>
+<h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><blockquote>
+<p><em>Software entities like classes,modules and functions should be open for extension but closed for modifications.</em></p>
+<p><em>一个软件实体如类，模块和函数应该对扩展开放，对修改关闭</em></p>
+</blockquote>
+<p>随着业务发展需要增加新的方法，有几种方式：</p>
+<ul>
+<li><strong>在接口上添加新方法</strong><ul>
+<li>导致每一个实现类都需要进行实现，改动量大</li>
+<li>不一定所有的实现类都需要该方法</li>
+</ul>
+</li>
+<li><strong>修改实现类旧方法</strong><ul>
+<li>替代原有旧方法功能，如果同时需要使用旧方法则无法采用此方式 （<code>getPrice()</code> 获取的是原价格还是打折后价格？如果需要同时获取原价和打折后价格如何处理）</li>
+</ul>
+</li>
+<li><strong>面向扩展，使用新接口或者新类继承父类</strong><ul>
+<li>新接口方法接口，需要的类进行实现</li>
+<li>新类继承父类，在父类基础上增加方法</li>
+</ul>
+</li>
+</ul>
+<p><strong>明显面向扩展更容易维护，这就是开闭原则的目的</strong></p>
+<h2 id="单一职责"><a href="#单一职责" class="headerlink" title="单一职责"></a>单一职责</h2><blockquote>
+<p><em>There should never be more than one reason for a class to change. —— Robert C. Martin</em></p>
+<p><em>一个类应该有且仅有一个引起它变化的原因，否则类应该被拆分</em></p>
+</blockquote>
+<p>控制业务实现的粒度问题；一个类可以具备任意数量的方法，但都属于同一个功能簇中</p>
+<p><strong>严格控制类中方法的粒度，必要时进行分析与拆分</strong></p>
+<h2 id="里氏替换"><a href="#里氏替换" class="headerlink" title="里氏替换"></a>里氏替换</h2><blockquote>
+<p><em>Inheritance should ensure that any property proved about supertype objects also holds for subtype objects. —— Liskov</em></p>
+<p><em>继承必须确保父类所拥有的性质在子类中仍然成立</em></p>
+</blockquote>
+<p>在里氏替换原则的指导方针下，可得出：仅仅依据两个类之间有没有 “is a” 的关系，来判断两个类能不能发生继承关系是不够的</p>
+<p>应该遵守一个大原则：<strong>任何使用父类的地方，都能被透明的替换成子类，且替换成子类后，程序行为不会发生问题</strong></p>
+<p>不应该滥用继承关系，鸵鸟是否是鸟的子类（不会飞），鲸鱼是否是鱼的子类（没有腮），继承具有侵入性，当需要使用继承关系时需要辨明是否是真正的继承，<strong>父类的每个方法都必须适用于子类</strong></p>
+<ol>
+<li>子类可以实现父类的抽象方法，但是不能覆盖父类的非抽象方法</li>
+<li>子类可以增加自己特有的方法</li>
+<li>子类重载父类方法时，方法的形参要比父类方法更为宽松</li>
+<li>子类实现父类抽象方法时，方法的返回值要比父类方法更为严格</li>
+</ol>
+<h2 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h2><blockquote>
+<p><em>talk only to your immediate friends. —— Ian Holland</em></p>
+<p><em>只和直接的朋友交流</em></p>
+</blockquote>
+<p>迪米特法则也称为最少知道原则，最少知道包含两个目的：</p>
+<ul>
+<li><strong>只和直接的朋友交互</strong><ul>
+<li>例如 MVC 架构，视图层和业务层交互，业务层和持久层交互，视图层不应该和持久层产生联系</li>
+</ul>
+</li>
+<li><strong>较少对朋友的了解</strong><ul>
+<li>类门面模式（门面指暴露重要工作的简单入口，而迪米特法则在于只暴露该暴露的入口，还是有所区别）思想，对外只暴露能够满足外部需要的内容</li>
+</ul>
+</li>
+</ul>
+<p><strong>目的在于降低类之间的耦合关系</strong></p>
+<h2 id="接口隔离"><a href="#接口隔离" class="headerlink" title="接口隔离"></a>接口隔离</h2><blockquote>
+<p><em>Interface Segregation Principle, ISP</em></p>
+<p><em>低耦合、高内聚中的高内聚</em></p>
+</blockquote>
+<p>接口隔离原则中所说的接口并不是狭意的指 Java 中的 Interface，而是一切的提供方法定义的对象，例如 Java 中的接口、抽象类、实体类</p>
+<p>接口隔离的原则：</p>
+<ul>
+<li>客户端不依赖不需要的接口</li>
+<li>类间依赖关系建立在最小的接口上</li>
+<li>接口应该细化，不应该具备臃肿的方法</li>
+</ul>
+<p>例如发送方式的实现类 <code>Send</code>，此时具备两种发送方式：邮件和短信，如果将方法都放在 <code>Send</code> 类中，则应该分别定义 <code>sendEmail()</code> 和 <code>sendNotice()</code> 两个方法，不利于后面的拓展；好的解决方法应该是定义接口，然后分别创建 <code>EmailSend</code> 和 <code>NoticeSend</code> 两个实现类，这就是接口隔离的目的</p>
+<p>接口隔离和单一原则看似冲突，目标是达到二者的平衡</p>
+<p><strong>避免接口污染</strong></p>
+<h2 id="依赖倒置"><a href="#依赖倒置" class="headerlink" title="依赖倒置"></a>依赖倒置</h2><blockquote>
+<p><em>Dependence Inversion Principle,DIP</em></p>
+<p><em>不依赖于具体实现，而依赖于抽象</em></p>
+</blockquote>
+<p>不正确的依赖关系是上层调用下层，上层依赖下层</p>
+<p>面向对象其实就是依赖倒置的一种体现，依赖倒置让下层依赖上层，比如接口，接口方法的扩展会影响所有实现类，但抽象层的变动远远少于实现层，所以依赖倒置可以很好地避免频繁的修改</p>
+<p><strong>面向接口编程</strong></p>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="如何满足里氏替换原则"><a href="#如何满足里氏替换原则" class="headerlink" title="如何满足里氏替换原则"></a>如何满足里氏替换原则</h2><p>里氏替换的原则指：需要使用父类的地方可以替换为子类使用，因为父类的方法在子类上应该保持一致</p>
+<p>在实际中遇到直接继承不能满足里氏替换的场景，就<strong>说明抽象不足，需要向上抽象</strong></p>
+<p>如果一个 <code>Add</code> 类的 <code>compute(int n)</code> 操作为加法，减法也想要进行实现，则继承 <code>Add</code> 类后重写了 <code>compute(int n)</code> 方法，此时则违反了里氏替换原则，整个方法的实现被重写了</p>
+<p>向上抽象出 <code>Compute</code> 接口，即可以实现里氏替换原则</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="type">int</span> n)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Add</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;加法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Subtract</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;减法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://refactoringguru.cn/design-patterns">常用设计模式有哪些？ (refactoringguru.cn)</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>规范</tag>
       </tags>
   </entry>
 </search>
