@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/astronaut-64.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/astronaut-32.svg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Topic 与 Tag在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率 Topic 是消息主题，通过 Topic 对不同的业务消息进行分类Tag  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性   Topic 和 Tag 的选择，建议从以下几个方面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ 最佳实践">
+<meta property="og:url" content="http://example.com/2022/12/04/MQ/RocketMQ%20%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="Topic 与 Tag在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率 Topic 是消息主题，通过 Topic 对不同的业务消息进行分类Tag  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性   Topic 和 Tag 的选择，建议从以下几个方面">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-12-03T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="RocketMQ">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/12/04/MQ/RocketMQ%20%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RocketMQ 最佳实践 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/04/MQ/RocketMQ%20%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RocketMQ 最佳实践
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-12-04 00:00:00" itemprop="dateCreated datePublished" datetime="2022-12-04T00:00:00+08:00">2022-12-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/MQ/" itemprop="url" rel="index"><span itemprop="name">MQ</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/MQ/RocketMQ/" itemprop="url" rel="index"><span itemprop="name">RocketMQ</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Topic-与-Tag"><a href="#Topic-与-Tag" class="headerlink" title="Topic 与 Tag"></a>Topic 与 Tag</h1><p>在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率</p>
+<p><strong>Topic</strong> 是消息主题，通过 Topic 对不同的业务消息进行分类<br><strong>Tag</strong>  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性  </p>
+<p>Topic 和 Tag 的选择，建议从以下几个方面判断：</p>
+<ul>
+<li><p><strong>消息类型是否一致：</strong>普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</p>
+</li>
+<li><p><strong>业务是否相关联：</strong>没有关联的业务应该使用不同的 Topic</p>
+</li>
+<li><p><strong>消息优先级是否一致：</strong>同一个 Topic 内应该是同样优先级的消息</p>
+</li>
+<li><p><strong>量级是否相当：</strong>业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</p>
+</li>
+</ul>
+<p>以电商系统为例，订单消息和支付消息属于不同的业务，设置 TOPIC_ORDER 和 TOPIC_PAY<br>其中订单消息根据商品种类再划分为不同的 tag，例如电器类、服装类、图书类等<br>支付消息根据不同的支付渠道划分，例如银行卡、支付宝、微信支付等</p>
+<h1 id="消费幂等"><a href="#消费幂等" class="headerlink" title="消费幂等"></a>消费幂等</h1><p>为了防止消息重复消费导致业务处理异常，RocketMQ 消费者在接收消息后，有必要根据业务上的唯一 Key 对消息进行幂等处理</p>
+<p>个人认为需要注意的是，这个业务上的唯一 Key，无论是在 Consumer 层做去重实现业务幂等（去重表），还是业务逻辑上做幂等（状态机、版本校验），都应该是使用业务意义上的唯一标识，而不是依赖 Message ID</p>
+<p><strong>消息重复的场景</strong></p>
+<ul>
+<li><strong>Producer 端：</strong>发送消息时，Brocker 已经收到消息并持久化，但 ACK 由于网络原因未成功返回给生产者，为了保证消息不丢失，生产者会再一次发送消息；或者上游业务认为失败重新进行了调用，就可能会发送重复的消息，并且是不同的 Message ID</li>
+<li><strong>Brocker 端：</strong>投递消息给消费者，消费者的 offset 因为网络等原因提交失败，为了保证消息至少一次，Brocker 会再次投递消息</li>
+<li><strong>Consumer 端：</strong>服务扩缩容导致的 rebalance 操作，本质上也是消费者的 offset 没有及时提交</li>
+</ul>
+<p>因为不同的 Message ID 对应的消息内容可能相同，有可能出现冲突（重复）的情况，所以真正安全的幂等处理，不建议以 Message ID 作为处理依据</p>
+<p>最好的方式是以业务唯一标识作为幂等处理的关键依据，而业务的唯一标识可以通过消息 Key 设置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">consumer.subscribe(<span class="string">&quot;ons_test&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="keyword">new</span> <span class="title class_">MessageListener</span>() &#123;</span><br><span class="line">    <span class="keyword">public</span> Action <span class="title function_">consume</span><span class="params">(Message message, ConsumeContext context)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> message.getKey()</span><br><span class="line">        <span class="comment">// 根据业务唯一标识的 Key 做幂等处理</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="订阅关系"><a href="#订阅关系" class="headerlink" title="订阅关系"></a>订阅关系</h1><p>订阅关系需要保持一致，一致的定义是：<strong>同一个消费者组下所有 Consumer 实例所订阅的 Topic、Tag、Tag 的顺序必须完全一致</strong></p>
+<p>如果订阅关系不一致，消息消费的逻辑就会混乱，甚至导致消息丢失</p>
+<p><strong>为什么会丢失？</strong></p>
+<p>当一个 Consumer 消费一个 Queue 时，会在 ConsumerQueue 中保存该消费者和消息的相关信息</p>
+<p>ConsumerQueue 中保存了如下信息：</p>
+<ul>
+<li>前 8 个字节记录消息在 CommitLog 中的偏移量</li>
+<li>中间 4 个字节记录消息大小</li>
+<li>最后 8 个字节记录消息中 tag 的 hashcode</li>
+</ul>
+<p>假如一个 Consumer 订阅了 Topic1 中的 Tag1，那这个 Consumer 拉取消息时，首先从 Name Server 获取订阅关系，得到当前 Consumer 订阅的所有 tag 的 hashcode 集合 codeSet；每次从 ConsumerQueue 获取一条记录，就要判断最后 8 个字节 tag hashcode 是否在 codeSet 中，比如 Tag2 不在 codeSet 中，就会被过滤掉</p>
+<p>所以不正确的订阅关系会导致该 ConsumerQueue 中的消息被错误丢弃了</p>
+<h1 id="消息堆积"><a href="#消息堆积" class="headerlink" title="消息堆积"></a>消息堆积</h1><p>当客户端消费速度跟不上服务端消息发送的速度，便会出现消息堆积</p>
+<p>消息堆积的主要影响：</p>
+<ul>
+<li>消费延迟</li>
+<li>生产者无法成功发送消息（无法生产）</li>
+</ul>
+<p>以下场景需要着重关注消息堆积和延迟问题：</p>
+<ul>
+<li>业务系统上下游能力不匹配造成的持续堆积，且无法自行恢复</li>
+<li>业务系统对消息的消费实时性要求较高，即使是短暂的堆积造成的消息延迟也无法接受</li>
+</ul>
+<p>客户端 Push 模式到消费消息有两个阶段：</p>
+<ul>
+<li><strong>获取消息：</strong>通过长轮询批量拉取的方式从 Brocker 拉取消息，这一阶段吞吐量较高，所以一般不会成为性能瓶颈</li>
+<li><strong>消费 &amp; 提交：</strong>依赖业务的处理耗时和消费逻辑的并发度</li>
+</ul>
+<p>所以通过消息消费的两大步骤来看，消息堆积的主要问题出现在第二阶段，即<strong>消费耗时</strong>和<strong>消费并发度</strong>    </p>
+<p><strong>消费耗时</strong></p>
+<p>影响消费耗时的消费逻辑主要分为 CPU 内存计算和外部 IO 操作；由于大部分服务器场景都是 IO 密集型，业务代码在正常情况下不会涉及复杂的运算，内部耗时相比 IO 耗时来说可以忽略不记</p>
+<p>IO 操作通常包含以下逻辑：</p>
+<ul>
+<li>读写外部数据库，例如 MySQL</li>
+<li>读写外部缓存系统，例如 Redis</li>
+<li>下游系统调用，例如 Dubbo 调用或者下游 HTTP 接口调用</li>
+</ul>
+<p><strong>消费并发度</strong></p>
+<p>不同的消息类型对应不同的并发度配置策略</p>
+<table>
+<thead>
+<tr>
+<th>消息类型</th>
+<th>并发度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通消息</td>
+<td>单节点线程数 × 节点数量</td>
+</tr>
+<tr>
+<td>定时和延时消息</td>
+<td>单节点线程数 × 节点数量</td>
+</tr>
+<tr>
+<td>事务消息</td>
+<td>单节点线程数 × 节点数量</td>
+</tr>
+<tr>
+<td>顺序消息</td>
+<td>Min（单节点线程数 × 节点数量，分区数）</td>
+</tr>
+</tbody></table>
+<p>此外单节点的并发度需要谨慎设置，不能盲目直接调大线程数，设置过大的线程数反而会带来大量的线程切换的开销</p>
+<p>理想环境下单节点的最优线程数计算模型如下：</p>
+<ul>
+<li>单机 CPU 核数为 C</li>
+<li>线程切换耗时忽略不计，IO 操作不消耗 CPU</li>
+<li>线程有足够消息等待处理，且内存充足</li>
+<li>逻辑中 CPU 计算耗时为 T1，外部 IO 操作为 T2</li>
+</ul>
+<p>则单个线程能达到的 TPS 为 <code>1 / (T1 + T2)</code>，如果CPU使用率达到理想状态 100%，那么单机达到最大能力时需要设置 <code>C × (T1 + T2) / T1</code> 个线程</p>
+<h1 id="读写队列"><a href="#读写队列" class="headerlink" title="读写队列"></a>读写队列</h1><p>新建 Topic 需要配置相关的属性 <code>writeQueueNums</code> 和 <code>readQueueNums</code>，分别代表写队列的数量和读队列的数量</p>
+<p>其中 <code>writeQueueNums</code> 和 <code>readQueueNums</code> 的参数可以自由配置，<strong>为什么可以自由配置呢而不是必须相等呢？</strong></p>
+<blockquote>
+<p><strong>备注</strong>：读写队列和读写分离不是同一个概念</p>
+<p>读写分离指的是主节点和从节点关于读写请求分配的问题</p>
+<p>读写队列在做路由信息时使用，在消息发送时，使用写队列个数返回路由信息，而消息消费时按照读队列个数返回路由信息，在物理文件层面，只有写队列才会创建文件</p>
+</blockquote>
+<p><strong>读写队列数量不匹配时会发生什么</strong></p>
+<ul>
+<li>写多读少：多出来的写队列无法被消费</li>
+<li>读多写少：Consumer 对应的多出来的读队列没有消息，也就不会从该读队列消费任何消息</li>
+</ul>
+<p><strong>为什么要这么设计</strong></p>
+<p>设置读写队列数的目的在于方便队列的缩容和扩容</p>
+<p>一个 Topic 在每个 Brocker 上创建了 128 个队列，现在需要将队列缩容到 64 个，怎么做才能 100% 不会丢失消息，并且无需重启应用程序</p>
+<p>解决办法：</p>
+<ol>
+<li>先将写队列缩容（128 调整为 64）；后续数据请求会进入 0 至 63 的写队列中，由之前的 Consumer 进行消费</li>
+<li>等待 64 至 127 队列中的消息被消费完成</li>
+<li>缩容读队列（128 调整为 64）；此时 Consumer 重新分配，对应 64 个写队列</li>
+</ol>
+<p><strong>同时缩容写队列和读队列可能会导致部分消息未被消费</strong></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/69109.html">最佳实践 (aliyun.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/liaowenhui/p/15717353.html">RocketMQ订阅关系不一致 - JustJavaIt - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qian_348840260/article/details/108975241">rocketmq中的读写队列_八荒六合唯我独尊-CSDN博客_rocketmq读写队列</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RocketMQ/" rel="tag"># RocketMQ</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/03/ES/ES%20cardinality%20%E5%92%8C%20HyperLogLog/" rel="prev" title="ES cardinality 和 HyperLogLog">
+      <i class="fa fa-chevron-left"></i> ES cardinality 和 HyperLogLog
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Topic-%E4%B8%8E-Tag"><span class="nav-number">1.</span> <span class="nav-text">Topic 与 Tag</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E5%B9%82%E7%AD%89"><span class="nav-number">2.</span> <span class="nav-text">消费幂等</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A2%E9%98%85%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text">订阅关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF"><span class="nav-number">4.</span> <span class="nav-text">消息堆积</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%98%9F%E5%88%97"><span class="nav-number">5.</span> <span class="nav-text">读写队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=450 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
