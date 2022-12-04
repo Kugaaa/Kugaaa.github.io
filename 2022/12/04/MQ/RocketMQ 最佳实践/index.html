@@ -199,7 +199,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -252,14 +252,10 @@
 <p><strong>Topic</strong> 是消息主题，通过 Topic 对不同的业务消息进行分类<br><strong>Tag</strong>  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性  </p>
 <p>Topic 和 Tag 的选择，建议从以下几个方面判断：</p>
 <ul>
-<li><p><strong>消息类型是否一致：</strong>普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</p>
-</li>
-<li><p><strong>业务是否相关联：</strong>没有关联的业务应该使用不同的 Topic</p>
-</li>
-<li><p><strong>消息优先级是否一致：</strong>同一个 Topic 内应该是同样优先级的消息</p>
-</li>
-<li><p><strong>量级是否相当：</strong>业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</p>
-</li>
+<li><strong>消息类型是否一致：</strong>普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</li>
+<li><strong>业务是否相关联：</strong>没有关联的业务应该使用不同的 Topic</li>
+<li><strong>消息优先级是否一致：</strong>同一个 Topic 内应该是同样优先级的消息</li>
+<li><strong>量级是否相当：</strong>业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</li>
 </ul>
 <p>以电商系统为例，订单消息和支付消息属于不同的业务，设置 TOPIC_ORDER 和 TOPIC_PAY<br>其中订单消息根据商品种类再划分为不同的 tag，例如电器类、服装类、图书类等<br>支付消息根据不同的支付渠道划分，例如银行卡、支付宝、微信支付等</p>
 <h1 id="消费幂等"><a href="#消费幂等" class="headerlink" title="消费幂等"></a>消费幂等</h1><p>为了防止消息重复消费导致业务处理异常，RocketMQ 消费者在接收消息后，有必要根据业务上的唯一 Key 对消息进行幂等处理</p>
@@ -394,7 +390,10 @@
     <a href="/2022/12/03/ES/ES%20cardinality%20%E5%92%8C%20HyperLogLog/" rel="prev" title="ES cardinality 和 HyperLogLog">
       <i class="fa fa-chevron-left"></i> ES cardinality 和 HyperLogLog
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%AE%A1%E9%81%93%E6%A8%A1%E5%BC%8F%20-%20pipeline/" rel="next" title="管道模式 - pipeline">
+      管道模式 - pipeline <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -460,14 +459,14 @@
       <div class="site-overview-wrap sidebar-panel">
       <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Kuga</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
