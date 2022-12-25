@@ -1,110 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>管道模式 - pipeline</title>
-    <url>/2022/12/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%AE%A1%E9%81%93%E6%A8%A1%E5%BC%8F%20-%20pipeline/</url>
-    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>管道模式（Pipeline Pattern）是责任链模式（Chain of Command Pattern）的变体；区别在于责任链是将处理器按照链条组织起来，待处理的上下文按照链条找到能够处理自己的处理器，一般只有唯一的一个处理器；而管道模式是链条中的每一个处理器都需要对上下文进行处理</p>
-<p><strong>目的</strong><br>降低业务逻辑流程的耦合性，将整个过程中所有的处理器隔离开，更方便扩展流程上新的业务逻辑</p>
-<p><strong>现实世界类比</strong><br>工厂的生产流水线，车架 -&gt; 发送机 -&gt; 外壳 -&gt; 内饰 -&gt; 总装 -&gt; 质检，整辆车在传送带又一个环节运输至另一个环节，每个处理环节都对汽车处理自己的部分，最终产出成品</p>
-<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><p>模拟一个场景，比如订单服务内查询接口把最终订单实体组装为一个 VO</p>
-<p>除了原有的实体属性，比如内部数据需要对优惠金额进行计算，外部数据需要补充用户信息、商品信息等</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>如果将所有步骤抽为方法，则代码一般会实现为这样</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> OrderInfoVo <span class="title function_">buildVO</span><span class="params">(OrderBo bo)</span> &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="type">OrderInfoVo</span> <span class="variable">vo</span> <span class="operator">=</span> <span class="built_in">this</span>.wrapVo(bo);</span><br><span class="line">    <span class="built_in">this</span>.calMitigateSum(vo);</span><br><span class="line">    <span class="built_in">this</span>.buildUserInfo(vo);</span><br><span class="line">    <span class="built_in">this</span>.buildCommodityInfo(vo);</span><br><span class="line">    <span class="keyword">return</span> vo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>后面如果对 VO 的字段有了新的要求，比如增加物流信息；或者对生成 VO 的流程有了新的要求，比如根据查询条件进行缓存，就会有以下坏处：</p>
-<ul>
-<li>在 <code>buildVO</code> 中实现缓存逻辑，违反了方法的单一职责，维护在外面可能又需要维护一个统一的入口</li>
-<li>将来每加入一个新的处理步骤或者删除某个步骤，都要修改 <code>buildVO</code> 方法</li>
-</ul>
-<p>这种情况下可以使用管道模式解决以上缺点</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a>上下文</h3><p>上下文维护着整个业务链条中间的结果和最终的结果数据</p>
-<p><strong>管道上下文父类</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 传递到管道的上下文</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PipelineContext</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理开始时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> LocalDateTime startTime;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理结束时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> LocalDateTime endTime;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取数据名称</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.getClass().getSimpleName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>具体的业务数据上下文</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 业务上下文</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderVOContext</span> <span class="keyword">extends</span> <span class="title class_">PipelineContext</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 订单业务模型</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> OrderBO bo;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 订单 VO</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> OrderVO vo;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模型创建出错时的错误信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String errorMsg;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 其他参数</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;build OrderVO&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h3><p><strong>处理器父类</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道中的上下文处理器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ContextHandler</span>&lt;T <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理输入的上下文数据</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context 处理时的上下文数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 返回 true 则表示由下一个 ContextHandler 继续处理，返回 false 则表示处理结束</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(T context)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>计算优惠金额</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CalMitigateSumHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--计算优惠金额--&quot;</span>);</span><br><span class="line">        <span class="comment">// 计算流程</span></span><br><span class="line">        <span class="type">double</span> <span class="variable">mitigateSum</span> <span class="operator">=</span> <span class="number">0.0</span>;</span><br><span class="line">        context.getVo().setMitigateSum(mitigateSum);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>构造用户信息</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">buildUserInfoHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--构造用户信息--&quot;</span>);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userClient.getUserById(context.getBo().getUserId());</span><br><span class="line">        <span class="keyword">if</span> (Objects.isNull(user)) &#123;</span><br><span class="line">            context.setErrorMsg(<span class="string">&quot;查询用户信息为空，id=&quot;</span> + context.getBo().getUserId());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        context.getVo().setUserName(user.getName());</span><br><span class="line">        context.getVo().setUserAge(user.getAge());</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>构造商品信息</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">buildGoodsInfoHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--构造商品信息--&quot;</span>);</span><br><span class="line">        <span class="type">Goods</span> <span class="variable">goods</span> <span class="operator">=</span> goodsClient.getGoodsBySku(context.getBo().getGoodsSku());</span><br><span class="line">        <span class="keyword">if</span> (Objects.isNull(goods)) &#123;</span><br><span class="line">            context.setErrorMsg(<span class="string">&quot;查询商品信息为空，id=&quot;</span> + context.getBo().getGoodsSku());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        context.getVo().setGoodsSku(goods.getSku());</span><br><span class="line">        context.getVo().setGoodsName(goods.getName());</span><br><span class="line">		context.getVo().setGoodsPrice(goods.getPrice());</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="组织处理器"><a href="#组织处理器" class="headerlink" title="组织处理器"></a>组织处理器</h3><p>现在业务 Context 和 Handler 都定义好了，那么使用什么方式将 Handler 组织起来呢？有如下几种：</p>
-<ul>
-<li>Handler 对象持有下一个 Handler 的信息，比如使用 <code>nextHandler</code> 属性来保存下一个处理器；缺点是无法直观了解整个业务链条都有哪些处理器，并且增删处理器需要修改其他处理器的属性</li>
-<li>自定义注解将顺序信息和 Handler 的实现绑定；这样也无法直观了解到一段业务都有多少个处理器</li>
-<li>维护一个路由表，基于 Spring 的自动注入来实现和管理路由表，使用一个执行器角色只有处理器集合作为入口</li>
-</ul>
-<p><strong>构造路由表</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道路由的配置</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PipelineRouteConfig</span> <span class="keyword">implements</span> <span class="title class_">ApplicationContextAware</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据类型-&gt;管道中处理器类型列表 的路由</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span></span><br><span class="line">    Map&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;,</span><br><span class="line">        List&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt;&gt;&gt; PIPELINE_ROUTE_MAP = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 在这里配置各种上下文类型对应的处理管道：键为上下文类型，值为处理器类型的列表</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        PIPELINE_ROUTE_MAP.put(OrderVOContext.class,</span><br><span class="line">                               Arrays.asList(</span><br><span class="line">                                       CalMitigateSumHandler.class,</span><br><span class="line">                                       buildUserInfoHandler.class,</span><br><span class="line">                                       buildGoodsInfoHandler.class</span><br><span class="line">                               ));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将来其他 Context 的管道配置</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在 Spring 启动时，根据路由表生成对应的管道映射关系</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean(&quot;pipelineRouteMap&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;, List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt;&gt; getHandlerPipelineMap() &#123;</span><br><span class="line">        <span class="keyword">return</span> PIPELINE_ROUTE_MAP.entrySet()</span><br><span class="line">                                 .stream()</span><br><span class="line">                                 .collect(Collectors.toMap(Map.Entry::getKey, <span class="built_in">this</span>::toPipeline));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据给定的管道中 ContextHandler 的类型的列表，构建管道</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt; toPipeline(</span><br><span class="line">            Map.Entry&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;, List&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt;&gt;&gt; entry) &#123;</span><br><span class="line">        <span class="keyword">return</span> entry.getValue()</span><br><span class="line">                    .stream()</span><br><span class="line">                    .map(appContext::getBean)</span><br><span class="line">                    .collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext appContext;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException &#123;</span><br><span class="line">        appContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>管道执行器</strong></p>
-<p>管道执行器根据传入的上下文数据的类型，找到其对应的管道，然后将上下文数据放入管道中去进行处理</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道执行器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PipelineExecutor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(<span class="built_in">this</span>.getClass());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 引用 PipelineRouteConfig 中的 pipelineRouteMap</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;,</span><br><span class="line">                List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="built_in">super</span> PipelineContext&gt;&gt;&gt; pipelineRouteMap;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 同步处理输入的上下文数据</span></span><br><span class="line"><span class="comment">     * 如果处理时上下文数据流通到最后一个处理器且最后一个处理器返回 true，则返回 true，否则返回 false</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context 输入的上下文数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 处理过程中管道是否畅通，畅通返回 true，不畅通返回 false</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">acceptSync</span><span class="params">(PipelineContext context)</span> &#123;</span><br><span class="line">        Objects.requireNonNull(context, <span class="string">&quot;上下文数据不能为 null&quot;</span>);</span><br><span class="line">        <span class="comment">// 拿到数据类型</span></span><br><span class="line">        Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt; dataType = context.getClass();</span><br><span class="line">        <span class="comment">// 获取数据处理管道</span></span><br><span class="line">        List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="built_in">super</span> PipelineContext&gt;&gt; pipeline = pipelineRouteMap.get(dataType);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isEmpty(pipeline)) &#123;</span><br><span class="line">            logger.error(<span class="string">&quot;&#123;&#125; 的管道为空&quot;</span>, dataType.getSimpleName());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 管道是否畅通</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">lastSuccess</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ContextHandler&lt;? <span class="built_in">super</span> PipelineContext&gt; handler : pipeline) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 当前处理器处理数据，并返回是否继续向下处理</span></span><br><span class="line">                lastSuccess = handler.handle(context);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">                lastSuccess = <span class="literal">false</span>;</span><br><span class="line">                logger.error(<span class="string">&quot;[&#123;&#125;] 处理异常，handler=&#123;&#125;&quot;</span>, context.getName(), handler.getClass().getSimpleName(), ex);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 不再向下处理</span></span><br><span class="line">            <span class="keyword">if</span> (!lastSuccess) &#123; <span class="keyword">break</span>; &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> lastSuccess;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="使用管道"><a href="#使用管道" class="headerlink" title="使用管道"></a>使用管道</h3><p>原来的 <code>buildVO</code> 可以引入管道来进行实现了</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> OrderInfoVo <span class="title function_">buildVO</span><span class="params">(OrderBo bo)</span> &#123;</span><br><span class="line">    <span class="type">OrderVOContext</span> <span class="variable">context</span> <span class="operator">=</span> <span class="built_in">this</span>.createContext(bo);</span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">success</span> <span class="operator">=</span> pipelineExecutor.acceptSync(data);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 流程成功</span></span><br><span class="line">    <span class="keyword">if</span> (success) &#123;</span><br><span class="line">        <span class="keyword">return</span> CommonResponse.success(data.getInstanceId());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    logger.error(<span class="string">&quot;build vo 失败：&#123;&#125;&quot;</span>, data.getErrorMsg());</span><br><span class="line">    <span class="keyword">return</span> CommonResponse.failed(data.getErrorMsg());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="增加处理器"><a href="#增加处理器" class="headerlink" title="增加处理器"></a>增加处理器</h3><p>如果需要在流程中增加新业务</p>
-<p><strong>创建新的处理器实现类</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">newTaskHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--执行新业务--&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>修改手动维护的静态路由表</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    PIPELINE_ROUTE_MAP.put(OrderVOContext.class,</span><br><span class="line">                           Arrays.asList(</span><br><span class="line">                               CalMitigateSumHandler.class,</span><br><span class="line">                               buildUserInfoHandler.class,</span><br><span class="line">                               newTaskHandler.class, <span class="comment">// 流程中增加了新逻辑</span></span><br><span class="line">                               buildGoodsInfoHandler.class</span><br><span class="line">                           ));</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="异步处理"><a href="#异步处理" class="headerlink" title="异步处理"></a>异步处理</h3><p>对于步骤繁多的任务，很多时候我们更需要的是异步处理，比如某些耗时长的定时任务，管道处理异步化非常的简单</p>
-<p>在 PipelineExecutor 中引入异步的处理方法</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道线程池</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> ThreadPoolTaskExecutor pipelineThreadPool; <span class="comment">// 处理异步的线程池</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 异步处理输入的上下文数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> context  上下文数据</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> callback 处理完成的回调</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">acceptAsync</span><span class="params">(PipelineContext context, BiConsumer&lt;PipelineContext, Boolean&gt; callback)</span> &#123;</span><br><span class="line">    pipelineThreadPool.execute(() -&gt; &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">success</span> <span class="operator">=</span> acceptSync(context);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (callback != <span class="literal">null</span>) &#123;</span><br><span class="line">            callback.accept(context, success);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过管道模式，可以大幅降低了系统的耦合度和提升了内聚程度与扩展性：</p>
-<ul>
-<li><p>优点</p>
-<ul>
-<li><code>buildVO</code> 所在的类只负责处理引导 BO 进入管道的业务流程，而不关注具体业务逻</li>
-<li><code>PipelineExecutor </code> 抽象定义，不关心业务细节</li>
-<li>每个 <code>ContextHandler </code> 只负责自己的业务，不需要知道链路结构，与其他处理器解耦</li>
-<li>对于处理器新增、删除、调整顺序等操作，只需要修改路由表，和业务逻辑脱离</li>
-</ul>
-</li>
-<li><p>缺点</p>
-<ul>
-<li>大的 Context 对象，让业务数据粒度很粗（上帝对象）</li>
-<li>和策略一样，可能造成实现类膨胀</li>
-<li>错误信息需要保存在 Context 对象中，走完所有处理器才会将错误返回</li>
-</ul>
-</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://zhuanlan.zhihu.com/p/370363597">设计模式最佳套路2 —— 基于 Spring 实现管道模式的最佳实践 - 知乎 (zhihu.com)</a></p>
-<p><a href="https://refactoringguru.cn/design-patterns/chain-of-responsibility">责任链设计模式（职责链模式） (refactoringguru.cn)</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ES cardinality 和 HyperLogLog</title>
     <url>/2022/12/03/ES/ES%20cardinality%20%E5%92%8C%20HyperLogLog/</url>
     <content><![CDATA[<h1 id="基数聚合"><a href="#基数聚合" class="headerlink" title="基数聚合"></a>基数聚合</h1><p>基数聚合属于聚合中的度量聚合，计算不同值的<strong>近似计数</strong></p>
@@ -199,145 +95,6 @@
       <tags>
         <tag>Elasticsearch</tag>
         <tag>ES 碎片</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>面向对象六大原则</title>
-    <url>/2022/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/</url>
-    <content><![CDATA[<h1 id="六大原则"><a href="#六大原则" class="headerlink" title="六大原则"></a>六大原则</h1><table>
-<thead>
-<tr>
-<th>设计原则</th>
-<th>概述</th>
-<th>目的</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>开闭原则</td>
-<td>对扩展开放，对修改关闭</td>
-<td>易于维护</td>
-</tr>
-<tr>
-<td>单一职责</td>
-<td>一个类只干一件事，实现类要单一</td>
-<td>提升可读性</td>
-</tr>
-<tr>
-<td>里氏替换</td>
-<td>不要重写父类的方法</td>
-<td>健壮性、防止错误继承</td>
-</tr>
-<tr>
-<td>迪米特法则</td>
-<td>最少知道，对象之间少建立联系</td>
-<td>低耦合</td>
-</tr>
-<tr>
-<td>接口隔离</td>
-<td>一个接口只干一件事，接口要精简单一</td>
-<td>高内聚</td>
-</tr>
-<tr>
-<td>依赖倒置</td>
-<td>高层不应该依赖低层，要面向接口编程</td>
-<td>利于结构升级</td>
-</tr>
-</tbody></table>
-<h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><blockquote>
-<p><em>Software entities like classes,modules and functions should be open for extension but closed for modifications.</em></p>
-<p><em>一个软件实体如类，模块和函数应该对扩展开放，对修改关闭</em></p>
-</blockquote>
-<p>随着业务发展需要增加新的方法，有几种方式：</p>
-<ul>
-<li><strong>在接口上添加新方法</strong><ul>
-<li>导致每一个实现类都需要进行实现，改动量大</li>
-<li>不一定所有的实现类都需要该方法</li>
-</ul>
-</li>
-<li><strong>修改实现类旧方法</strong><ul>
-<li>替代原有旧方法功能，如果同时需要使用旧方法则无法采用此方式 （<code>getPrice()</code> 获取的是原价格还是打折后价格？如果需要同时获取原价和打折后价格如何处理）</li>
-</ul>
-</li>
-<li><strong>面向扩展，使用新接口或者新类继承父类</strong><ul>
-<li>新接口方法接口，需要的类进行实现</li>
-<li>新类继承父类，在父类基础上增加方法</li>
-</ul>
-</li>
-</ul>
-<p><strong>明显面向扩展更容易维护，这就是开闭原则的目的</strong></p>
-<h2 id="单一职责"><a href="#单一职责" class="headerlink" title="单一职责"></a>单一职责</h2><blockquote>
-<p><em>There should never be more than one reason for a class to change. —— Robert C. Martin</em></p>
-<p><em>一个类应该有且仅有一个引起它变化的原因，否则类应该被拆分</em></p>
-</blockquote>
-<p>控制业务实现的粒度问题；一个类可以具备任意数量的方法，但都属于同一个功能簇中</p>
-<p><strong>严格控制类中方法的粒度，必要时进行分析与拆分</strong></p>
-<h2 id="里氏替换"><a href="#里氏替换" class="headerlink" title="里氏替换"></a>里氏替换</h2><blockquote>
-<p><em>Inheritance should ensure that any property proved about supertype objects also holds for subtype objects. —— Liskov</em></p>
-<p><em>继承必须确保父类所拥有的性质在子类中仍然成立</em></p>
-</blockquote>
-<p>在里氏替换原则的指导方针下，可得出：仅仅依据两个类之间有没有 “is a” 的关系，来判断两个类能不能发生继承关系是不够的</p>
-<p>应该遵守一个大原则：<strong>任何使用父类的地方，都能被透明的替换成子类，且替换成子类后，程序行为不会发生问题</strong></p>
-<p>不应该滥用继承关系，鸵鸟是否是鸟的子类（不会飞），鲸鱼是否是鱼的子类（没有腮），继承具有侵入性，当需要使用继承关系时需要辨明是否是真正的继承，<strong>父类的每个方法都必须适用于子类</strong></p>
-<ol>
-<li>子类可以实现父类的抽象方法，但是不能覆盖父类的非抽象方法</li>
-<li>子类可以增加自己特有的方法</li>
-<li>子类重载父类方法时，方法的形参要比父类方法更为宽松</li>
-<li>子类实现父类抽象方法时，方法的返回值要比父类方法更为严格</li>
-</ol>
-<h2 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h2><blockquote>
-<p><em>talk only to your immediate friends. —— Ian Holland</em></p>
-<p><em>只和直接的朋友交流</em></p>
-</blockquote>
-<p>迪米特法则也称为最少知道原则，最少知道包含两个目的：</p>
-<ul>
-<li><strong>只和直接的朋友交互</strong><ul>
-<li>例如 MVC 架构，视图层和业务层交互，业务层和持久层交互，视图层不应该和持久层产生联系</li>
-</ul>
-</li>
-<li><strong>较少对朋友的了解</strong><ul>
-<li>类门面模式（门面指暴露重要工作的简单入口，而迪米特法则在于只暴露该暴露的入口，还是有所区别）思想，对外只暴露能够满足外部需要的内容</li>
-</ul>
-</li>
-</ul>
-<p><strong>目的在于降低类之间的耦合关系</strong></p>
-<h2 id="接口隔离"><a href="#接口隔离" class="headerlink" title="接口隔离"></a>接口隔离</h2><blockquote>
-<p><em>Interface Segregation Principle, ISP</em></p>
-<p><em>低耦合、高内聚中的高内聚</em></p>
-</blockquote>
-<p>接口隔离原则中所说的接口并不是狭意的指 Java 中的 Interface，而是一切的提供方法定义的对象，例如 Java 中的接口、抽象类、实体类</p>
-<p>接口隔离的原则：</p>
-<ul>
-<li>客户端不依赖不需要的接口</li>
-<li>类间依赖关系建立在最小的接口上</li>
-<li>接口应该细化，不应该具备臃肿的方法</li>
-</ul>
-<p>例如发送方式的实现类 <code>Send</code>，此时具备两种发送方式：邮件和短信，如果将方法都放在 <code>Send</code> 类中，则应该分别定义 <code>sendEmail()</code> 和 <code>sendNotice()</code> 两个方法，不利于后面的拓展；好的解决方法应该是定义接口，然后分别创建 <code>EmailSend</code> 和 <code>NoticeSend</code> 两个实现类，这就是接口隔离的目的</p>
-<p>接口隔离和单一原则看似冲突，目标是达到二者的平衡</p>
-<p><strong>避免接口污染</strong></p>
-<h2 id="依赖倒置"><a href="#依赖倒置" class="headerlink" title="依赖倒置"></a>依赖倒置</h2><blockquote>
-<p><em>Dependence Inversion Principle,DIP</em></p>
-<p><em>不依赖于具体实现，而依赖于抽象</em></p>
-</blockquote>
-<p>不正确的依赖关系是上层调用下层，上层依赖下层</p>
-<p>面向对象其实就是依赖倒置的一种体现，依赖倒置让下层依赖上层，比如接口，接口方法的扩展会影响所有实现类，但抽象层的变动远远少于实现层，所以依赖倒置可以很好地避免频繁的修改</p>
-<p><strong>面向接口编程</strong></p>
-<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="如何满足里氏替换原则"><a href="#如何满足里氏替换原则" class="headerlink" title="如何满足里氏替换原则"></a>如何满足里氏替换原则</h2><p>里氏替换的原则指：需要使用父类的地方可以替换为子类使用，因为父类的方法在子类上应该保持一致</p>
-<p>在实际中遇到直接继承不能满足里氏替换的场景，就<strong>说明抽象不足，需要向上抽象</strong></p>
-<p>如果一个 <code>Add</code> 类的 <code>compute(int n)</code> 操作为加法，减法也想要进行实现，则继承 <code>Add</code> 类后重写了 <code>compute(int n)</code> 方法，此时则违反了里氏替换原则，整个方法的实现被重写了</p>
-<p>向上抽象出 <code>Compute</code> 接口，即可以实现里氏替换原则</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="type">int</span> n)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Add</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;加法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Subtract</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;减法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://refactoringguru.cn/design-patterns">常用设计模式有哪些？ (refactoringguru.cn)</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式</tag>
-        <tag>规范</tag>
       </tags>
   </entry>
   <entry>
@@ -439,6 +196,136 @@
       <tags>
         <tag>Elasticsearch</tag>
         <tag>ES 碎片</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>桥接模式 - bridge</title>
+    <url>/2022/12/25/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%EF%BC%88bridge%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>桥接（bridge）模式首先的场景是内部实现逻辑分为多个模块，每个模块又可能对应多种实现</p>
+<p>在桥接内部，这些不同类型的模块按照组合或聚合的方式组织在一起，将逻辑模块抽象部分与实现部分相分离</p>
+<p><strong>目的</strong><br>降低内部多种类型逻辑模块的耦合，扩展变成以各模块为单位，更为灵活</p>
+<p><strong>现实世界类比</strong><br><a href="https://vans.com.cn/customs.html">Vans自由定制鞋_Vans(范斯)中国官方网站</a></p>
+<p>球鞋定制，从选择款式开始，对不同的部位（鞋头、鞋腰、侧边条纹、鞋带等）选择不同的设计（颜色、图案、材质等），最终产出最终产品（桥接模式的最终成品可以认为是组合了多个模块逻辑的执行器）</p>
+<p>针对不同部位选择不同的设计，而不是平铺出笛卡尔积式的配置表，就是桥接模式希望实现的解耦的目的</p>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><p>模拟一个场景，比如服务内希望实现一个消息通知功能</p>
+<p>消息分为多种记录方式：缓存、数据库</p>
+<p>通知的方式也分为多种方式：邮件、微信</p>
+<p>服务内定义什么级别的消息通过什么方式进行通知</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>如果将所需要的发送方式进行实现，需要实现 4 种执行器（2 × 2），哪怕是服务中可以进行选择，也需要全部进行实现</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CacheEmailNotifier</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(String msg)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;缓存数据&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;发送电子邮件&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CacheWeChatNotifier</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(String msg)</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;缓存数据&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;发送微信&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>如果后续有调整，增加了新的记录方式或者通知方式，那么需要需要创建的类就更多了，并且可能还存在相同的逻辑被实现了多份不便于维护</p>
+<p>问题出现的原因是因为将记录方式和通知方式这两种互不关联的模块<strong>在实现中耦合在一起</strong></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="通知方式"><a href="#通知方式" class="headerlink" title="通知方式"></a>通知方式</h3><p><strong>定义接口</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Sender</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(String msg)</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>进行实现</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 电子邮件</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmailSender</span> <span class="keyword">implements</span> <span class="title class_">Sender</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(<span class="keyword">final</span> String msg)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;发送电子邮件:&quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 微信</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WeChatSender</span> <span class="keyword">implements</span> <span class="title class_">Sender</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(<span class="keyword">final</span> String msg)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;发送微信:&quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="记录方式"><a href="#记录方式" class="headerlink" title="记录方式"></a>记录方式</h3><p><strong>定义接口</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Recorder</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">record</span><span class="params">(String msg)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>进行实现</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 缓存</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CacheRecorder</span> <span class="keyword">implements</span> <span class="title class_">Recorder</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">record</span><span class="params">(<span class="keyword">final</span> String msg)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;记录到缓存:&quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数据库</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DbRecorder</span> <span class="keyword">implements</span> <span class="title class_">Recorder</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">record</span><span class="params">(<span class="keyword">final</span> String msg)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;记录到数据库:&quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="组织者"><a href="#组织者" class="headerlink" title="组织者"></a>组织者</h3><p><strong>抽象组织者</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AbstractNotifier</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Recorder recorder;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Sender sender;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AbstractNotifier</span><span class="params">(<span class="keyword">final</span> Recorder recorder, <span class="keyword">final</span> Sender sender)</span> &#123;</span><br><span class="line">        Assert.notNull(recorder);</span><br><span class="line">        Assert.notNull(sender);</span><br><span class="line">        <span class="built_in">this</span>.recorder = recorder;</span><br><span class="line">        <span class="built_in">this</span>.sender = sender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handle</span><span class="params">(String msg)</span> &#123;</span><br><span class="line">        recorder.record(msg);</span><br><span class="line">        sender.send(msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>继承构造模块的实现</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CustomNotifier</span> <span class="keyword">extends</span> <span class="title class_">AbstractNotifier</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CustomNotifier</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(<span class="keyword">new</span> <span class="title class_">DbRecorder</span>(), <span class="keyword">new</span> <span class="title class_">EmailSender</span>());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="业务扩展"><a href="#业务扩展" class="headerlink" title="业务扩展"></a>业务扩展</h3><p>需要增加新的发送方式，比如短信</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ShortMessageSender</span> <span class="keyword">implements</span> <span class="title class_">Sender</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(<span class="keyword">final</span> String msg)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;发送短信:&quot;</span> + msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>需要进行新的 notifier 的实现</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PlusNotifier</span> <span class="keyword">extends</span> <span class="title class_">AbstractNotifier</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">PlusNotifier</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(<span class="keyword">new</span> <span class="title class_">CacheRecorder</span>(), <span class="keyword">new</span> <span class="title class_">ShortMessageSender</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h2><p>JDBC 驱动为所有的关系型数据库提供一个通用的标准，这就是一个桥接模式的典型应用</p>
+<h3 id="进行连接"><a href="#进行连接" class="headerlink" title="进行连接"></a>进行连接</h3><p>先回顾一下 JDBC 的使用，使用 JDBC 连接 MySQL 数据库主要分为这样几步：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//1.加载 MySQL 驱动注入到 DriverManager</span></span><br><span class="line">Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.提供 JDBC 连接的 URL、用户名和密码</span></span><br><span class="line"><span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;jdbc:mysql://localhost:3306/test_db?&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">username</span> <span class="operator">=</span> <span class="string">&quot;root&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="string">&quot;root&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3.创建数据库的连接</span></span><br><span class="line"><span class="type">Connection</span> <span class="variable">connection</span> <span class="operator">=</span> DriverManager.getConnection(url, username, password);</span><br><span class="line"></span><br><span class="line"><span class="comment">//4.创建 statement 实例</span></span><br><span class="line"><span class="type">Statement</span> <span class="variable">statement</span> <span class="operator">=</span> connection.createStatement();</span><br><span class="line"></span><br><span class="line"><span class="comment">//5.执行 SQL 语句</span></span><br><span class="line"><span class="type">String</span> <span class="variable">query</span> <span class="operator">=</span> <span class="string">&quot;select * from test&quot;</span>;</span><br><span class="line"><span class="type">ResultSet</span> <span class="variable">resultSet</span> <span class="operator">=</span> statement.executeQuery(query);</span><br><span class="line"></span><br><span class="line"><span class="comment">//6.关闭连接对象</span></span><br><span class="line">connection.close();</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Driver"><a href="#Driver" class="headerlink" title="Driver"></a>Driver</h3><p><code>Class.forName(&quot;com.mysql.cj.jdbc.Driver&quot;);</code> 获取了 Driver 对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Driver</span> <span class="keyword">extends</span> <span class="title class_">NonRegisteringDriver</span> <span class="keyword">implements</span> <span class="title class_">java</span>.sql.Driver &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Driver</span><span class="params">()</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 注册驱动</span></span><br><span class="line">            DriverManager.registerDriver(<span class="keyword">new</span> <span class="title class_">Driver</span>());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException var1) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Can&#x27;t register driver!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过调用 <code>DriverManager</code> 静态方法 <code>registerDriver()</code> 方法来将 MySQL 驱动注册到 <code>DriverManager</code></p>
+<h3 id="DriverManager"><a href="#DriverManager" class="headerlink" title="DriverManager"></a>DriverManager</h3><p><code>registerDriver()</code> 方法具体如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">registerDriver</span><span class="params">(java.sql.Driver driver)</span></span><br><span class="line">    <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">	<span class="comment">// 直接调用下面的同名静态方法</span></span><br><span class="line">    registerDriver(driver, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">registerDriver</span><span class="params">(java.sql.Driver driver,DriverAction da)</span><span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">    <span class="comment">// registeredDrivers 是一个 list,用 DriverInfo 实例封装 Driver</span></span><br><span class="line">    <span class="keyword">if</span>(driver != <span class="literal">null</span>) &#123;</span><br><span class="line">        registeredDrivers.addIfAbsent(<span class="keyword">new</span> <span class="title class_">DriverInfo</span>(driver, da));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// This is for compatibility with the original DriverManager</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">&quot;registerDriver: &quot;</span> + driver);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>registeredDrivers</code> 静态变量是一个 list</p>
+<p>泛型 <code>DriverInfo</code> 是驱动信息的包装类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DriverManager</span> &#123;</span><br><span class="line">    <span class="comment">// List of registered JDBC drivers</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> CopyOnWriteArrayList&lt;DriverInfo&gt; registeredDrivers = <span class="keyword">new</span> <span class="title class_">CopyOnWriteArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="DriverInfo"><a href="#DriverInfo" class="headerlink" title="DriverInfo"></a>DriverInfo</h3><p><code>DriverInfo</code> 类中封装了 <code>java.sql.Driver</code> 接口，类似 Driver 信息管理者的角色</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">DriverInfo</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Driver driver;</span><br><span class="line">    DriverAction da;</span><br><span class="line">    DriverInfo(Driver driver, DriverAction action) &#123;</span><br><span class="line">        <span class="built_in">this</span>.driver = driver;</span><br><span class="line">        da = action;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Connection"><a href="#Connection" class="headerlink" title="Connection"></a>Connection</h3><p>接下来进行连接的获取，<code>Connection connection = DriverManager.getConnection(url, username, password);</code></p>
+<p><code>Connection</code> 接口是和特定数据库的连接会话，<strong>不同的数据库的连接会话都不相同</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Connection</span>  <span class="keyword">extends</span> <span class="title class_">Wrapper</span>, AutoCloseable &#123;</span><br><span class="line"></span><br><span class="line">    Statement <span class="title function_">createStatement</span><span class="params">()</span> <span class="keyword">throws</span> SQLException;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>DriverManager</code> 中的 <code>getConnection</code> 方法，从 <code>registeredDrivers</code> 进行选择对应数据库驱动下的连接实例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title function_">getConnection</span><span class="params">(String url,String user, String password)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">    java.util.<span class="type">Properties</span> <span class="variable">info</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">java</span>.util.Properties();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (user != <span class="literal">null</span>) &#123;</span><br><span class="line">        info.put(<span class="string">&quot;user&quot;</span>, user);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (password != <span class="literal">null</span>) &#123;</span><br><span class="line">        info.put(<span class="string">&quot;password&quot;</span>, password);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (getConnection(url, info, Reflection.getCallerClass()));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 实际上调用的是下面的静态方法 getConnection</span></span><br><span class="line"><span class="comment">//  Worker method called by the public getConnection() methods.</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Connection <span class="title function_">getConnection</span><span class="params">(</span></span><br><span class="line"><span class="params">    String url, java.util.Properties info, Class&lt;?&gt; caller)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * When callerCl is null, we should check the application&#x27;s</span></span><br><span class="line"><span class="comment">         * (which is invoking this class indirectly)</span></span><br><span class="line"><span class="comment">         * classloader, so that the JDBC driver class outside rt.jar</span></span><br><span class="line"><span class="comment">         * can be loaded from here.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="type">ClassLoader</span> <span class="variable">callerCL</span> <span class="operator">=</span> caller != <span class="literal">null</span> ? caller.getClassLoader() : <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">synchronized</span>(DriverManager.class) &#123;</span><br><span class="line">        <span class="comment">// synchronize loading of the correct classloader.</span></span><br><span class="line">        <span class="keyword">if</span> (callerCL == <span class="literal">null</span>) &#123;</span><br><span class="line">            callerCL = Thread.currentThread().getContextClassLoader();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(url == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SQLException</span>(<span class="string">&quot;The url cannot be null&quot;</span>, <span class="string">&quot;08001&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">&quot;DriverManager.getConnection(\&quot;&quot;</span> + url + <span class="string">&quot;\&quot;)&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Walk through the loaded registeredDrivers attempting to make a connection.</span></span><br><span class="line">    <span class="comment">// Remember the first exception that gets raised so we can reraise it.</span></span><br><span class="line">    <span class="type">SQLException</span> <span class="variable">reason</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(DriverInfo aDriver : registeredDrivers) &#123;</span><br><span class="line">        <span class="comment">// If the caller does not have permission to load the driver then</span></span><br><span class="line">        <span class="comment">// skip it.</span></span><br><span class="line">        <span class="keyword">if</span>(isDriverAllowed(aDriver.driver, callerCL)) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                println(<span class="string">&quot;    trying &quot;</span> + aDriver.driver.getClass().getName());</span><br><span class="line">                <span class="type">Connection</span> <span class="variable">con</span> <span class="operator">=</span> aDriver.driver.connect(url, info);</span><br><span class="line">                <span class="keyword">if</span> (con != <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// Success!</span></span><br><span class="line">                    println(<span class="string">&quot;getConnection returning &quot;</span> + aDriver.driver.getClass().getName());</span><br><span class="line">                    <span class="keyword">return</span> (con);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException ex) &#123;</span><br><span class="line">                <span class="keyword">if</span> (reason == <span class="literal">null</span>) &#123;</span><br><span class="line">                    reason = ex;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            println(<span class="string">&quot;    skipping: &quot;</span> + aDriver.getClass().getName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// if we got here nobody could connect.</span></span><br><span class="line">    <span class="keyword">if</span> (reason != <span class="literal">null</span>)    &#123;</span><br><span class="line">        println(<span class="string">&quot;getConnection failed: &quot;</span> + reason);</span><br><span class="line">        <span class="keyword">throw</span> reason;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">&quot;getConnection: no suitable driver found for &quot;</span>+ url);</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SQLException</span>(<span class="string">&quot;No suitable driver found for &quot;</span>+ url, <span class="string">&quot;08001&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Connection-实现"><a href="#Connection-实现" class="headerlink" title="Connection 实现"></a>Connection 实现</h3><p>在 <code>Connection</code> 接口的具体实现部分，MySQL 的连接是通过两层实现完成抽象部分的实现</p>
+<p>不同的数据库会进行不同的实现</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConnectionImpl</span> <span class="keyword">implements</span> <span class="title class_">JdbcConnection</span>, SessionEventListener, Serializable &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">4009476458425101761L</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">SQLPermission</span> <span class="variable">SET_NETWORK_TIMEOUT_PERM</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SQLPermission</span>(<span class="string">&quot;setNetworkTimeout&quot;</span>);</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">JdbcConnection</span> <span class="keyword">extends</span> <span class="title class_">Connection</span>, MysqlConnection, TransactionEventHandler &#123;</span><br><span class="line">    JdbcPropertySet <span class="title function_">getPropertySet</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">changeUser</span><span class="params">(String var1, String var2)</span> <span class="keyword">throws</span> SQLException;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>DriverManager</code> 作为组织者，组织了 <code>Driver</code>（由管理者 <code>DriverInfo</code> 进行管理）和 <code>Connection</code> 两类模块</p>
+<p>根据使用的数据库不同灵活地进行连接的选择</p>
+<p>对应的类图：</p>
+<p><img src="https://img2022.cnblogs.com/blog/1707576/202203/1707576-20220330234128184-699042654.png" alt="JDBC 类图"></p>
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>当存在一段逻辑中分为多类模块时，可以考虑将各模块分别实现再进行组织降低耦合</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>可以将庞大的类拆分成更有层次的结构，层次之间不存在耦合</li>
+<li>便于模块实现的扩展（开闭）</li>
+<li>切换不同的实现更加方便</li>
+<li>每个模块又可以定义出抽象部分和实现部分（单一职责）</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>在已存在的功能上进行改造工程量较大（不同于适配器模式）</li>
+<li>高内聚的类进行桥接设计会使代码更加复杂</li>
+</ul>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://refactoringguru.cn/design-patterns/bridge">桥接设计模式 (refactoringguru.cn)</a></p>
+<p><a href="https://blog.csdn.net/MY9526/article/details/108738263">桥接模式的实际使用_最后一个NPE的博客-CSDN博客_桥接模式实战</a></p>
+<p><a href="https://www.cnblogs.com/EthanWong/p/16079803.html">设计模式学习笔记（九）桥接模式及其应用 - 归斯君 - 博客园 (cnblogs.com)</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -719,6 +606,249 @@
       </categories>
       <tags>
         <tag>RocketMQ</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>管道模式 - pipeline</title>
+    <url>/2022/12/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%AE%A1%E9%81%93%E6%A8%A1%E5%BC%8F%20-%20pipeline/</url>
+    <content><![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>管道模式（Pipeline Pattern）是责任链模式（Chain of Command Pattern）的变体；区别在于责任链是将处理器按照链条组织起来，待处理的上下文按照链条找到能够处理自己的处理器，一般只有唯一的一个处理器；而管道模式是链条中的每一个处理器都需要对上下文进行处理</p>
+<p><strong>目的</strong><br>降低业务逻辑流程的耦合性，将整个过程中所有的处理器隔离开，更方便扩展流程上新的业务逻辑</p>
+<p><strong>现实世界类比</strong><br>工厂的生产流水线，车架 -&gt; 发送机 -&gt; 外壳 -&gt; 内饰 -&gt; 总装 -&gt; 质检，整辆车在传送带又一个环节运输至另一个环节，每个处理环节都对汽车处理自己的部分，最终产出成品</p>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><p>模拟一个场景，比如订单服务内查询接口把最终订单实体组装为一个 VO</p>
+<p>除了原有的实体属性，比如内部数据需要对优惠金额进行计算，外部数据需要补充用户信息、商品信息等</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>如果将所有步骤抽为方法，则代码一般会实现为这样</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> OrderInfoVo <span class="title function_">buildVO</span><span class="params">(OrderBo bo)</span> &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="type">OrderInfoVo</span> <span class="variable">vo</span> <span class="operator">=</span> <span class="built_in">this</span>.wrapVo(bo);</span><br><span class="line">    <span class="built_in">this</span>.calMitigateSum(vo);</span><br><span class="line">    <span class="built_in">this</span>.buildUserInfo(vo);</span><br><span class="line">    <span class="built_in">this</span>.buildCommodityInfo(vo);</span><br><span class="line">    <span class="keyword">return</span> vo;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>后面如果对 VO 的字段有了新的要求，比如增加物流信息；或者对生成 VO 的流程有了新的要求，比如根据查询条件进行缓存，就会有以下坏处：</p>
+<ul>
+<li>在 <code>buildVO</code> 中实现缓存逻辑，违反了方法的单一职责，维护在外面可能又需要维护一个统一的入口</li>
+<li>将来每加入一个新的处理步骤或者删除某个步骤，都要修改 <code>buildVO</code> 方法</li>
+</ul>
+<p>这种情况下可以使用管道模式解决以上缺点</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a>上下文</h3><p>上下文维护着整个业务链条中间的结果和最终的结果数据</p>
+<p><strong>管道上下文父类</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 传递到管道的上下文</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PipelineContext</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理开始时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> LocalDateTime startTime;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理结束时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> LocalDateTime endTime;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取数据名称</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.getClass().getSimpleName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>具体的业务数据上下文</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 业务上下文</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderVOContext</span> <span class="keyword">extends</span> <span class="title class_">PipelineContext</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 订单业务模型</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> OrderBO bo;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 订单 VO</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> OrderVO vo;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模型创建出错时的错误信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String errorMsg;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 其他参数</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;build OrderVO&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h3><p><strong>处理器父类</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道中的上下文处理器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ContextHandler</span>&lt;T <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理输入的上下文数据</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context 处理时的上下文数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 返回 true 则表示由下一个 ContextHandler 继续处理，返回 false 则表示处理结束</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(T context)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>计算优惠金额</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CalMitigateSumHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--计算优惠金额--&quot;</span>);</span><br><span class="line">        <span class="comment">// 计算流程</span></span><br><span class="line">        <span class="type">double</span> <span class="variable">mitigateSum</span> <span class="operator">=</span> <span class="number">0.0</span>;</span><br><span class="line">        context.getVo().setMitigateSum(mitigateSum);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>构造用户信息</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">buildUserInfoHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--构造用户信息--&quot;</span>);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userClient.getUserById(context.getBo().getUserId());</span><br><span class="line">        <span class="keyword">if</span> (Objects.isNull(user)) &#123;</span><br><span class="line">            context.setErrorMsg(<span class="string">&quot;查询用户信息为空，id=&quot;</span> + context.getBo().getUserId());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        context.getVo().setUserName(user.getName());</span><br><span class="line">        context.getVo().setUserAge(user.getAge());</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>构造商品信息</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">buildGoodsInfoHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--构造商品信息--&quot;</span>);</span><br><span class="line">        <span class="type">Goods</span> <span class="variable">goods</span> <span class="operator">=</span> goodsClient.getGoodsBySku(context.getBo().getGoodsSku());</span><br><span class="line">        <span class="keyword">if</span> (Objects.isNull(goods)) &#123;</span><br><span class="line">            context.setErrorMsg(<span class="string">&quot;查询商品信息为空，id=&quot;</span> + context.getBo().getGoodsSku());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        context.getVo().setGoodsSku(goods.getSku());</span><br><span class="line">        context.getVo().setGoodsName(goods.getName());</span><br><span class="line">		context.getVo().setGoodsPrice(goods.getPrice());</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="组织处理器"><a href="#组织处理器" class="headerlink" title="组织处理器"></a>组织处理器</h3><p>现在业务 Context 和 Handler 都定义好了，那么使用什么方式将 Handler 组织起来呢？有如下几种：</p>
+<ul>
+<li>Handler 对象持有下一个 Handler 的信息，比如使用 <code>nextHandler</code> 属性来保存下一个处理器；缺点是无法直观了解整个业务链条都有哪些处理器，并且增删处理器需要修改其他处理器的属性</li>
+<li>自定义注解将顺序信息和 Handler 的实现绑定；这样也无法直观了解到一段业务都有多少个处理器</li>
+<li>维护一个路由表，基于 Spring 的自动注入来实现和管理路由表，使用一个执行器角色只有处理器集合作为入口</li>
+</ul>
+<p><strong>构造路由表</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道路由的配置</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PipelineRouteConfig</span> <span class="keyword">implements</span> <span class="title class_">ApplicationContextAware</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据类型-&gt;管道中处理器类型列表 的路由</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span></span><br><span class="line">    Map&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;,</span><br><span class="line">        List&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt;&gt;&gt; PIPELINE_ROUTE_MAP = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 在这里配置各种上下文类型对应的处理管道：键为上下文类型，值为处理器类型的列表</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        PIPELINE_ROUTE_MAP.put(OrderVOContext.class,</span><br><span class="line">                               Arrays.asList(</span><br><span class="line">                                       CalMitigateSumHandler.class,</span><br><span class="line">                                       buildUserInfoHandler.class,</span><br><span class="line">                                       buildGoodsInfoHandler.class</span><br><span class="line">                               ));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将来其他 Context 的管道配置</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在 Spring 启动时，根据路由表生成对应的管道映射关系</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean(&quot;pipelineRouteMap&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;, List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt;&gt; getHandlerPipelineMap() &#123;</span><br><span class="line">        <span class="keyword">return</span> PIPELINE_ROUTE_MAP.entrySet()</span><br><span class="line">                                 .stream()</span><br><span class="line">                                 .collect(Collectors.toMap(Map.Entry::getKey, <span class="built_in">this</span>::toPipeline));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据给定的管道中 ContextHandler 的类型的列表，构建管道</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt; toPipeline(</span><br><span class="line">            Map.Entry&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;, List&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;&gt;&gt;&gt; entry) &#123;</span><br><span class="line">        <span class="keyword">return</span> entry.getValue()</span><br><span class="line">                    .stream()</span><br><span class="line">                    .map(appContext::getBean)</span><br><span class="line">                    .collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext appContext;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException &#123;</span><br><span class="line">        appContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>管道执行器</strong></p>
+<p>管道执行器根据传入的上下文数据的类型，找到其对应的管道，然后将上下文数据放入管道中去进行处理</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道执行器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PipelineExecutor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(<span class="built_in">this</span>.getClass());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 引用 PipelineRouteConfig 中的 pipelineRouteMap</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt;,</span><br><span class="line">                List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="built_in">super</span> PipelineContext&gt;&gt;&gt; pipelineRouteMap;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 同步处理输入的上下文数据</span></span><br><span class="line"><span class="comment">     * 如果处理时上下文数据流通到最后一个处理器且最后一个处理器返回 true，则返回 true，否则返回 false</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context 输入的上下文数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 处理过程中管道是否畅通，畅通返回 true，不畅通返回 false</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">acceptSync</span><span class="params">(PipelineContext context)</span> &#123;</span><br><span class="line">        Objects.requireNonNull(context, <span class="string">&quot;上下文数据不能为 null&quot;</span>);</span><br><span class="line">        <span class="comment">// 拿到数据类型</span></span><br><span class="line">        Class&lt;? <span class="keyword">extends</span> <span class="title class_">PipelineContext</span>&gt; dataType = context.getClass();</span><br><span class="line">        <span class="comment">// 获取数据处理管道</span></span><br><span class="line">        List&lt;? <span class="keyword">extends</span> <span class="title class_">ContextHandler</span>&lt;? <span class="built_in">super</span> PipelineContext&gt;&gt; pipeline = pipelineRouteMap.get(dataType);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isEmpty(pipeline)) &#123;</span><br><span class="line">            logger.error(<span class="string">&quot;&#123;&#125; 的管道为空&quot;</span>, dataType.getSimpleName());</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 管道是否畅通</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">lastSuccess</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ContextHandler&lt;? <span class="built_in">super</span> PipelineContext&gt; handler : pipeline) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 当前处理器处理数据，并返回是否继续向下处理</span></span><br><span class="line">                lastSuccess = handler.handle(context);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">                lastSuccess = <span class="literal">false</span>;</span><br><span class="line">                logger.error(<span class="string">&quot;[&#123;&#125;] 处理异常，handler=&#123;&#125;&quot;</span>, context.getName(), handler.getClass().getSimpleName(), ex);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 不再向下处理</span></span><br><span class="line">            <span class="keyword">if</span> (!lastSuccess) &#123; <span class="keyword">break</span>; &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> lastSuccess;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用管道"><a href="#使用管道" class="headerlink" title="使用管道"></a>使用管道</h3><p>原来的 <code>buildVO</code> 可以引入管道来进行实现了</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> OrderInfoVo <span class="title function_">buildVO</span><span class="params">(OrderBo bo)</span> &#123;</span><br><span class="line">    <span class="type">OrderVOContext</span> <span class="variable">context</span> <span class="operator">=</span> <span class="built_in">this</span>.createContext(bo);</span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">success</span> <span class="operator">=</span> pipelineExecutor.acceptSync(data);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 流程成功</span></span><br><span class="line">    <span class="keyword">if</span> (success) &#123;</span><br><span class="line">        <span class="keyword">return</span> CommonResponse.success(data.getInstanceId());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    logger.error(<span class="string">&quot;build vo 失败：&#123;&#125;&quot;</span>, data.getErrorMsg());</span><br><span class="line">    <span class="keyword">return</span> CommonResponse.failed(data.getErrorMsg());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="增加处理器"><a href="#增加处理器" class="headerlink" title="增加处理器"></a>增加处理器</h3><p>如果需要在流程中增加新业务</p>
+<p><strong>创建新的处理器实现类</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@sl4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">newTaskHandler</span> <span class="keyword">implements</span> <span class="title class_">ContextHandler</span>&lt;OrderVOContext&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">handle</span><span class="params">(InstanceBuildContext context)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;--执行新业务--&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改手动维护的静态路由表</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    PIPELINE_ROUTE_MAP.put(OrderVOContext.class,</span><br><span class="line">                           Arrays.asList(</span><br><span class="line">                               CalMitigateSumHandler.class,</span><br><span class="line">                               buildUserInfoHandler.class,</span><br><span class="line">                               newTaskHandler.class, <span class="comment">// 流程中增加了新逻辑</span></span><br><span class="line">                               buildGoodsInfoHandler.class</span><br><span class="line">                           ));</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="异步处理"><a href="#异步处理" class="headerlink" title="异步处理"></a>异步处理</h3><p>对于步骤繁多的任务，很多时候我们更需要的是异步处理，比如某些耗时长的定时任务，管道处理异步化非常的简单</p>
+<p>在 PipelineExecutor 中引入异步的处理方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 管道线程池</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> ThreadPoolTaskExecutor pipelineThreadPool; <span class="comment">// 处理异步的线程池</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 异步处理输入的上下文数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> context  上下文数据</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> callback 处理完成的回调</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">acceptAsync</span><span class="params">(PipelineContext context, BiConsumer&lt;PipelineContext, Boolean&gt; callback)</span> &#123;</span><br><span class="line">    pipelineThreadPool.execute(() -&gt; &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">success</span> <span class="operator">=</span> acceptSync(context);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (callback != <span class="literal">null</span>) &#123;</span><br><span class="line">            callback.accept(context, success);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过管道模式，可以大幅降低了系统的耦合度和提升了内聚程度与扩展性：</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li><code>buildVO</code> 所在的类只负责处理引导 BO 进入管道的业务流程，而不关注具体业务逻</li>
+<li><code>PipelineExecutor </code> 抽象定义，不关心业务细节</li>
+<li>每个 <code>ContextHandler </code> 只负责自己的业务，不需要知道链路结构，与其他处理器解耦</li>
+<li>对于处理器新增、删除、调整顺序等操作，只需要修改路由表，和业务逻辑脱离</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>大的 Context 对象，让业务数据粒度很粗（上帝对象）</li>
+<li>和策略一样，可能造成实现类膨胀</li>
+<li>错误信息需要保存在 Context 对象中，走完所有处理器才会将错误返回</li>
+</ul>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://zhuanlan.zhihu.com/p/370363597">设计模式最佳套路2 —— 基于 Spring 实现管道模式的最佳实践 - 知乎 (zhihu.com)</a></p>
+<p><a href="https://refactoringguru.cn/design-patterns/chain-of-responsibility">责任链设计模式（职责链模式） (refactoringguru.cn)</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>面向对象六大原则</title>
+    <url>/2022/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99/</url>
+    <content><![CDATA[<h1 id="六大原则"><a href="#六大原则" class="headerlink" title="六大原则"></a>六大原则</h1><table>
+<thead>
+<tr>
+<th>设计原则</th>
+<th>概述</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开闭原则</td>
+<td>对扩展开放，对修改关闭</td>
+<td>易于维护</td>
+</tr>
+<tr>
+<td>单一职责</td>
+<td>一个类只干一件事，实现类要单一</td>
+<td>提升可读性</td>
+</tr>
+<tr>
+<td>里氏替换</td>
+<td>不要重写父类的方法</td>
+<td>健壮性、防止错误继承</td>
+</tr>
+<tr>
+<td>迪米特法则</td>
+<td>最少知道，对象之间少建立联系</td>
+<td>低耦合</td>
+</tr>
+<tr>
+<td>接口隔离</td>
+<td>一个接口只干一件事，接口要精简单一</td>
+<td>高内聚</td>
+</tr>
+<tr>
+<td>依赖倒置</td>
+<td>高层不应该依赖低层，要面向接口编程</td>
+<td>利于结构升级</td>
+</tr>
+</tbody></table>
+<h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><blockquote>
+<p><em>Software entities like classes,modules and functions should be open for extension but closed for modifications.</em></p>
+<p><em>一个软件实体如类，模块和函数应该对扩展开放，对修改关闭</em></p>
+</blockquote>
+<p>随着业务发展需要增加新的方法，有几种方式：</p>
+<ul>
+<li><strong>在接口上添加新方法</strong><ul>
+<li>导致每一个实现类都需要进行实现，改动量大</li>
+<li>不一定所有的实现类都需要该方法</li>
+</ul>
+</li>
+<li><strong>修改实现类旧方法</strong><ul>
+<li>替代原有旧方法功能，如果同时需要使用旧方法则无法采用此方式 （<code>getPrice()</code> 获取的是原价格还是打折后价格？如果需要同时获取原价和打折后价格如何处理）</li>
+</ul>
+</li>
+<li><strong>面向扩展，使用新接口或者新类继承父类</strong><ul>
+<li>新接口方法接口，需要的类进行实现</li>
+<li>新类继承父类，在父类基础上增加方法</li>
+</ul>
+</li>
+</ul>
+<p><strong>明显面向扩展更容易维护，这就是开闭原则的目的</strong></p>
+<h2 id="单一职责"><a href="#单一职责" class="headerlink" title="单一职责"></a>单一职责</h2><blockquote>
+<p><em>There should never be more than one reason for a class to change. —— Robert C. Martin</em></p>
+<p><em>一个类应该有且仅有一个引起它变化的原因，否则类应该被拆分</em></p>
+</blockquote>
+<p>控制业务实现的粒度问题；一个类可以具备任意数量的方法，但都属于同一个功能簇中</p>
+<p><strong>严格控制类中方法的粒度，必要时进行分析与拆分</strong></p>
+<h2 id="里氏替换"><a href="#里氏替换" class="headerlink" title="里氏替换"></a>里氏替换</h2><blockquote>
+<p><em>Inheritance should ensure that any property proved about supertype objects also holds for subtype objects. —— Liskov</em></p>
+<p><em>继承必须确保父类所拥有的性质在子类中仍然成立</em></p>
+</blockquote>
+<p>在里氏替换原则的指导方针下，可得出：仅仅依据两个类之间有没有 “is a” 的关系，来判断两个类能不能发生继承关系是不够的</p>
+<p>应该遵守一个大原则：<strong>任何使用父类的地方，都能被透明的替换成子类，且替换成子类后，程序行为不会发生问题</strong></p>
+<p>不应该滥用继承关系，鸵鸟是否是鸟的子类（不会飞），鲸鱼是否是鱼的子类（没有腮），继承具有侵入性，当需要使用继承关系时需要辨明是否是真正的继承，<strong>父类的每个方法都必须适用于子类</strong></p>
+<ol>
+<li>子类可以实现父类的抽象方法，但是不能覆盖父类的非抽象方法</li>
+<li>子类可以增加自己特有的方法</li>
+<li>子类重载父类方法时，方法的形参要比父类方法更为宽松</li>
+<li>子类实现父类抽象方法时，方法的返回值要比父类方法更为严格</li>
+</ol>
+<h2 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h2><blockquote>
+<p><em>talk only to your immediate friends. —— Ian Holland</em></p>
+<p><em>只和直接的朋友交流</em></p>
+</blockquote>
+<p>迪米特法则也称为最少知道原则，最少知道包含两个目的：</p>
+<ul>
+<li><strong>只和直接的朋友交互</strong><ul>
+<li>例如 MVC 架构，视图层和业务层交互，业务层和持久层交互，视图层不应该和持久层产生联系</li>
+</ul>
+</li>
+<li><strong>较少对朋友的了解</strong><ul>
+<li>类门面模式（门面指暴露重要工作的简单入口，而迪米特法则在于只暴露该暴露的入口，还是有所区别）思想，对外只暴露能够满足外部需要的内容</li>
+</ul>
+</li>
+</ul>
+<p><strong>目的在于降低类之间的耦合关系</strong></p>
+<h2 id="接口隔离"><a href="#接口隔离" class="headerlink" title="接口隔离"></a>接口隔离</h2><blockquote>
+<p><em>Interface Segregation Principle, ISP</em></p>
+<p><em>低耦合、高内聚中的高内聚</em></p>
+</blockquote>
+<p>接口隔离原则中所说的接口并不是狭意的指 Java 中的 Interface，而是一切的提供方法定义的对象，例如 Java 中的接口、抽象类、实体类</p>
+<p>接口隔离的原则：</p>
+<ul>
+<li>客户端不依赖不需要的接口</li>
+<li>类间依赖关系建立在最小的接口上</li>
+<li>接口应该细化，不应该具备臃肿的方法</li>
+</ul>
+<p>例如发送方式的实现类 <code>Send</code>，此时具备两种发送方式：邮件和短信，如果将方法都放在 <code>Send</code> 类中，则应该分别定义 <code>sendEmail()</code> 和 <code>sendNotice()</code> 两个方法，不利于后面的拓展；好的解决方法应该是定义接口，然后分别创建 <code>EmailSend</code> 和 <code>NoticeSend</code> 两个实现类，这就是接口隔离的目的</p>
+<p>接口隔离和单一原则看似冲突，目标是达到二者的平衡</p>
+<p><strong>避免接口污染</strong></p>
+<h2 id="依赖倒置"><a href="#依赖倒置" class="headerlink" title="依赖倒置"></a>依赖倒置</h2><blockquote>
+<p><em>Dependence Inversion Principle,DIP</em></p>
+<p><em>不依赖于具体实现，而依赖于抽象</em></p>
+</blockquote>
+<p>不正确的依赖关系是上层调用下层，上层依赖下层</p>
+<p>面向对象其实就是依赖倒置的一种体现，依赖倒置让下层依赖上层，比如接口，接口方法的扩展会影响所有实现类，但抽象层的变动远远少于实现层，所以依赖倒置可以很好地避免频繁的修改</p>
+<p><strong>面向接口编程</strong></p>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="如何满足里氏替换原则"><a href="#如何满足里氏替换原则" class="headerlink" title="如何满足里氏替换原则"></a>如何满足里氏替换原则</h2><p>里氏替换的原则指：需要使用父类的地方可以替换为子类使用，因为父类的方法在子类上应该保持一致</p>
+<p>在实际中遇到直接继承不能满足里氏替换的场景，就<strong>说明抽象不足，需要向上抽象</strong></p>
+<p>如果一个 <code>Add</code> 类的 <code>compute(int n)</code> 操作为加法，减法也想要进行实现，则继承 <code>Add</code> 类后重写了 <code>compute(int n)</code> 方法，此时则违反了里氏替换原则，整个方法的实现被重写了</p>
+<p>向上抽象出 <code>Compute</code> 接口，即可以实现里氏替换原则</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="type">int</span> n)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Add</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;加法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Subtract</span> <span class="keyword">implements</span> <span class="title class_">Compute</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">compute</span><span class="params">(<span class="keyword">final</span> <span class="type">int</span> n)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;减法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://refactoringguru.cn/design-patterns">常用设计模式有哪些？ (refactoringguru.cn)</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式</tag>
+        <tag>规范</tag>
       </tags>
   </entry>
   <entry>
