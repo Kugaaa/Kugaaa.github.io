@@ -27,13 +27,13 @@
 <meta property="og:site_name" content="贫瘠之地">
 <meta property="og:description" content="背景桥接（bridge）模式首先的场景是内部实现逻辑分为多个模块，每个模块又可能对应多种实现 在桥接内部，这些不同类型的模块按照组合或聚合的方式组织在一起，将逻辑模块抽象部分与实现部分相分离 目的降低内部多种类型逻辑模块的耦合，扩展变成以各模块为单位，更为灵活 现实世界类比Vans自由定制鞋_Vans(范斯)中国官方网站">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img2022.cnblogs.com/blog/1707576/202203/1707576-20220330234128184-699042654.png">
+<meta property="og:image" content="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
 <meta property="article:published_time" content="2022-12-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-12-24T16:00:00.000Z">
 <meta property="article:author" content="Kuga">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img2022.cnblogs.com/blog/1707576/202203/1707576-20220330234128184-699042654.png">
+<meta name="twitter:image" content="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
 
 <link rel="canonical" href="http://example.com/2022/12/25/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%EF%BC%88bridge%EF%BC%89/">
 
@@ -343,7 +343,7 @@
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>DriverManager</code> 作为组织者，组织了 <code>Driver</code>（由管理者 <code>DriverInfo</code> 进行管理）和 <code>Connection</code> 两类模块</p>
 <p>根据使用的数据库不同灵活地进行连接的选择</p>
 <p>对应的类图：</p>
-<p><img src="https://img2022.cnblogs.com/blog/1707576/202203/1707576-20220330234128184-699042654.png" alt="JDBC 类图"></p>
+<p><img src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/jdbc%E7%B1%BB%E5%9B%BE.drawio.png" alt="jdbc类图.drawio"></p>
 <h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>当存在一段逻辑中分为多类模块时，可以考虑将各模块分别实现再进行组织降低耦合</p>
 <ul>
 <li><p>优点</p>

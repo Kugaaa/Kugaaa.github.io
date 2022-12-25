@@ -298,7 +298,7 @@
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>DriverManager</code> 作为组织者，组织了 <code>Driver</code>（由管理者 <code>DriverInfo</code> 进行管理）和 <code>Connection</code> 两类模块</p>
 <p>根据使用的数据库不同灵活地进行连接的选择</p>
 <p>对应的类图：</p>
-<p><img src="https://img2022.cnblogs.com/blog/1707576/202203/1707576-20220330234128184-699042654.png" alt="JDBC 类图"></p>
+<p><img src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/jdbc%E7%B1%BB%E5%9B%BE.drawio.png" alt="jdbc类图.drawio"></p>
 <h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>当存在一段逻辑中分为多类模块时，可以考虑将各模块分别实现再进行组织降低耦合</p>
 <ul>
 <li><p>优点</p>
