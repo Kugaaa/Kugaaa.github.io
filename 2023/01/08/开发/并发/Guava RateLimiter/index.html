@@ -332,7 +332,7 @@
 <p>第一行就调用了方法 <code>resync()</code>，该方法的目的是重新计算 <code>this.storedPermits</code> 和 <code>this.nextFreeTicketMicros</code> 这两个重要属性</p>
 <p>接下来的几行操作可以概括为：如果需要获取的许可大于当前已经存储的许可，那么计算出超出的许可数量 <code>freshPermits</code>，调用 <code>storedPermitsToWaitTime</code> 方法返回值加上 <code>超出的许可数量 × 许可生产间隔</code> 即可算出需要额外等待的时长；这里对于 <code>SmoothBursty</code> 来说，返回固定是 0，也就是额外的等待时间就是 <code>超出的许可数量 × 许可生产间隔</code></p>
 <p>最后更新这次操作后 <code>this.nextFreeTicketMicros</code> 和 <code>this.storedPermits</code> 的值，返回一开始保存的 <code>this.nextFreeTicketMicros</code></p>
-<p>**这里需要思考一个问题：**为什么返回的是 <code>resync</code> 后的 <code>nextFreeTicketMicros</code>？如果令牌数量不够，这个值不是被向后更新了吗？这里就体现出 <code>RateLimiter</code> 整体的一个思想，即每一个请求过来本质上都能拿到许可，无非是等待多长时间才能执行，对于超出部分来说，当前线程不用等待，将这部分时间全部交给下一个线程来进行等待了，我自己概括起来就是 <strong>惰性计算 + 以当前线程为主</strong></p>
+<p><strong>这里需要思考一个问题</strong>：为什么返回的是 <code>resync</code> 后的 <code>nextFreeTicketMicros</code>？如果令牌数量不够，这个值不是被向后更新了吗？这里就体现出 <code>RateLimiter</code> 整体的一个思想，即每一个请求过来本质上都能拿到许可，无非是等待多长时间才能执行，对于超出部分来说，当前线程不用等待，将这部分时间全部交给下一个线程来进行等待了，我自己概括起来就是 <strong>惰性计算 + 以当前线程为主</strong></p>
 <br/>
 <p><strong>resync</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">resync</span><span class="params">(<span class="type">long</span> nowMicros)</span> &#123;</span><br><span class="line">    <span class="comment">// if nextFreeTicket is in the past, resync to now</span></span><br><span class="line">    <span class="keyword">if</span> (nowMicros &gt; nextFreeTicketMicros) &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">newPermits</span> <span class="operator">=</span> (nowMicros - nextFreeTicketMicros) / coolDownIntervalMicros();</span><br><span class="line">        storedPermits = min(maxPermits, storedPermits + newPermits);</span><br><span class="line">        nextFreeTicketMicros = nowMicros;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -394,18 +394,18 @@
 <li><code>mutexDoNotUseDirectly</code> 锁对象的创建有必要使用懒汉式吗？<code>RateLimiter</code> 在实例化后直接执行了 <code>reserve</code> 方法，那么这个懒加载的单例意义是什么</li>
 <li>为什么不使用 <code>synchronized (this)</code>，包装了一个方法 <code>mutex()</code> 来返回锁对象</li>
 </ul>
-<p>**第一个问题：**减少 <code>volatile</code> 对内存的读请求；<code>mutexDoNotUseDirectly</code> 是可见的，每次读取都会访问内存，使用临时变量对于不需要可见性的场景能减少访问内存的次数</p>
+<p><strong>第一个问题</strong>：减少 <code>volatile</code> 对内存的读请求；<code>mutexDoNotUseDirectly</code> 是可见的，每次读取都会访问内存，使用临时变量对于不需要可见性的场景能减少访问内存的次数</p>
 <blockquote>
 <p>It avoids an additional volatile read of the field once it’s determined to be non-null.<br>
 详见 issue：<a target="_blank" rel="noopener" href="https://github.com/google/guava/issues/3381">https://github.com/google/guava/issues/3381</a></p>
 </blockquote>
-<p>**第二个问题：**源代码注释中也已经解释了目的：<code>// Can't be initialized in the constructor because mocks don't call the constructor.</code></p>
+<p><strong>第二个问题</strong>：源代码注释中也已经解释了目的：<code>// Can't be initialized in the constructor because mocks don't call the constructor.</code></p>
 <p>作者是考虑到使用 Mockito 框架时，用 mock 方法创建 <code>RateLimiter</code> 的 mock 对象不会执行其构造器，该锁对象不会被实例化；并且成员变量直接赋值也会被解释为构造器的一部分</p>
 <blockquote>
 <p>Inline field initialization is syntactic sugar for initializing from the constructor.<br>
 详见 issue：<a target="_blank" rel="noopener" href="https://github.com/google/guava/issues/3066">https://github.com/google/guava/issues/3066</a></p>
 </blockquote>
-<p>**第三个问题：**更方便控制锁粒度，并且避免使用 <code>this</code> 作为锁对象是一种规范，因为无法得知外部是否也是用 <code>this</code> 作为锁来使用</p>
+<p><strong>第三个问题</strong>：更方便控制锁粒度，并且避免使用 <code>this</code> 作为锁对象是一种规范，因为无法得知外部是否也是用 <code>this</code> 作为锁来使用</p>
 <blockquote>
 <p>可以参考该回答：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12397427/what-is-different-between-method-synchronized-vs-object-synchronized">https://stackoverflow.com/questions/12397427/what-is-different-between-method-synchronized-vs-object-synchronized</a></p>
 </blockquote>
