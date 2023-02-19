@@ -22,20 +22,20 @@
 
   <meta name="description" content="背景桥接（bridge）模式首先的场景是内部实现逻辑分为多个模块，每个模块又可能对应多种实现 在桥接内部，这些不同类型的模块按照组合或聚合的方式组织在一起，将逻辑模块抽象部分与实现部分相分离 目的降低内部多种类型逻辑模块的耦合，扩展变成以各模块为单位，更为灵活 现实世界类比Vans自由定制鞋_Vans(范斯)中国官方网站">
 <meta property="og:type" content="article">
-<meta property="og:title" content="桥接模式 - bridge">
-<meta property="og:url" content="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20bridge/index.html">
+<meta property="og:title" content="桥接模式 - Bridge">
+<meta property="og:url" content="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/index.html">
 <meta property="og:site_name" content="贫瘠之地">
 <meta property="og:description" content="背景桥接（bridge）模式首先的场景是内部实现逻辑分为多个模块，每个模块又可能对应多种实现 在桥接内部，这些不同类型的模块按照组合或聚合的方式组织在一起，将逻辑模块抽象部分与实现部分相分离 目的降低内部多种类型逻辑模块的耦合，扩展变成以各模块为单位，更为灵活 现实世界类比Vans自由定制鞋_Vans(范斯)中国官方网站">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
+<meta property="og:image" content="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
 <meta property="article:published_time" content="2022-12-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-12-24T16:00:00.000Z">
 <meta property="article:author" content="Kuga">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
+<meta name="twitter:image" content="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
 
-<link rel="canonical" href="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20bridge/">
+<link rel="canonical" href="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>桥接模式 - bridge | 贫瘠之地</title>
+  <title>桥接模式 - Bridge | 贫瘠之地</title>
   
 
 
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20bridge/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -209,7 +209,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          桥接模式 - bridge
+          桥接模式 - Bridge
         </h1>
 
         <div class="post-meta">
@@ -343,7 +343,7 @@
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>DriverManager</code> 作为组织者，组织了 <code>Driver</code>（由管理者 <code>DriverInfo</code> 进行管理）和 <code>Connection</code> 两类模块</p>
 <p>根据使用的数据库不同灵活地进行连接的选择</p>
 <p>对应的类图：</p>
-<img src="/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png" class="" title="jdbc类图.drawio">
+<img src="/2022/12/25/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png" class="" title="jdbc类图.drawio">
 
 <h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>当存在一段逻辑中分为多类模块时，可以考虑将各模块分别实现再进行组织降低耦合</p>
 <ul>
@@ -462,7 +462,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
