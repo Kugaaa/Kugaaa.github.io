@@ -3115,4 +3115,42 @@
         <tag>源码</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Hexo 部署 Github Pages 404 问题</title>
+    <url>/2023/04/27/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Hexo%20%E9%83%A8%E7%BD%B2%20Github%20Pages%20404%20%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1>背景</h1>
+<p>突然发现 Hexo 中的有些文章突然打不开了</p>
+<p>表现是点击无反应，无论是点击 “阅读原文” 还是在归档等页面中点击文章标题都无法正常打开</p>
+<p>查看控制台发现对页面的请求 404 了</p>
+<h1>排查</h1>
+<p><strong>Github 的 Actions 正常</strong></p>
+<p>也没出现部署失败的情况</p>
+<img src="/2023/04/27/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Hexo%20%E9%83%A8%E7%BD%B2%20Github%20Pages%20404%20%E9%97%AE%E9%A2%98/image-20230427231601450.png" class="" title="image-20230427231601450">
+<p>查看 push 上来的源文件，发现可能是因为大小写问题</p>
+<p>文件路径为 <code>...bridge</code> ，而请求的路径为 <code>...Bridge</code>，尝试将路径手动修改为小写，发现正常跳转</p>
+<h1>解决</h1>
+<p>查询了一下，基本上可以确定原因为 git 默认忽略大小写</p>
+<ol>
+<li>首先 push 了小写标题的文章</li>
+<li>修改了文章标题为大写，此时 Hexo 解析其他页面也更换了大写</li>
+<li>但是因为 git 忽略大小写，所以更名为大写的内容并没有 push 到仓库，导致解析 pages 时没有更新相应的资源路径；此时点击 Hexo 生成的其他页面则资源名称已经更新为大写，导致 404</li>
+</ol>
+<h2 id="修改-git-config-文件">修改 git config 文件</h2>
+<p>在博客根目录下编辑 <code>./.git/config</code> 文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[core]</span><br><span class="line">	repositoryformatversion = 0</span><br><span class="line">	filemode = <span class="literal">false</span></span><br><span class="line">	bare = <span class="literal">false</span></span><br><span class="line">	logallrefupdates = <span class="literal">true</span></span><br><span class="line">	symlinks = <span class="literal">false</span></span><br><span class="line">	ignorecase = <span class="literal">true</span></span><br><span class="line">	<span class="comment"># ignorecase = false</span></span><br></pre></td></tr></table></figure>
+<p>修改 <code>ignorecase</code> 为 false</p>
+<p>进行推送即可，也可以直接重新 push 整个项目</p>
+<h2 id="全部重新-push">全部重新 push</h2>
+<p>在博客根目录 <code>./.deploy_git</code> 目录下</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">rm</span> -rf *</span><br><span class="line">git commit -m <span class="string">&#x27;clean all file&#x27;</span></span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+<p>使用 Hexo 插件进行 deploy</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line">hexo clean</span><br><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+<h1>参考</h1>
+<p><a href="http://1mhz.me/2015/hexo-deploy-case-sensitive/">Hexo 部署到 Github Pages 文件夹大小写问题 // Yizhao He’s Notes (1mhz.me)</a></p>
+<p><a href="https://blog.csdn.net/weixin_43219615/article/details/102536642">利用hexo在GitHub搭建博客改变tag因为大小写问题而404的解决方法_hexo的next用tag就404_轨迹 ‎‎ ‎‎的博客-CSDN博客</a></p>
+]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
+  </entry>
 </search>
