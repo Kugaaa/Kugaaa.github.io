@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/astronaut-64.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/astronaut-32.svg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="可继承 Inheritable InheritableThreadLocal 是官方提供的类，区别于 ThreadLocal 的功能就是使子线程创建时会赋值父线程当时的 ThreadLocal 值（引用），实现开启线程后将线程本地变量传递 123456789101112131415public class ThreadLocalTest &amp;#123;  	&#x2F;&#x2F; 这里如果将 ThreadLocal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TransmittableThreadLocal 源码 &amp; 简单使用">
+<meta property="og:url" content="http://example.com/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="可继承 Inheritable InheritableThreadLocal 是官方提供的类，区别于 ThreadLocal 的功能就是使子线程创建时会赋值父线程当时的 ThreadLocal 值（引用），实现开启线程后将线程本地变量传递 123456789101112131415public class ThreadLocalTest &amp;#123;  	&#x2F;&#x2F; 这里如果将 ThreadLocal">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://camo.githubusercontent.com/bc33d0e5608d42d034de759fc7e6a2c4a65bbd3b9231c0d3f4f7bb815e5d08c0/68747470733a2f2f696d672e736869656c64732e696f2f6d6176656e2d63656e7472616c2f762f636f6d2e616c69626162612f7472616e736d69747461626c652d7468726561642d6c6f63616c3f76657273696f6e5072656669783d322e31322e26636f6c6f723d6c6967687467726579266c6f676f3d6170616368652d6d6176656e266c6f676f436f6c6f723d7768697465">
+<meta property="og:image" content="http://example.com/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/ThrealLocal%20%E6%93%8D%E4%BD%9C.webp">
+<meta property="article:published_time" content="2023-06-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-06-16T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/bc33d0e5608d42d034de759fc7e6a2c4a65bbd3b9231c0d3f4f7bb815e5d08c0/68747470733a2f2f696d672e736869656c64732e696f2f6d6176656e2d63656e7472616c2f762f636f6d2e616c69626162612f7472616e736d69747461626c652d7468726561642d6c6f63616c3f76657273696f6e5072656669783d322e31322e26636f6c6f723d6c6967687467726579266c6f676f3d6170616368652d6d6176656e266c6f676f436f6c6f723d7768697465">
+
+<link rel="canonical" href="http://example.com/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>TransmittableThreadLocal 源码 & 简单使用 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TransmittableThreadLocal 源码 & 简单使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-06-17 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-17T00:00:00+08:00">2023-06-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/" itemprop="url" rel="index"><span itemprop="name">杂项</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1>可继承 Inheritable</h1>
+<p><code>InheritableThreadLocal</code> 是官方提供的类，区别于 <code>ThreadLocal</code> 的功能就是使子线程创建时会赋值父线程当时的 <code>ThreadLocal</code> 值（引用），实现开启线程后将线程本地变量传递</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalTest</span> &#123;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 这里如果将 ThreadLocal 实现换为 ThreadLocal，则子线程内获取为 null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; THREAD_LOCAL = <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        THREAD_LOCAL.set(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Thread[main,<span class="number">5</span>,main] Hello World</span><br><span class="line">Thread[Thread-<span class="number">0</span>,<span class="number">5</span>,main] Hello World</span><br></pre></td></tr></table></figure>
+<h2 id="实现">实现</h2>
+<p><code>ThreadLocal</code> 对象本质是 <code>Thread</code> 内 <code>threadLocalMap</code> 的 key</p>
+<p><code>InheritableThreadLocal</code> 功能的实现需要两方支持：</p>
+<ul>
+<li><code>InheritableThreadLocal</code> 将父类 <code>ThreadLocal</code> 关于 map 的实现重写为支持新的 map（inheritableThreadLocals）</li>
+<li><code>Thread</code> 内提供 <code>InheritableThreadLocal</code> 使用的 map，并且在线程创建期间将父线程的 map 值传递给子线程</li>
+</ul>
+<p><strong>InheritableThreadLocal 重写方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">InheritableThreadLocal</span>&lt;T&gt; <span class="keyword">extends</span> <span class="title class_">ThreadLocal</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Computes the child&#x27;s initial value for this inheritable thread-local</span></span><br><span class="line"><span class="comment">     * variable as a function of the parent&#x27;s value at the time the child</span></span><br><span class="line"><span class="comment">     * thread is created.  This method is called from within the parent</span></span><br><span class="line"><span class="comment">     * thread before the child is started.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * This method merely returns its input argument, and should be overridden</span></span><br><span class="line"><span class="comment">     * if a different behavior is desired.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> parentValue the parent thread&#x27;s value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the child thread&#x27;s initial value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> T <span class="title function_">childValue</span><span class="params">(T parentValue)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> parentValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Get the map associated with a ThreadLocal.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> t the current thread</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    ThreadLocalMap <span class="title function_">getMap</span><span class="params">(Thread t)</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> t.inheritableThreadLocals;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create the map associated with a ThreadLocal.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> t the current thread</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> firstValue value for the initial entry of the table.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">createMap</span><span class="params">(Thread t, T firstValue)</span> &#123;</span><br><span class="line">        t.inheritableThreadLocals = <span class="keyword">new</span> <span class="title class_">ThreadLocalMap</span>(<span class="built_in">this</span>, firstValue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Thread init 赋值</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Thread</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line">  	...</span><br><span class="line">    </span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">(ThreadGroup g, Runnable target, String name,</span></span><br><span class="line"><span class="params">                      <span class="type">long</span> stackSize, AccessControlContext acc,</span></span><br><span class="line"><span class="params">                      <span class="type">boolean</span> inheritThreadLocals)</span> &#123;</span><br><span class="line">      	...</span><br><span class="line">        <span class="comment">// 如果参数开关开启，父线程存在 inheritableThreadLocals，则进行 createInheritedMap 并赋值</span></span><br><span class="line">        <span class="keyword">if</span> (inheritThreadLocals &amp;&amp; parent.inheritableThreadLocals != <span class="literal">null</span>)</span><br><span class="line">            <span class="built_in">this</span>.inheritableThreadLocals =</span><br><span class="line">                ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</span><br><span class="line">      </span><br><span class="line">        <span class="comment">/* Stash the specified stack size in case the VM cares */</span></span><br><span class="line">        <span class="built_in">this</span>.stackSize = stackSize;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Set thread ID */</span></span><br><span class="line">        tid = nextThreadID();</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="局限">局限</h2>
+<p><code>InheritableThreadLocal</code> 在部分场景有其局限性：</p>
+<ul>
+<li>
+<p>只能在线程创建初始化时期赋值，线程池中的线程一般是复用的，所以如果使用线程池则无法传递</p>
+<p>当然这种行为符合预期的，因为 Inheritable 强调的就是<strong>继承性</strong>，线程池的场景强调的是<strong>传递性</strong></p>
+<blockquote>
+<p>但对于使用线程池等会池化复用线程的执行组件的情况，线程由线程池创建好，并且线程是池化起来反复使用的；这时父子线程关系的<code>ThreadLocal</code>值传递已经没有意义，应用需要的实际上是把 <strong>任务提交给线程池时</strong>的<code>ThreadLocal</code>值传递到 <strong>任务执行时</strong></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/transmittable-thread-local#-user-guide">https://github.com/alibaba/transmittable-thread-local#-user-guide</a></p>
+</blockquote>
+</li>
+<li>
+<p>传递的是引用而不是拷贝，使用中需要注意引用数据修改的影响；也没有提供拷贝相关的能力实现</p>
+</li>
+</ul>
+<p><strong>线程池复用则无法传递</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalTest</span> &#123;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 单线程线程池</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; THREAD_LOCAL = <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Executor</span> <span class="variable">EXECUTOR</span> <span class="operator">=</span> Executors.newSingleThreadExecutor();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">      	<span class="comment">// 为了让线程池 init 一个新线程</span></span><br><span class="line">        EXECUTOR.execute(() -&gt; System.out.println(<span class="string">&quot;init&quot;</span>));</span><br><span class="line"></span><br><span class="line">        THREAD_LOCAL.set(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line"></span><br><span class="line">      	<span class="comment">// 复用线程</span></span><br><span class="line">        EXECUTOR.execute(() -&gt; &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">init</span><br><span class="line">Thread[main,<span class="number">5</span>,main] Hello World</span><br><span class="line">Thread[pool-<span class="number">1</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main] <span class="literal">null</span></span><br></pre></td></tr></table></figure>
+<h1>可传递 Transmittable</h1>
+<p>alibaba 开源的 <a target="_blank" rel="noopener" href="https://github.com/alibaba/transmittable-thread-local">transmittable-thread-local</a> 可以解决满足需要</p>
+<p><code>ThreadLocal</code>的需求场景即<code>TransmittableThreadLocal</code>的潜在需求场景，如果你的业务需要 <em>在使用线程池等会池化复用线程的执行组件情况下传递 <code>ThreadLocal</code> 值</em> 则是 <code>TransmittableThreadLocal</code> 目标场景</p>
+<p>下面是几个典型场景例子：</p>
+<ol>
+<li>分布式跟踪系统 或 全链路压测（即链路打标）</li>
+<li>日志收集记录系统上下文</li>
+<li><code>Session</code> 级 <code>Cache</code></li>
+<li>应用容器或上层框架跨应用代码给下层<code>SDK</code>传递信息</li>
+</ol>
+<p>官方文档写的非常详细，我就不赘述了，具体可以去查看官方文档～</p>
+<h2 id="简单使用">简单使用</h2>
+<p>关于使用官方文档也描述的非常详细，这里就简单列举一下 Java 代码</p>
+<p>依赖为 2.12.6 版本</p>
+<blockquote>
+<p>从<code>TTL v2.13+</code>开始，升级到<code>Java 8</code>。<br>
+如果需要<code>Java 6</code>的支持，使用版本<code>2.12.x</code> <a target="_blank" rel="noopener" href="https://search.maven.org/artifact/com.alibaba/transmittable-thread-local"><img src="https://camo.githubusercontent.com/bc33d0e5608d42d034de759fc7e6a2c4a65bbd3b9231c0d3f4f7bb815e5d08c0/68747470733a2f2f696d672e736869656c64732e696f2f6d6176656e2d63656e7472616c2f762f636f6d2e616c69626162612f7472616e736d69747461626c652d7468726561642d6c6f63616c3f76657273696f6e5072656669783d322e31322e26636f6c6f723d6c6967687467726579266c6f676f3d6170616368652d6d6176656e266c6f676f436f6c6f723d7768697465" alt="Maven Central"></a></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.alibaba&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;transmittable-thread-local&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;<span class="number">2.12</span><span class="number">.2</span>&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="装饰-Runnable">装饰 Runnable</h3>
+<p>使用 <code>TtlRunnable</code> 和 <code>TtlCallable</code> 来修饰传入线程池的 <code>Runnable</code> 和 <code>Callable</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalTest</span> &#123;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 使用 TransmittableThreadLocal</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; THREAD_LOCAL = <span class="keyword">new</span> <span class="title class_">TransmittableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ExecutorService</span> <span class="variable">EXECUTOR</span> <span class="operator">=</span> Executors.newSingleThreadExecutor();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        EXECUTOR.execute(() -&gt; System.out.println(<span class="string">&quot;init&quot;</span>));</span><br><span class="line"></span><br><span class="line">        THREAD_LOCAL.set(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line"></span><br><span class="line">      	<span class="comment">// 装饰 Runnable 为 TtlRunnable</span></span><br><span class="line">        <span class="type">TtlRunnable</span> <span class="variable">ttlRunnable</span> <span class="operator">=</span> TtlRunnable.get(() -&gt; System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get()));</span><br><span class="line">        EXECUTOR.execute(ttlRunnable);</span><br><span class="line"></span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">init</span><br><span class="line">Thread[main,<span class="number">5</span>,main] Hello World</span><br><span class="line">Thread[pool-<span class="number">1</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main] Hello World</span><br></pre></td></tr></table></figure>
+<p>**需要注意：**即使提交同一个 <code>Runnable</code> 任务到线程池，每次都需要进行装饰操作，否则抓取的仍是上一次的上下文信息</p>
+<h3 id="装饰线程池">装饰线程池</h3>
+<p>省去每次 <code>Runnable</code> 和 <code>Callable</code> 传入线程池时的修饰，这个逻辑可以在线程池中完成</p>
+<p>通过工具类 <code>TtlExecutors</code> 完成，有下面的方法：</p>
+<ul>
+<li><code>getTtlExecutor</code>：修饰接口 <code>Executor</code></li>
+<li><code>getTtlExecutorService</code>：修饰接口 <code>ExecutorService</code></li>
+<li><code>getTtlScheduledExecutorService</code>：修饰接口 <code>ScheduledExecutorService</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; THREAD_LOCAL = <span class="keyword">new</span> <span class="title class_">TransmittableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 装饰线程池 ExecutorService</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ExecutorService</span> <span class="variable">EXECUTOR</span> <span class="operator">=</span> TtlExecutors.getTtlExecutorService(Executors.newSingleThreadExecutor());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        EXECUTOR.execute(() -&gt; System.out.println(<span class="string">&quot;init&quot;</span>));</span><br><span class="line"></span><br><span class="line">        THREAD_LOCAL.set(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line"></span><br><span class="line">      	<span class="comment">// 不需要再装饰 Runnable</span></span><br><span class="line">        EXECUTOR.execute(() -&gt; System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get()));</span><br><span class="line"></span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">init</span><br><span class="line">Thread[main,<span class="number">5</span>,main] Hello World</span><br><span class="line">Thread[pool-<span class="number">1</span>-thread-<span class="number">1</span>,<span class="number">5</span>,main] Hello World</span><br></pre></td></tr></table></figure>
+<h2 id="源码及思想">源码及思想</h2>
+<h3 id="TransmittableThreadLocal">TransmittableThreadLocal</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TransmittableThreadLocal</span>&lt;T&gt; <span class="keyword">extends</span> <span class="title class_">InheritableThreadLocal</span>&lt;T&gt; <span class="keyword">implements</span> <span class="title class_">TtlCopier</span>&lt;T&gt;</span><br></pre></td></tr></table></figure>
+<p>继承了 <code>InheritableThreadLocal</code>，实现了 <code>TtlCopier</code></p>
+<p>重点关注 <code>set</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">set</span><span class="params">(T value)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!disableIgnoreNullValueSemantics &amp;&amp; <span class="literal">null</span> == value) &#123;</span><br><span class="line">        <span class="comment">// may set null to remove value</span></span><br><span class="line">        remove();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.set(value);</span><br><span class="line">        addThisToHolder();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了使用父类 <code>InheritableThreadLocal</code> 的 <code>set</code> 方法之后，调用了 <code>addThisToHolder</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">addThisToHolder</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!holder.get().containsKey(<span class="built_in">this</span>)) &#123;</span><br><span class="line">        holder.get().put((TransmittableThreadLocal&lt;Object&gt;) <span class="built_in">this</span>, <span class="literal">null</span>); <span class="comment">// WeakHashMap supports null value.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将 <code>this</code> 对象，即 <code>TransmittableThreadLocal</code> 对象作为 key 放进 <code>holder</code> 中，这里的 <code>holder</code> 是一个泛形为 Map 的 <code>InheritableThreadLocal</code>，下面会进行分析</p>
+<p>这里的 Map 只用来作为 Set，<strong>WeakHashMap supports null value.</strong>；类似的思想还有使用 <code>ConcurrentHashMap</code> 实现并发安全的 Set</p>
+<h3 id="holder">holder</h3>
+<p><code>holder</code> 是 <code>TransmittableThreadLocal</code> 进行扩展的关键一环</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> InheritableThreadLocal&lt;WeakHashMap&lt;TransmittableThreadLocal&lt;Object&gt;, ?&gt;&gt; holder =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;WeakHashMap&lt;TransmittableThreadLocal&lt;Object&gt;, ?&gt;&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">protected</span> WeakHashMap&lt;TransmittableThreadLocal&lt;Object&gt;, ?&gt; initialValue() &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">WeakHashMap</span>&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt;();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">protected</span> WeakHashMap&lt;TransmittableThreadLocal&lt;Object&gt;, ?&gt; childValue(WeakHashMap&lt;TransmittableThreadLocal&lt;Object&gt;, ?&gt; parentValue) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">WeakHashMap</span>&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt;(parentValue);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure>
+<p>是一个匿名内部类，重写了 <code>InheritableThreadLocal</code> 的 <code>initialValue</code> 和 <code>childValue</code> 方法</p>
+<ul>
+<li>initialValue：直接创建 Map</li>
+<li>childValue：<code>ThreadLocal.createInheritedMap</code> 中复制值时调用，重写实现为包装一个新 Map</li>
+</ul>
+<p>在上一步的 <code>addThisToHolder</code> 操作中，会将 <code>TransmittableThreadLocal</code> 的 <code>this</code> 对象放进 <code>holder</code> 的 Map 中</p>
+<h3 id="TtlRunnable">TtlRunnable</h3>
+<p>使用 <code>TtlRunnable</code> 的静态方法 <code>get</code> 对普通的 <code>Runnable</code> 进行装饰</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> TtlRunnable <span class="title function_">get</span><span class="params">(<span class="meta">@Nullable</span> Runnable runnable, <span class="type">boolean</span> releaseTtlValueReferenceAfterRun, <span class="type">boolean</span> idempotent)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == runnable) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 这里避免过度装饰，只装饰一层</span></span><br><span class="line">    <span class="keyword">if</span> (runnable <span class="keyword">instanceof</span> TtlEnhanced) &#123;</span><br><span class="line">        <span class="comment">// avoid redundant decoration, and ensure idempotency</span></span><br><span class="line">        <span class="keyword">if</span> (idempotent) <span class="keyword">return</span> (TtlRunnable) runnable;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;Already TtlRunnable!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  	</span><br><span class="line">  	<span class="comment">// 包装成 TtlRunnable 对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">TtlRunnable</span>(runnable, releaseTtlValueReferenceAfterRun);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终通过 <code>TtlRunnable</code> 的构造器包装成 <code>TtlRunnable</code> 对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="title function_">TtlRunnable</span><span class="params">(<span class="meta">@NonNull</span> Runnable runnable, <span class="type">boolean</span> releaseTtlValueReferenceAfterRun)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.capturedRef = <span class="keyword">new</span> <span class="title class_">AtomicReference</span>&lt;Object&gt;(capture());</span><br><span class="line">    <span class="built_in">this</span>.runnable = runnable;</span><br><span class="line">    <span class="built_in">this</span>.releaseTtlValueReferenceAfterRun = releaseTtlValueReferenceAfterRun;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>整个 <code>ThreadLocal</code> 传递的关键都在 <code>capturedRef</code> 对象，赋值的关键逻辑在 <code>Transmitter.capture</code> 方法</p>
+<h3 id="Transmitter">Transmitter</h3>
+<p><code>Transmitter</code> 扮演传递者的角色，是 <code>TransmittableThreadLocal</code> 的公有静态内部类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Transmitter</span> &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Capture all &#123;<span class="doctag">@link</span> TransmittableThreadLocal&#125; and registered &#123;<span class="doctag">@link</span> ThreadLocal&#125; values in the current thread.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> the captured &#123;<span class="doctag">@link</span> TransmittableThreadLocal&#125; values</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@since</span> 2.3.0</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@NonNull</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">capture</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Snapshot</span>(captureTtlValues(), captureThreadLocalValues());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> HashMap&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt; <span class="title function_">captureTtlValues</span><span class="params">()</span> &#123;</span><br><span class="line">            HashMap&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt; ttl2Value = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt;();</span><br><span class="line">            <span class="keyword">for</span> (TransmittableThreadLocal&lt;Object&gt; threadLocal : holder.get().keySet()) &#123;</span><br><span class="line">                ttl2Value.put(threadLocal, threadLocal.copyValue());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ttl2Value;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>创建一个 <code>Snapshot</code> 的对象，将 <code>holder</code> 中的 keys（也就是将 <code>WeakHashMap</code> 当作 Set 来使用，key 为 <code>TransmittableThreadLocal</code> 对象）遍历取出，同时调用 <code>copyValue</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> T <span class="title function_">copyValue</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> copy(get());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> T <span class="title function_">copy</span><span class="params">(T parentValue)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> parentValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>基础的 <code>TransmittableThreadLocal</code> 实现就是将 value get 出来，不涉及 copy 等操作</p>
+<p>完成这些后，<code>TtlRunnable</code> 就实例化完成，并且保存了 <code>Snapshot</code> 结构，保存当前时间点、当前线程下的 <code>TransmittableThreadLocal</code> 对象及其 value</p>
+<h3 id="run">run</h3>
+<p>最终放入线程池的 <code>Runnable</code> 是被装饰的 <code>TtlRunnable</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">  	<span class="comment">// 获取当时保存的 父线程 + 装饰那一刻的 Snapshot</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Object</span> <span class="variable">captured</span> <span class="operator">=</span> capturedRef.get();</span><br><span class="line">  	<span class="comment">// captured == null 说明该 Runnable 已经被 run 了</span></span><br><span class="line">  	<span class="comment">// capturedRef.compareAndSet(captured, null) 使用原子类保证争抢执行资格</span></span><br><span class="line">    <span class="keyword">if</span> (captured == <span class="literal">null</span> || releaseTtlValueReferenceAfterRun &amp;&amp; !capturedRef.compareAndSet(captured, <span class="literal">null</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;TTL value reference is released after run!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// replay 重放</span></span><br><span class="line">    <span class="keyword">final</span> <span class="type">Object</span> <span class="variable">backup</span> <span class="operator">=</span> replay(captured);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 执行被装饰的真正的 Runnable</span></span><br><span class="line">        runnable.run();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// restore 恢复</span></span><br><span class="line">        restore(backup);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="replay">replay</h3>
+<p>保存当前时间的副本，依靠传参进入的快照 <code>captured</code> 将设置当前线程的上下文环境</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">replay</span><span class="params">(<span class="meta">@NonNull</span> Object captured)</span> &#123;</span><br><span class="line">			<span class="comment">// 取出快照</span></span><br><span class="line">            <span class="keyword">final</span> <span class="type">Snapshot</span> <span class="variable">capturedSnapshot</span> <span class="operator">=</span> (Snapshot) captured;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Snapshot</span>(replayTtlValues(capturedSnapshot.ttl2Value), replayThreadLocalValues(capturedSnapshot.threadLocal2Value));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@NonNull</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> HashMap&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt; <span class="title function_">replayTtlValues</span><span class="params">(<span class="meta">@NonNull</span> HashMap&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt; captured)</span> &#123;</span><br><span class="line">            HashMap&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt; backup = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt;();</span><br><span class="line"></span><br><span class="line">          	<span class="comment">// 注意这里的 holder，此时已经在子线程内了</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">final</span> Iterator&lt;TransmittableThreadLocal&lt;Object&gt;&gt; iterator = holder.get().keySet().iterator(); iterator.hasNext(); ) &#123;</span><br><span class="line">                TransmittableThreadLocal&lt;Object&gt; threadLocal = iterator.next();</span><br><span class="line"></span><br><span class="line">                <span class="comment">// backup</span></span><br><span class="line">                backup.put(threadLocal, threadLocal.get());</span><br><span class="line"></span><br><span class="line">                <span class="comment">// clear the TTL values that is not in captured</span></span><br><span class="line">                <span class="comment">// avoid the extra TTL values after replay when run task</span></span><br><span class="line">                <span class="keyword">if</span> (!captured.containsKey(threadLocal)) &#123;</span><br><span class="line">                    iterator.remove();</span><br><span class="line">                    threadLocal.superRemove();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// set TTL values to captured</span></span><br><span class="line">            setTtlValuesTo(captured);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// call beforeExecute callback</span></span><br><span class="line">            doExecuteCallback(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> backup;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>这里就是为了拿到副本，<strong>为什么需要拿到副本而不是直接根据快照设置值并恢复呢</strong></p>
+<blockquote>
+<p>当我们提交的任务被划分的线程有自己的上下文（任务的提交和实际执行中间存在时间差，如果这个时间段出现了上下文的更新，那么直接覆盖将导致本次更新丢失），那么就需要保证在任务执行的时候是当时的上下文，执行完毕后需要还原</p>
+</blockquote>
+<ol>
+<li>获取当前线程，上线文快照</li>
+<li>如果当前线程有快照里面不存在的上下文，那么先清除掉</li>
+<li>将创建TtlRunnable时保存的快照设置到当前线程的上下文中（实现 <code>ThreadLocal</code> 传递的核心）</li>
+<li><code>doExecuteCallback</code> 执行钩子方法</li>
+<li>返回保存的副本</li>
+</ol>
+<h3 id="restore">restore</h3>
+<p>根据 replay 时生成的副本对上下文环境进行恢复</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">restore</span><span class="params">(<span class="meta">@NonNull</span> Object backup)</span> &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="type">Snapshot</span> <span class="variable">backupSnapshot</span> <span class="operator">=</span> (Snapshot) backup;</span><br><span class="line">    restoreTtlValues(backupSnapshot.ttl2Value);</span><br><span class="line">    restoreThreadLocalValues(backupSnapshot.threadLocal2Value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">restoreTtlValues</span><span class="params">(<span class="meta">@NonNull</span> HashMap&lt;TransmittableThreadLocal&lt;Object&gt;, Object&gt; backup)</span> &#123;</span><br><span class="line">    <span class="comment">// call afterExecute callback</span></span><br><span class="line">    doExecuteCallback(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> Iterator&lt;TransmittableThreadLocal&lt;Object&gt;&gt; iterator = holder.get().keySet().iterator(); iterator.hasNext(); ) &#123;</span><br><span class="line">        TransmittableThreadLocal&lt;Object&gt; threadLocal = iterator.next();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// clear the TTL values that is not in backup</span></span><br><span class="line">        <span class="comment">// avoid the extra TTL values after restore</span></span><br><span class="line">        <span class="keyword">if</span> (!backup.containsKey(threadLocal)) &#123;</span><br><span class="line">            iterator.remove();</span><br><span class="line">            threadLocal.superRemove();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// restore TTL values</span></span><br><span class="line">    setTtlValuesTo(backup);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据副本恢复当前线程的 <code>ThreadLocal</code></p>
+<h3 id="线程池">线程池</h3>
+<p>对线程池的装饰实现和 <code>Runnable</code> 一致，将真正的线程池包装在 Wrapper 对象中</p>
+<p>根据线程池实现的不同，有三个方法：</p>
+<ul>
+<li>getTtlExecutor：返回 <code>Executor</code></li>
+<li>getTtlExecutorService：返回 <code>ExecutorService</code></li>
+<li>getTtlScheduledExecutorService：返回 <code>ScheduledExecutorService</code></li>
+</ul>
+<p>以 <code>getTtlExecutor</code> 为例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Executor <span class="title function_">getTtlExecutor</span><span class="params">(<span class="meta">@Nullable</span> Executor executor)</span> &#123;</span><br><span class="line">    <span class="comment">// 判断是否是 TtlAgent 加载、或者是 TtlEnhanced，避免重复装饰</span></span><br><span class="line">    <span class="keyword">if</span> (TtlAgent.isTtlAgentLoaded() || executor == <span class="literal">null</span> || executor <span class="keyword">instanceof</span> TtlEnhanced) &#123;</span><br><span class="line">        <span class="keyword">return</span> executor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ExecutorTtlWrapper</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ExecutorTtlWrapper</span>(executor, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ExecutorTtlWrapper</span> <span class="keyword">implements</span> <span class="title class_">Executor</span>, TtlWrapper&lt;Executor&gt;, TtlEnhanced &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Executor executor;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">boolean</span> idempotent;</span><br><span class="line"></span><br><span class="line">    ExecutorTtlWrapper(<span class="meta">@NonNull</span> Executor executor, <span class="type">boolean</span> idempotent) &#123;</span><br><span class="line">        <span class="built_in">this</span>.executor = executor;</span><br><span class="line">        <span class="built_in">this</span>.idempotent = idempotent;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 帮忙调用了 TtlRunnable.get</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">execute</span><span class="params">(<span class="meta">@NonNull</span> Runnable command)</span> &#123;</span><br><span class="line">        executor.execute(TtlRunnable.get(command, <span class="literal">false</span>, idempotent));</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以本质上就是包装为 <code>ExecutorTtlWrapper</code> 后重写了提交任务等方法，实现内主动去调用了装饰方法</p>
+<h2 id="图示">图示</h2>
+<p>个人认为 <code>Transmittable</code> 核心的思想：</p>
+<ul>
+<li>不同 <code>ThreadLocal</code> 之间的关系，保存、赋值、恢复等操作的流程</li>
+<li>并发场景下的实现，使用原子类、副本的保存和恢复等</li>
+</ul>
+<img src="/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/%E6%97%B6%E5%BA%8F%E5%9B%BE.png" class="" title="时序图">
+<img src="/2023/06/17/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/ThrealLocal%20%E6%93%8D%E4%BD%9C.webp" class="" title="ThrealLocal 操作">
+<h2 id="扩展-TTL">扩展 TTL</h2>
+<p>上面提到 <code>InheritableThreadLocal</code> 没有提供拷贝相关的能力，TTL 也进行了支持</p>
+<p><code>SuppliedTransmittableThreadLocal</code> 继承了 <code>TransmittableThreadLocal</code>，提供了传参 <code>Supplier</code> 和 <code>TtlCopier</code> 来进行初始值、继承值拷贝、传递值拷贝的设置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">SuppliedTransmittableThreadLocal</span>&lt;T&gt; <span class="keyword">extends</span> <span class="title class_">TransmittableThreadLocal</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="comment">// initialValue</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Supplier&lt;? <span class="keyword">extends</span> <span class="title class_">T</span>&gt; supplier;</span><br><span class="line">    <span class="comment">// childValue InheritableThreadLocal</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> TtlCopier&lt;T&gt; copierForChildValue;</span><br><span class="line">    <span class="comment">// copy</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> TtlCopier&lt;T&gt; copierForCopy;</span><br><span class="line"></span><br><span class="line">    SuppliedTransmittableThreadLocal(Supplier&lt;? <span class="keyword">extends</span> <span class="title class_">T</span>&gt; supplier, TtlCopier&lt;T&gt; copierForChildValue, TtlCopier&lt;T&gt; copierForCopy) &#123;</span><br><span class="line">        <span class="keyword">if</span> (supplier == <span class="literal">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NullPointerException</span>(<span class="string">&quot;supplier is null&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.supplier = supplier;</span><br><span class="line">        <span class="built_in">this</span>.copierForChildValue = copierForChildValue;</span><br><span class="line">        <span class="built_in">this</span>.copierForCopy = copierForCopy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> T <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> supplier.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> T <span class="title function_">childValue</span><span class="params">(T parentValue)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (copierForChildValue != <span class="literal">null</span>) <span class="keyword">return</span> copierForChildValue.copy(parentValue);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="built_in">super</span>.childValue(parentValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> T <span class="title function_">copy</span><span class="params">(T parentValue)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (copierForCopy != <span class="literal">null</span>) <span class="keyword">return</span> copierForCopy.copy(parentValue);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="built_in">super</span>.copy(parentValue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过静态方法 <code>withInitial</code>、<code>withInitialAndCopier</code> 进行创建</p>
+<p><strong>简单使用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Student&gt; THREAD_LOCAL = </span><br><span class="line">        TransmittableThreadLocal.withInitialAndCopier(</span><br><span class="line">        () -&gt; <span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;默认&quot;</span>, <span class="number">0</span>), </span><br><span class="line">        value -&gt; <span class="keyword">new</span> <span class="title class_">Student</span>(value.name + <span class="string">&quot; Inherit&quot;</span>, value.age),</span><br><span class="line">        value -&gt; <span class="keyword">new</span> <span class="title class_">Student</span>(value.name + <span class="string">&quot; Transmit&quot;</span>, value.age)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 装饰线程池 ExecutorService</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ExecutorService</span> <span class="variable">EXECUTOR</span> <span class="operator">=</span></span><br><span class="line">        TtlExecutors.getTtlExecutorService(Executors.newSingleThreadExecutor());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;主线程设置前：&quot;</span> + THREAD_LOCAL.get());</span><br><span class="line"></span><br><span class="line">        THREAD_LOCAL.set(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;张三&quot;</span>, <span class="number">20</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;主线程设置后：&quot;</span> + THREAD_LOCAL.get());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 新线程</span></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            <span class="type">Student</span> <span class="variable">student</span> <span class="operator">=</span> THREAD_LOCAL.get();</span><br><span class="line">            System.out.println(<span class="string">&quot;新线程：&quot;</span> + student);</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更新</span></span><br><span class="line">        THREAD_LOCAL.set(<span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;张三2&quot;</span>, <span class="number">21</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;主线程修改：&quot;</span> + THREAD_LOCAL.get());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 线程池</span></span><br><span class="line">        EXECUTOR.execute(() -&gt; &#123;</span><br><span class="line">            <span class="type">Student</span> <span class="variable">student</span> <span class="operator">=</span> THREAD_LOCAL.get();</span><br><span class="line">            System.out.println(<span class="string">&quot;线程池：&quot;</span> + student);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="meta">@AllArgsConstructor</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Student</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> String name;</span><br><span class="line">        <span class="keyword">private</span> Integer age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">主线程设置前：ThreadLocalTest.Student(name=默认, age=<span class="number">0</span>)</span><br><span class="line">主线程设置后：ThreadLocalTest.Student(name=张三, age=<span class="number">20</span>)</span><br><span class="line">主线程修改：ThreadLocalTest.Student(name=张三<span class="number">2</span>, age=<span class="number">21</span>)</span><br><span class="line">新线程：ThreadLocalTest.Student(name=张三 Inherit, age=<span class="number">20</span>)</span><br><span class="line">线程池：ThreadLocalTest.Student(name=张三<span class="number">2</span> Transmit, age=<span class="number">21</span>)</span><br></pre></td></tr></table></figure>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/transmittable-thread-local/tree/2.x">alibaba/transmittable-thread-local at 2.x (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/f92721fb0e29">TransmittableThreadLocal源码分析 - 简书 (jianshu.com)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BA%90%E7%A0%81/" rel="tag"># 源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/06/11/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/REST%20VS%20gRPC/" rel="prev" title="REST VS gRPC">
+      <i class="fa fa-chevron-left"></i> REST VS gRPC
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">可继承 Inheritable</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E9%99%90"><span class="nav-number">1.2.</span> <span class="nav-text">局限</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">可传递 Transmittable</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">2.1.</span> <span class="nav-text">简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0-Runnable"><span class="nav-number">2.1.1.</span> <span class="nav-text">装饰 Runnable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">2.1.2.</span> <span class="nav-text">装饰线程池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%8F%8A%E6%80%9D%E6%83%B3"><span class="nav-number">2.2.</span> <span class="nav-text">源码及思想</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TransmittableThreadLocal"><span class="nav-number">2.2.1.</span> <span class="nav-text">TransmittableThreadLocal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#holder"><span class="nav-number">2.2.2.</span> <span class="nav-text">holder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TtlRunnable"><span class="nav-number">2.2.3.</span> <span class="nav-text">TtlRunnable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transmitter"><span class="nav-number">2.2.4.</span> <span class="nav-text">Transmitter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#run"><span class="nav-number">2.2.5.</span> <span class="nav-text">run</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replay"><span class="nav-number">2.2.6.</span> <span class="nav-text">replay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#restore"><span class="nav-number">2.2.7.</span> <span class="nav-text">restore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">2.2.8.</span> <span class="nav-text">线程池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%A4%BA"><span class="nav-number">2.3.</span> <span class="nav-text">图示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-TTL"><span class="nav-number">2.4.</span> <span class="nav-text">扩展 TTL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=450 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
