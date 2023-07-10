@@ -242,11 +242,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>from size</h1>
-<p>from size 是最常见的分页方式，类比 MySQL 的 offset limit</p>
+          <h1 id="from-size"><a href="#from-size" class="headerlink" title="from size"></a>from size</h1><p>from size 是最常见的分页方式，类比 MySQL 的 offset limit</p>
 <p>由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 <code>from + size</code> 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 <code>(shards × (from + size))</code> 条数时在 coordinate node 再进行一次排序，最终抽取出真正 from 后的 size 条结果</p>
 <p>显而易见，当 shards 较多、分页深度很大时，这种方式存在很大的性能问题，这也是 ES 默认深度为 <code>from + size &lt;= 10000</code> 的原因</p>
-<h2 id="Routing-机制">Routing 机制</h2>
+<h2 id="Routing-机制"><a href="#Routing-机制" class="headerlink" title="Routing 机制"></a>Routing 机制</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2022/11/29/%E5%BC%80%E5%8F%91/ES/ES%20%E7%9A%84%20from%20size%20%E5%92%8C%20scroll%20%E5%92%8C%20search%20after/#more" rel="contents">
@@ -324,8 +323,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>六大原则</h1>
-<table>
+          <h1 id="六大原则"><a href="#六大原则" class="headerlink" title="六大原则"></a>六大原则</h1><table>
 <thead>
 <tr>
 <th>设计原则</th>
@@ -333,8 +331,7 @@
 <th>目的</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>开闭原则</td>
 <td>对扩展开放，对修改关闭</td>
 <td>易于维护</td>
@@ -364,10 +361,8 @@
 <td>高层不应该依赖低层，要面向接口编程</td>
 <td>利于结构升级</td>
 </tr>
-</tbody>
-</table>
-<h2 id="开闭原则">开闭原则</h2>
-<blockquote>
+</tbody></table>
+<h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><blockquote>
 <p><em>Software entities like classes,modules and functions should be open for extension but closed for modifications.</em></p>
 <p><em>一个软件实体如类，模块和函数应该对扩展开放，对修改关闭</em></p>
 </blockquote>
@@ -486,13 +481,24 @@
 
       </div>
     </div>
-      <div style="margin-top:20px">
-        <a href="https://www.foreverblog.cn/go.html" target="_blank"> <img src="https://img.foreverblog.cn/wormhole_2_tp.gif" alt="" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客"></a>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
       </div>
 
       <div style="margin-top:20px">
         <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=410 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
       </div>
+    </div>
   </aside>
   <div id="sidebar-dimmer"></div>
 
