@@ -242,13 +242,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<p>空对象模式（Null Object Pattern），使用空对象的行为（空实现、校验等）来代替对 Null 值的判断；空对象并不是在检查空值，而是通过对象的行为实现不进行任何动作或者校验的效果，以此对调用方隐藏更多的实现细节</p>
-<p><strong>目的</strong><br>
-向上层隐藏更多的实现细节，加强系统的稳定性，减少判空判断</p>
-<p><strong>现实世界类比</strong><br>
-在现实世界中也很难表达 ”空“ 这个概念，往往会使用 ”空盒子“、”空间“ 来进行表达，类比在代码中就是使用表现空概念的对象，而不是判空 <code>obj == null</code> 来实现对空的判断</p>
-<h1>实践</h1>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>空对象模式（Null Object Pattern），使用空对象的行为（空实现、校验等）来代替对 Null 值的判断；空对象并不是在检查空值，而是通过对象的行为实现不进行任何动作或者校验的效果，以此对调用方隐藏更多的实现细节</p>
+<p><strong>目的</strong><br>向上层隐藏更多的实现细节，加强系统的稳定性，减少判空判断</p>
+<p><strong>现实世界类比</strong><br>在现实世界中也很难表达 ”空“ 这个概念，往往会使用 ”空盒子“、”空间“ 来进行表达，类比在代码中就是使用表现空概念的对象，而不是判空 <code>obj == null</code> 来实现对空的判断</p>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/04/01/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F%20-%20Null%20Object/#more" rel="contents">
@@ -328,8 +325,7 @@
       
           <p>密码学是一门深奥难懂的学科，它充满了数学证明；但除非是正在开发密码系统，否则不必了解太多深层次的知识</p>
 <p>如果你打开这篇文章是希望创造下一代 HTTPS 协议，那么很抱歉，只有“鸽子”是远远不够的；如果你的目的不在于此，那么请欣赏这篇文章</p>
-<h1>爱丽丝、鲍勃和 … 鸽子？</h1>
-<p>在互联网上的任何活动（阅读这篇文章、在 Amazon 平台购买商品、上传猫咪图片）归根结底是同服务器发送或者接收消息</p>
+<h1 id="爱丽丝、鲍勃和-……-鸽子？"><a href="#爱丽丝、鲍勃和-……-鸽子？" class="headerlink" title="爱丽丝、鲍勃和 …… 鸽子？"></a>爱丽丝、鲍勃和 …… 鸽子？</h1><p>在互联网上的任何活动（阅读这篇文章、在 Amazon 平台购买商品、上传猫咪图片）归根结底是同服务器发送或者接收消息</p>
 <p>可能听起来有点抽象，所以让我们想象一下这些信息是由<strong>信鸽</strong>（carrier pigeons）传递的，我知道这个比喻看起来很随意，但相信我，HTTPS 的工作方式是一样的，尽管要快得多</p>
           <!--noindex-->
             <div class="post-button">
@@ -408,13 +404,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<p>装饰模式（Decorator Pattern）也叫装饰器模式，可以实现在不必改变原类文件和使用继承的情况下，动态地扩展一个对象的功能；它是通过创建一个包装对象（装饰器），也就是装饰来包裹真实的对象（委托对象）</p>
-<p><strong>目的</strong><br>
-更灵活地对对象方法进行扩展，也可以使多个装饰器共同作用，装饰器之间也可以任意组合</p>
-<p><strong>现实世界类比</strong><br>
-嵌入式设备，摄像头通过接口连接计算机，安装合适的驱动和软件，整个硬件环境就可以具备摄影机的功能；而在具备摄影功能的基础上再连接新的设备遥控底盘，就变成了可以移动的摄像车</p>
-<h1>实践</h1>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>装饰模式（Decorator Pattern）也叫装饰器模式，可以实现在不必改变原类文件和使用继承的情况下，动态地扩展一个对象的功能；它是通过创建一个包装对象（装饰器），也就是装饰来包裹真实的对象（委托对象）</p>
+<p><strong>目的</strong><br>更灵活地对对象方法进行扩展，也可以使多个装饰器共同作用，装饰器之间也可以任意组合</p>
+<p><strong>现实世界类比</strong><br>嵌入式设备，摄像头通过接口连接计算机，安装合适的驱动和软件，整个硬件环境就可以具备摄影机的功能；而在具备摄影功能的基础上再连接新的设备遥控底盘，就变成了可以移动的摄像车</p>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/02/19/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%A3%85%E9%A5%B0%E6%A8%A1%E5%BC%8F%20-%20Decorator/#more" rel="contents">
@@ -493,10 +486,11 @@
 
       
           <img src="/2023/01/16/%E4%BA%BA%E7%94%9F/%E9%85%92/%E5%95%A4%E9%85%92%E8%8A%B1%EF%BC%9A%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%E7%9F%A5%E8%AF%86/hops.jpg" class>
+
 <p>记录显示第一个喝到啤酒的人距今有 9000 年之久，但奇怪的是，人们使用啤酒花为了防腐，或者为了添加风味和香气的历史并不久远</p>
 <p>如今，啤酒中不添加啤酒花是不可思议的行为；它不仅可以保护啤酒的新鲜，也可以丰富啤酒的味道</p>
 <p>本文将介绍你可能不知道的啤酒花知识，现在是时候了解关于家庭酿造的基本原料之一的新东西了</p>
-<h1>认识啤酒花</h1>
+<h1 id="认识啤酒花"><a href="#认识啤酒花" class="headerlink" title="认识啤酒花"></a>认识啤酒花</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/01/16/%E4%BA%BA%E7%94%9F/%E9%85%92/%E5%95%A4%E9%85%92%E8%8A%B1%EF%BC%9A%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84%E7%9F%A5%E8%AF%86/#more" rel="contents">
@@ -574,8 +568,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>限流</h1>
-<p>限流是保护高并发系统的三把利器之一（限流、缓存、降级）；其目的是通过对并发访问或请求进行限速或者一个时间窗口内的的请求进行限速来保护系统，一旦达到限制速率则可以拒绝服务或进行流量整形</p>
+          <h1 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h1><p>限流是保护高并发系统的三把利器之一（限流、缓存、降级）；其目的是通过对并发访问或请求进行限速或者一个时间窗口内的的请求进行限速来保护系统，一旦达到限制速率则可以拒绝服务或进行流量整形</p>
 <p>限流的类型可大致分为：</p>
 <ul>
 <li>限制总并发数 - 数据库连接池、线程池</li>
@@ -583,7 +576,7 @@
 <li>限制时间窗口内的平均速率 - Guava 的 RateLimiter</li>
 <li>其他 - 根据网络流量、CPU 占用率、内存占用率等作为标准来进行限流</li>
 </ul>
-<h1>桶漏 &amp; 令牌桶</h1>
+<h1 id="桶漏-amp-令牌桶"><a href="#桶漏-amp-令牌桶" class="headerlink" title="桶漏 &amp; 令牌桶"></a>桶漏 &amp; 令牌桶</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/01/08/%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91/Guava%20RateLimiter/#more" rel="contents">
@@ -661,11 +654,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<p>在 Spring 框架和 MVC 三层模式下，对于创建一个对象并对属性进行赋值的操作不需要复杂的设计</p>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在 Spring 框架和 MVC 三层模式下，对于创建一个对象并对属性进行赋值的操作不需要复杂的设计</p>
 <p>代码中创建的对象往往是一个 “贫血模型”，只用来充当数据的传递者</p>
 <p>应该根据不同的类及其功能选择合适的对象创建方式</p>
-<h1>方式</h1>
+<h1 id="方式"><a href="#方式" class="headerlink" title="方式"></a>方式</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/01/07/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%B1%9E%E6%80%A7%E8%AE%BE%E7%BD%AE/#more" rel="contents">
@@ -795,7 +787,7 @@
       </div>
 
       <div style="margin-top:20px">
-        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=410 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=410 src="https://music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
       </div>
     </div>
   </aside>

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="在很长的一段时间，REST 都是一种且唯一一种构建 API 的 “标准”；它在某种程度上取代了 SOAP，后者是一个 “太多 XML” 的丑陋烂摊子 但是近些年新的选择出现了，2015 年，Facebook 向公众发布了 GraphQL，2016 年谷歌紧随其后发布了 gRPC 在本文中，我们将关注仍然被广泛使用的后者，并将其与 REST 进行比较 概述 下表将概述所讨论的要点，并显示 REST">
+  <meta name="description" content="在很长的一段时间，REST 都是一种且唯一一种构建 API 的 “标准”；它在某种程度上取代了 SOAP，后者是一个 “太多 XML” 的丑陋烂摊子 但是近些年新的选择出现了，2015 年，Facebook 向公众发布了 GraphQL，2016 年谷歌紧随其后发布了 gRPC 在本文中，我们将关注仍然被广泛使用的后者，并将其与 REST 进行比较 概述下表将概述所讨论的要点，并显示 REST 和">
 <meta property="og:type" content="article">
 <meta property="og:title" content="REST VS gRPC">
 <meta property="og:url" content="http://example.com/2023/06/11/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/REST%20VS%20gRPC/index.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="在很长的一段时间，REST 都是一种且唯一一种构建 API 的 “标准”；它在某种程度上取代了 SOAP，后者是一个 “太多 XML” 的丑陋烂摊子 但是近些年新的选择出现了，2015 年，Facebook 向公众发布了 GraphQL，2016 年谷歌紧随其后发布了 gRPC 在本文中，我们将关注仍然被广泛使用的后者，并将其与 REST 进行比较 概述 下表将概述所讨论的要点，并显示 REST">
+<meta property="og:description" content="在很长的一段时间，REST 都是一种且唯一一种构建 API 的 “标准”；它在某种程度上取代了 SOAP，后者是一个 “太多 XML” 的丑陋烂摊子 但是近些年新的选择出现了，2015 年，Facebook 向公众发布了 GraphQL，2016 年谷歌紧随其后发布了 gRPC 在本文中，我们将关注仍然被广泛使用的后者，并将其与 REST 进行比较 概述下表将概述所讨论的要点，并显示 REST 和">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-06-10T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-06-10T16:00:00.000Z">
@@ -247,65 +247,60 @@
         <p>在很长的一段时间，REST 都是一种且唯一一种构建 API 的 “标准”；它在某种程度上取代了 SOAP，后者是一个 “太多 XML” 的丑陋烂摊子</p>
 <p>但是近些年新的选择出现了，2015 年，Facebook 向公众发布了 GraphQL，2016 年谷歌紧随其后发布了 gRPC</p>
 <p>在本文中，我们将关注仍然被广泛使用的后者，并将其与 REST 进行比较</p>
-<h1>概述</h1>
-<p>下表将概述所讨论的要点，并显示 REST 和 gRPC 的亮点</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>下表将概述所讨论的要点，并显示 REST 和 gRPC 的亮点</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">Toic</th>
-<th style="text-align:center">REST</th>
-<th style="text-align:center">gRPC</th>
+<th align="center">Toic</th>
+<th align="center">REST</th>
+<th align="center">gRPC</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center"><strong>Standardization</strong></td>
-<td style="text-align:center">无标准</td>
-<td style="text-align:center">定义完善</td>
+<tbody><tr>
+<td align="center"><strong>Standardization</strong></td>
+<td align="center">无标准</td>
+<td align="center">定义完善</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>Paradigm</strong></td>
-<td style="text-align:center">基于资源</td>
-<td style="text-align:center">RPC</td>
+<td align="center"><strong>Paradigm</strong></td>
+<td align="center">基于资源</td>
+<td align="center">RPC</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>Service modes</strong></td>
-<td style="text-align:center">只有 unary</td>
-<td style="text-align:center">Unary, client streaming, server streaming 和 bidirectional streaming</td>
+<td align="center"><strong>Service modes</strong></td>
+<td align="center">只有 unary</td>
+<td align="center">Unary, client streaming, server streaming 和 bidirectional streaming</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>Requirements</strong></td>
-<td style="text-align:center">各种 HTTP 版本，JSON 解析</td>
-<td style="text-align:center">HTTP/2, 依赖语言实现</td>
+<td align="center"><strong>Requirements</strong></td>
+<td align="center">各种 HTTP 版本，JSON 解析</td>
+<td align="center">HTTP&#x2F;2, 依赖语言实现</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>API design</strong></td>
-<td style="text-align:center">代码第一</td>
-<td style="text-align:center">设计第一</td>
+<td align="center"><strong>API design</strong></td>
+<td align="center">代码第一</td>
+<td align="center">设计第一</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>Default data format</strong></td>
-<td style="text-align:center">JSON</td>
-<td style="text-align:center">Protobuf</td>
+<td align="center"><strong>Default data format</strong></td>
+<td align="center">JSON</td>
+<td align="center">Protobuf</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>Web browser support</strong></td>
-<td style="text-align:center">原生</td>
-<td style="text-align:center">gRPC web, via workarounds</td>
+<td align="center"><strong>Web browser support</strong></td>
+<td align="center">原生</td>
+<td align="center">gRPC web, via workarounds</td>
 </tr>
 <tr>
-<td style="text-align:center"><strong>Tools</strong></td>
-<td style="text-align:center">更成熟</td>
-<td style="text-align:center">语言支持各不相同，有些具有出色的实现</td>
+<td align="center"><strong>Tools</strong></td>
+<td align="center">更成熟</td>
+<td align="center">语言支持各不相同，有些具有出色的实现</td>
 </tr>
-</tbody>
-</table>
-<h1>标准化</h1>
-<p>REST 其中之一的缺点就是缺乏标准化，因为 REST 与其说是 API 标准（standard），不如说是一种范式（paradigm），许多人在谈论它时都有不同的含义</p>
+</tbody></table>
+<h1 id="标准化"><a href="#标准化" class="headerlink" title="标准化"></a>标准化</h1><p>REST 其中之一的缺点就是缺乏标准化，因为 REST 与其说是 API 标准（standard），不如说是一种范式（paradigm），许多人在谈论它时都有不同的含义</p>
 <p>大多数情况下，所谓的 “REST API” 更倾向于基于 HTTP 协议和 JSON 格式的 API，但是使用 XML 代替 JSON 仍然会使 API 符合 RESTful 规范，尽管这种方式没有被广泛使用；REST 这个术语甚至与 HTTP 无关，在使用 REST API 时，这可能会导致很多混乱，例如使用者可能会自动期望某些 REST API 端点的幂等性或缓存性，即使没有明确定义</p>
-<p>相比之下，gRPC 定义完善；例如， <a target="_blank" rel="noopener" href="https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md">gRPC implementation over HTTP/2</a>  非常详细</p>
-<h1>基本区别</h1>
-<p>REST 和 gRPC 的规范是不同的</p>
+<p>相比之下，gRPC 定义完善；例如， <a target="_blank" rel="noopener" href="https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md">gRPC implementation over HTTP&#x2F;2</a>  非常详细</p>
+<h1 id="基本区别"><a href="#基本区别" class="headerlink" title="基本区别"></a>基本区别</h1><p>REST 和 gRPC 的规范是不同的</p>
 <p>REST 中一切都以资源为中心，这些资源可以被检索和操作；如果我们以一本书作为示例资源，REST API 通常会提供以下接口：</p>
 <ul>
 <li><code>GET /books</code> 获取所有书籍，可能带有用于筛选项和分页相关参数</li>
@@ -324,54 +319,49 @@
 </ul>
 <p>可以随心所欲地命名这些方法，并需要我们需要的任何参数；如果我们现在想添加一个方法来创建多本书，没有什么能阻止我们添加 <code>CreateBooks()</code> 方法</p>
 <p>gRPC 在设计 API 时提供了更多的 “自由”，因为有更少的（自我强加的）限制</p>
-<h2 id="服务模式">服务模式</h2>
-<p>gRPC 支持四种服务方式：</p>
+<h2 id="服务模式"><a href="#服务模式" class="headerlink" title="服务模式"></a>服务模式</h2><p>gRPC 支持四种服务方式：</p>
 <ul>
-<li>**Unary：**发送一个请求，接受一个响应</li>
-<li>**Server steaming：**发送一个请求，接收多个响应</li>
-<li>**Client streaming：**发送多个请求，接收一个响应</li>
-<li>**Bidirectional streaming：**发送多个请求，接收多个响应</li>
+<li><strong>Unary：</strong>发送一个请求，接受一个响应</li>
+<li><strong>Server steaming：</strong>发送一个请求，接收多个响应</li>
+<li><strong>Client streaming：</strong>发送多个请求，接收一个响应</li>
+<li><strong>Bidirectional streaming：</strong>发送多个请求，接收多个响应</li>
 </ul>
 <p>这是 gRPC 相比只支持 Unary 方式的 REST 非常好的优势，在 REST API 中支持其他服务模式需要使用不同的协议，例如 server-sent events 或 websocket，这并不是非常 “RESTful”</p>
-<h2 id="依赖">依赖</h2>
-<p>REST API 经常只工作在各种 HTTP 版本之上，只要编程语言有 HTTP 客户端和 JSON 解析器，处理 REST 的 API 是轻而易举的</p>
-<p>gRPC 明确需要 HTTP/2 协议的支持；近些年这种问题越来越少，因为大多数代理和框架都增加了对 HTTP/2 的支持；不过需要注意，由于 gRPC 需要生成代码（用于创建客户端或服务器存根），因此并不是所有编程语言都支持</p>
-<h1>API 设计</h1>
-<p>REST API 通常是其实现的结果，称为 “代码优先（code-first）”；虽然可以先用 OpenAPI 进行设计，然后生成服务器存根，但这并不是许多开发人员采用的方法；如果有一个 OpenAPI 定义，那么 OpenAPI 定义很可能是从 API 实现生成的；因此 API 定义与实现紧密耦合，错误地更改模型可能会导致无意中破坏 API</p>
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><p>REST API 经常只工作在各种 HTTP 版本之上，只要编程语言有 HTTP 客户端和 JSON 解析器，处理 REST 的 API 是轻而易举的</p>
+<p>gRPC 明确需要 HTTP&#x2F;2 协议的支持；近些年这种问题越来越少，因为大多数代理和框架都增加了对 HTTP&#x2F;2 的支持；不过需要注意，由于 gRPC 需要生成代码（用于创建客户端或服务器存根），因此并不是所有编程语言都支持</p>
+<h1 id="API-设计"><a href="#API-设计" class="headerlink" title="API 设计"></a>API 设计</h1><p>REST API 通常是其实现的结果，称为 “代码优先（code-first）”；虽然可以先用 OpenAPI 进行设计，然后生成服务器存根，但这并不是许多开发人员采用的方法；如果有一个 OpenAPI 定义，那么 OpenAPI 定义很可能是从 API 实现生成的；因此 API 定义与实现紧密耦合，错误地更改模型可能会导致无意中破坏 API</p>
 <p>gRPC 使用不同的方法，在实现 API 之前必须定义 API，称为 “设计优先（design-first）”，然后根据这个 API 定义生成客户端和服务器存根，这需要提前进行，因为不能直接实现 API</p>
 <p>这两种方法各有利弊。通常的 REST API 方法允许更快的迭代，因为服务器始终是真实接口的来源；而使用 gRPC，需要在调整实现之前首先更改 API 的定义可能会比较烦人，但是它通过显式定义 API 带来了一些安全优点</p>
-<h1>数据格式</h1>
-<p>REST 和 gRPC 都会使用不同的格式来进行数据传输；大部分 REST API 使用 JSON，gRPC 则会默认使用 <a target="_blank" rel="noopener" href="https://protobuf.dev/">Protocol Buffers</a>（Protobuf），让我们来比较这两者</p>
+<h1 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h1><p>REST 和 gRPC 都会使用不同的格式来进行数据传输；大部分 REST API 使用 JSON，gRPC 则会默认使用 <a target="_blank" rel="noopener" href="https://protobuf.dev/">Protocol Buffers</a>（Protobuf），让我们来比较这两者</p>
 <p>JSON 对数据类型的支持有限，也有一些怪癖（例如大数字需要表示为字符串）；它是一种文本格式，便于阅读；字段名是序列化的，这会占用一些空间，在一些编程语言中需要使用反射来反序列化 JSON 格式的数据，会比较慢</p>
 <p>如上所述，gRPC API 的消息类型首先被定义为 Protocol Buffers；对于受支持的编程语言，可以自动生成（反）序列化消息的代码；并且由于它是一种二进制格式，不需要序列化字段名，因此它使用的空间比等效的  JSON 消息更少；当然缺点是不再具备人类可读性，需要 Protobuf 定义来反序列化消息，可能会对开发人员造成一些阻碍</p>
 <p>下面的 JSON 示例将占用大约 66 个字节（去掉空格）</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;persons&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Max&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">23</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Mike&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">52</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <p>等效的序列化 protobuf 信息仅使用 19 个字节</p>
 <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>x0A070A034D617810170A080A04486<span class="number">16E731034</span></span><br></pre></td></tr></table></figure>
-<h2 id="大型数据">大型数据</h2>
-<p>Protobuf 设计用于序列化和反序列化内存中的数据，因此不建议使用 Protobuf / gRPC 传输大型数据；大多数 gRPC 实现对单个消息的默认限制为 4MB</p>
+
+
+
+<h2 id="大型数据"><a href="#大型数据" class="headerlink" title="大型数据"></a>大型数据</h2><p>Protobuf 设计用于序列化和反序列化内存中的数据，因此不建议使用 Protobuf &#x2F; gRPC 传输大型数据；大多数 gRPC 实现对单个消息的默认限制为 4MB</p>
 <p>使用 REST API 处理大数据量（例如文件上传）是相当直接的，接收到的文件可以被视为流，只需使用很少的内存</p>
 <p>这在 gRPC 中并非不可能，但需要更多的手动操作：文件必须在发送方分为几个部分，然后每个块将作为单独的数据通过客户端流传输方法发送到服务器，服务器接收每个块，并可以从中构造数据流，从而产生与 REST API 类似的行为，尽管需要付出更多努力</p>
-<h1>浏览器兼容性</h1>
-<p>这就是 REST 真正的闪光点，它由 Web 浏览器天然支持，因此可以轻松地使用 Web 应用程序中的 REST API</p>
-<p>gRPC 不直接由浏览器支持，因为它需要明确的 HTTP/2 支持和访问某些 HTTP/2 功能，而 web 浏览器不提供这些功能</p>
+<h1 id="浏览器兼容性"><a href="#浏览器兼容性" class="headerlink" title="浏览器兼容性"></a>浏览器兼容性</h1><p>这就是 REST 真正的闪光点，它由 Web 浏览器天然支持，因此可以轻松地使用 Web 应用程序中的 REST API</p>
+<p>gRPC 不直接由浏览器支持，因为它需要明确的 HTTP&#x2F;2 支持和访问某些 HTTP&#x2F;2 功能，而 web 浏览器不提供这些功能</p>
 <p>gRPC Web 可以作为一种变通方式；这是 gRPC 协议的一个微小变化，使其可供 web 浏览器使用</p>
 <p>对于某些编程语言，框架中已经包含了 gRPC Web 支持；而对于不支持的语言，需要一个代理来将 gRPC 请求转换为 gRPC Web 请求，反之亦然</p>
 <p>与不需要特殊依赖的 REST API 相比，gRPC API 在从 Web 上使用时更麻烦</p>
-<h1>工具</h1>
-<p>gRPC 和 REST 工具在编程语言和框架之间差异很大，在某些情况下，gRPC 感觉更 “原生（native）”，而在另一些情况下，REST 工具则更高级</p>
+<h1 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h1><p>gRPC 和 REST 工具在编程语言和框架之间差异很大，在某些情况下，gRPC 感觉更 “原生（native）”，而在另一些情况下，REST 工具则更高级</p>
 <p>对 gRPC 而言适当语言支持更为重要，因为它需要工具来生成客户端和服务器存根（stubs）；对于不受支持的编程语言则就不那么幸运了</p>
 <p>REST API 的客户端总是可以手动创建的，虽然可能需要一些努力；存在从 Open API 定义创建 REST 客户端的工具，但与 gRPC 相比，对开发人员的经验要求更少</p>
 <p>由于 REST API 存在的时间要长得多，因此存在更多有助于构建、测试和部署 REST API 的工具；它们的功能通常比 gRPC 工具更高级</p>
 <p>这也是我们构建 Kreya 的主要原因之一，它试图成为最好的 gRPC GUI 客户端（同时也支持 REST）</p>
-<h1>总结</h1>
-<p>REST 和 gRPC 都有各自的优点和缺点</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>REST 和 gRPC 都有各自的优点和缺点</p>
 <p>从 Web 应用中处理 REST API 通常来说更简单；此外 REST API 使用更广泛，这使得一些开发人员使用它更容易，因为他们可能不了解 gRPC</p>
 <p>在我看来，gRPC 在服务器到服务器的通信（例如微服务之间）方面无疑具有优势，能够共享准确的 API 定义并用多种编程语言创建 API 客户端，这是一个巨大的胜利</p>
 <p>对于 “我应该使用 REST 还是 gRPC” 的问题没有标准答案，有些 API 可能具有独特的情况，gRPC 或 REST 其中一个可能更适合，或者程序员对其中一者的使用更顺手、更熟练</p>
 <p>所有这些都是理由，所以每个人都应该自己决定使用哪种技术</p>
-<h1>参考</h1>
-<p><a target="_blank" rel="noopener" href="https://kreya.app/blog/rest-vs-grpc/">https://kreya.app/blog/rest-vs-grpc/</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://kreya.app/blog/rest-vs-grpc/">https://kreya.app/blog/rest-vs-grpc/</a></p>
 
     </div>
 
@@ -452,7 +442,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">标准化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">基本区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">服务模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">3.2.</span> <span class="nav-text">依赖</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">API 设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">数据格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%9E%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">5.1.</span> <span class="nav-text">大型数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">浏览器兼容性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">7.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">标准化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">基本区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">服务模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">3.2.</span> <span class="nav-text">依赖</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#API-%E8%AE%BE%E8%AE%A1"><span class="nav-number">4.</span> <span class="nav-text">API 设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">数据格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%9E%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">5.1.</span> <span class="nav-text">大型数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">6.</span> <span class="nav-text">浏览器兼容性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7"><span class="nav-number">7.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -504,7 +494,7 @@
       </div>
 
       <div style="margin-top:20px">
-        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=410 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=410 src="https://music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
       </div>
     </div>
   </aside>
