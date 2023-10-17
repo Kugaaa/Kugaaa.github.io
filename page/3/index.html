@@ -191,6 +191,167 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/06/04/%E5%BC%80%E5%8F%91/Java/ThreadLocal%20&%20Memory%20Leak/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/06/04/%E5%BC%80%E5%8F%91/Java/ThreadLocal%20&%20Memory%20Leak/" class="post-title-link" itemprop="url">ThreadLocal & Memory Leak</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-06-04 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-04T00:00:00+08:00">2023-06-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><p>在项目中我们可以通过 <code>ThreadLocal</code> 来存储用户信息</p>
+<p>其中一般会在过滤器&#x2F;拦截器的入口处初始化用户信息，并在执行结束后对其进行清理</p>
+<p>这样从请求进来一直到返回，我们只需要通过线程变量 <code>ThreadLocal</code> 获取用户信息即可，而不用每次都从数据库查出来</p>
+<p>因为 <code>ThreadLocal</code> 是线程安全的，<strong>所以通常声明为一个静态单例变量</strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/06/04/%E5%BC%80%E5%8F%91/Java/ThreadLocal%20&%20Memory%20Leak/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/27/%E5%BC%80%E5%8F%91/Java/Java%20%E6%B3%9B%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/27/%E5%BC%80%E5%8F%91/Java/Java%20%E6%B3%9B%E5%9E%8B/" class="post-title-link" itemprop="url">Java 泛型</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-27 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-27T00:00:00+08:00">2023-05-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><h2 id="什么是泛型"><a href="#什么是泛型" class="headerlink" title="什么是泛型"></a>什么是泛型</h2><p>泛型，即<strong>参数化类型</strong></p>
+<p>一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在调用时传入具体的类型（类型实参）</p>
+<h2 id="为什么要引入泛型"><a href="#为什么要引入泛型" class="headerlink" title="为什么要引入泛型"></a>为什么要引入泛型</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/05/27/%E5%BC%80%E5%8F%91/Java/Java%20%E6%B3%9B%E5%9E%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/29/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%20-%20State/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -435,87 +596,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/09/%E4%BA%BA%E7%94%9F/%E5%A4%A9%E5%AD%90%E5%91%BC%E6%9D%A5%E4%B8%8D%E4%B8%8A%E8%88%B9/RECIPES%20-%20Maison%20Premiere%E2%80%99s%20Tom%20Collins/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/09/%E4%BA%BA%E7%94%9F/%E5%A4%A9%E5%AD%90%E5%91%BC%E6%9D%A5%E4%B8%8D%E4%B8%8A%E8%88%B9/RECIPES%20-%20Maison%20Premiere%E2%80%99s%20Tom%20Collins/" class="post-title-link" itemprop="url">RECIPES - Maison Premiere’s Tom Collins</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-04-09 00:00:00" itemprop="dateCreated datePublished" datetime="2023-04-09T00:00:00+08:00">2023-04-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BA%BA%E7%94%9F/" itemprop="url" rel="index"><span itemprop="name">人生</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BA%BA%E7%94%9F/%E5%A4%A9%E5%AD%90%E5%91%BC%E6%9D%A5%E4%B8%8D%E4%B8%8A%E8%88%B9/" itemprop="url" rel="index"><span itemprop="name">天子呼来不上船</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://assets-prd.punchdrink.com/wp-content/uploads/2023/03/16224141/Article-Tom-Collins-Underrated-Classic-Cocktail-Recipe-500x688.jpg"></p>
-<h1 id="Maison-Premiere-的汤姆柯林斯"><a href="#Maison-Premiere-的汤姆柯林斯" class="headerlink" title="Maison Premiere 的汤姆柯林斯"></a>Maison Premiere 的汤姆柯林斯</h1><p><a target="_blank" rel="noopener" href="https://punchdrink.com/recipes/maison-premieres-tom-collins/">Maison Premiere’s Tom Collins Cocktail Recipe | PUNCH (punchdrink.com)</a></p>
-<p>对于某些调酒师来说，“被低估” 并不一定意味着鲜为人知</p>
-<p>Maison Premiere 的威廉·埃利奥特（William Elliott）认为，汤姆柯林斯是无处不在的经典，值得 ”好好对待“</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/04/09/%E4%BA%BA%E7%94%9F/%E5%A4%A9%E5%AD%90%E5%91%BC%E6%9D%A5%E4%B8%8D%E4%B8%8A%E8%88%B9/RECIPES%20-%20Maison%20Premiere%E2%80%99s%20Tom%20Collins/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/09/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/GoogleCode%20ConcurrentLinkedHashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -577,87 +657,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/04/09/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/GoogleCode%20ConcurrentLinkedHashMap/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/01/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F%20-%20Null%20Object/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/04/01/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F%20-%20Null%20Object/" class="post-title-link" itemprop="url">空对象模式 - Null Object</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-04-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-04-01T00:00:00+08:00">2023-04-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>空对象模式（Null Object Pattern），使用空对象的行为（空实现、校验等）来代替对 Null 值的判断；空对象并不是在检查空值，而是通过对象的行为实现不进行任何动作或者校验的效果，以此对调用方隐藏更多的实现细节</p>
-<p><strong>目的</strong><br>向上层隐藏更多的实现细节，加强系统的稳定性，减少判空判断</p>
-<p><strong>现实世界类比</strong><br>在现实世界中也很难表达 ”空“ 这个概念，往往会使用 ”空盒子“、”空间“ 来进行表达，类比在代码中就是使用表现空概念的对象，而不是判空 <code>obj == null</code> 来实现对空的判断</p>
-<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/04/01/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%A9%BA%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%BC%8F%20-%20Null%20Object/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -746,20 +745,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
