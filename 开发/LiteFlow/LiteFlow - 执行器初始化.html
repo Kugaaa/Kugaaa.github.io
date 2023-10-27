@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="自动装配基于 SpringBoot 的实现方式自然使用到了 starter 机制，核心代码在 liteflow-spring-boot-starter 包下 首先来看 spring.factories 文件 123org.springframework.boot.autoconfigure.EnableAutoConfiguration&#x3D;\  com.yomahub.liteflow.spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LiteFlow - 执行器初始化">
+<meta property="og:url" content="http://example.com/%E5%BC%80%E5%8F%91/LiteFlow/LiteFlow%20-%20%E6%89%A7%E8%A1%8C%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="自动装配基于 SpringBoot 的实现方式自然使用到了 starter 机制，核心代码在 liteflow-spring-boot-starter 包下 首先来看 spring.factories 文件 123org.springframework.boot.autoconfigure.EnableAutoConfiguration&#x3D;\  com.yomahub.liteflow.spring">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-04-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-23T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="LiteFlow">
+<meta property="article:tag" content="源码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/%E5%BC%80%E5%8F%91/LiteFlow/LiteFlow%20-%20%E6%89%A7%E8%A1%8C%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LiteFlow - 执行器初始化 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%BC%80%E5%8F%91/LiteFlow/LiteFlow%20-%20%E6%89%A7%E8%A1%8C%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LiteFlow - 执行器初始化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-04-24 00:00:00" itemprop="dateCreated datePublished" datetime="2023-04-24T00:00:00+08:00">2023-04-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/LiteFlow/" itemprop="url" rel="index"><span itemprop="name">LiteFlow</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="自动装配"><a href="#自动装配" class="headerlink" title="自动装配"></a>自动装配</h1><p>基于 SpringBoot 的实现方式自然使用到了 starter 机制，核心代码在 <code>liteflow-spring-boot-starter</code> 包下</p>
+<p>首先来看 <code>spring.factories</code> 文件</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span>=<span class="string">\</span></span><br><span class="line"><span class="string">  com.yomahub.liteflow.springboot.config.LiteflowPropertyAutoConfiguration,\</span></span><br><span class="line"><span class="string">  com.yomahub.liteflow.springboot.config.LiteflowMainAutoConfiguration</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到一共有两个重要的自动装配的配置类：</p>
+<ul>
+<li><strong>LiteflowPropertyAutoConfiguration</strong>：配置属性的解析，封装为 <code>LiteflowConfig</code> 实例</li>
+<li><strong>LiteflowMainAutoConfiguration</strong>：LiteFlow 的核心功能对象在该配置类下实例化<ul>
+<li><strong>SpringAware</strong>：Spring ApplicationContext 的获取与封装，便于后续业务中获取 bean 的操作</li>
+<li><strong>ComponentScanner</strong>：组件扫描器，用于扫描与封装 <code>NodeComponent</code> 节点的实现类</li>
+<li><strong>FlowExecutor</strong>：规则执行器</li>
+<li><strong>LiteflowExecutorInit</strong>：设置服务启动时初始化配置生效，用于启动时主动进行初始化操作</li>
+<li><strong>MonitorBus</strong>：监控类元数据</li>
+</ul>
+</li>
+</ul>
+<h2 id="LiteflowPropertyAutoConfiguration"><a href="#LiteflowPropertyAutoConfiguration" class="headerlink" title="LiteflowPropertyAutoConfiguration"></a>LiteflowPropertyAutoConfiguration</h2><p>总的来说就是对配置属性的合并和封装，实例化 <code>LiteflowConfig</code>，便于后续业务的使用</p>
+<p>合并了 <code>liteflow</code> 配置和 <code>liteflow.monitor</code> 配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableConfigurationProperties(&#123;LiteflowProperty.class, LiteflowMonitorProperty.class&#125;)</span></span><br><span class="line"><span class="meta">@PropertySource(</span></span><br><span class="line"><span class="meta">        name = &quot;Liteflow Default Properties&quot;,</span></span><br><span class="line"><span class="meta">        value = &quot;classpath:/META-INF/liteflow-default.properties&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LiteflowPropertyAutoConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> LiteflowConfig <span class="title function_">liteflowConfig</span><span class="params">(LiteflowProperty property, LiteflowMonitorProperty liteflowMonitorProperty)</span>&#123;</span><br><span class="line">        <span class="type">LiteflowConfig</span> <span class="variable">liteflowConfig</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">LiteflowConfig</span>();</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        liteflowConfig.setPrintExecutionLog(property.isPrintExecutionLog());</span><br><span class="line">        liteflowConfig.setSubstituteCmpClass(property.getSubstituteCmpClass());</span><br><span class="line">        <span class="keyword">return</span> liteflowConfig;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>依赖前置 <code>LiteflowProperty</code> 和 <code>LiteflowMonitorProperty</code> bean，即流程配置参数和监控器的配置参数类</p>
+<h2 id="LiteflowMainAutoConfiguration"><a href="#LiteflowMainAutoConfiguration" class="headerlink" title="LiteflowMainAutoConfiguration"></a>LiteflowMainAutoConfiguration</h2><p>配置核心的各种实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@AutoConfigureAfter(&#123;LiteflowPropertyAutoConfiguration.class&#125;)</span></span><br><span class="line"><span class="meta">@ConditionalOnBean(LiteflowConfig.class)</span></span><br><span class="line"><span class="meta">@ConditionalOnProperty(prefix = &quot;liteflow&quot;, name = &quot;enable&quot;, havingValue = &quot;true&quot;)</span></span><br><span class="line"><span class="meta">@Import(SpringAware.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LiteflowMainAutoConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//实例化ComponentScanner</span></span><br><span class="line">    <span class="comment">//多加一个SpringAware的意义是，确保在执行这个的时候，SpringAware这个bean已经被初始化</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> ComponentScanner <span class="title function_">componentScanner</span><span class="params">(LiteflowConfig liteflowConfig, SpringAware springAware)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ComponentScanner</span>(liteflowConfig);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//实例化FlowExecutor</span></span><br><span class="line">    <span class="comment">//多加一个SpringAware的意义是，确保在执行这个的时候，SpringAware这个bean已经被初始化</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> FlowExecutor <span class="title function_">flowExecutor</span><span class="params">(LiteflowConfig liteflowConfig, SpringAware springAware)</span> &#123;</span><br><span class="line">        <span class="type">FlowExecutor</span> <span class="variable">flowExecutor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FlowExecutor</span>();</span><br><span class="line">        flowExecutor.setLiteflowConfig(liteflowConfig);</span><br><span class="line">        <span class="keyword">return</span> flowExecutor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//FlowExecutor的初始化工作，和实例化分开来</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnProperty(prefix = &quot;liteflow&quot;, name = &quot;parse-on-start&quot;, havingValue = &quot;true&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> LiteflowExecutorInit <span class="title function_">liteflowExecutorInit</span><span class="params">(FlowExecutor flowExecutor)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">LiteflowExecutorInit</span>(flowExecutor);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//实例化MonitorBus</span></span><br><span class="line">    <span class="comment">//多加一个SpringAware的意义是，确保在执行这个的时候，SpringAware这个bean已经被初始化</span></span><br><span class="line">    <span class="meta">@Bean(&quot;monitorBus&quot;)</span></span><br><span class="line">    <span class="meta">@ConditionalOnProperty(prefix = &quot;liteflow&quot;, name = &quot;monitor.enable-log&quot;, havingValue = &quot;true&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> MonitorBus <span class="title function_">monitorBus</span><span class="params">(LiteflowConfig liteflowConfig, SpringAware springAware)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MonitorBus</span>(liteflowConfig);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出 bean 的加载顺序：LiteflowPropertyAutoConfiguration -&gt; LiteflowConfig -&gt; ComponentScanner &amp; FlowExecutor &amp; MonitorBus -&gt; LiteflowExecutorInit</p>
+<p>LiteflowExecutorInit 和 MonitorBus 依赖不同的配置条件，其中 <code>liteflow.parse-on-start</code> 默认是 true，<code>liteflow.monitor.enable-log</code> 默认是 false</p>
+<h1 id="ComponentScanner"><a href="#ComponentScanner" class="headerlink" title="ComponentScanner"></a>ComponentScanner</h1><p><code>ComponentScanner</code> 在项目中也被缩写为 <code>cmp</code>，主要是依赖 Spring 的 <code>BeanPostProcessor</code> 来对 <code>NodeComponent</code> 的各种实现进行发现、保存、扩展等一系列操作</p>
+<h2 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h2><p>配置类中使用了其构造方法进行实例化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ComponentScanner</span><span class="params">(LiteflowConfig liteflowConfig)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.liteflowConfig = liteflowConfig;</span><br><span class="line">    <span class="keyword">if</span> (liteflowConfig.getPrintBanner()) &#123;</span><br><span class="line">        <span class="comment">// 打印liteflow的LOGO</span></span><br><span class="line">        LOGOPrinter.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造方法中主要进行了两个操作：</p>
+<ol>
+<li><p>填充属性 liteflowConfig</p>
+</li>
+<li><p>打印 LOGO（可以看出这个是启动的第一个 bean）；LOGOPrinter 就是一个打印 LOGO 的静态方法工具类</p>
+</li>
+</ol>
+<h2 id="BeanPostProcessor"><a href="#BeanPostProcessor" class="headerlink" title="BeanPostProcessor"></a>BeanPostProcessor</h2><p>既然实现了 <code>BeanPostProcessor</code> 接口，那么重点就需要关注其对于 before 和 after 钩子方法的实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ComponentScanner</span> <span class="keyword">implements</span> <span class="title class_">BeanPostProcessor</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">postProcessBeforeInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException &#123;</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>before 方法是一个空实现，重点关注 after 方法</p>
+<h3 id="声明式组件"><a href="#声明式组件" class="headerlink" title="声明式组件"></a>声明式组件</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//判断是不是声明式组件</span></span><br><span class="line"><span class="comment">//如果是，就缓存到类属性的map中</span></span><br><span class="line"><span class="keyword">if</span> (LiteFlowProxyUtil.isDeclareCmp(bean.getClass())) &#123;</span><br><span class="line">    LOG.info(<span class="string">&quot;proxy component[&#123;&#125;] has been found&quot;</span>, beanName);</span><br><span class="line">    List&lt;NodeComponent&gt; nodeComponents = LiteFlowProxyUtil.proxy2NodeComponent(bean, beanName);</span><br><span class="line">    nodeComponents.forEach(</span><br><span class="line">            nodeComponent -&gt; &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">nodeId</span> <span class="operator">=</span> nodeComponent.getNodeId();</span><br><span class="line">                nodeId = StrUtil.isEmpty(nodeId) ? beanName : nodeId;</span><br><span class="line">                nodeComponentMap.put(nodeId, nodeComponent);</span><br><span class="line">            &#125;</span><br><span class="line">    );</span><br><span class="line">    <span class="comment">// 只有注解支持单bean多Node,所以一个直接返回</span></span><br><span class="line">    <span class="keyword">if</span> (nodeComponents.size() == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> nodeComponents.get(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如何判断是否是一个声明式组件，实现方法是 <code>LiteFlowProxyUtil.isDeclareCmp</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 判断一个bean是否是声明式组件</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">isDeclareCmp</span><span class="params">(Class&lt;?&gt; clazz)</span> &#123;</span><br><span class="line">    <span class="comment">// 查看bean里的method是否有方法标记了@LiteflowMethod标注</span></span><br><span class="line">    <span class="comment">// 这里的bean有可能是cglib加强过的class，所以要先进行个判断</span></span><br><span class="line">    Class&lt;?&gt; targetClass = getUserClass(clazz);</span><br><span class="line">    <span class="comment">// 判断是否有方法标记了@LiteflowMethod标注，有则为声明式组件</span></span><br><span class="line">    <span class="keyword">return</span> Arrays.stream(targetClass.getMethods())</span><br><span class="line">        .anyMatch(method -&gt; method.getAnnotation(LiteflowMethod.class) != <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>获取真实的用户定义类</li>
+<li>判断类中的方法是否标记了 <code>@LiteflowMethod</code></li>
+</ol>
+<h3 id="实现类组件"><a href="#实现类组件" class="headerlink" title="实现类组件"></a>实现类组件</h3><p>实现类组件有两种：</p>
+<ul>
+<li>继承自 <code>NodeComponent</code> 的逻辑组件</li>
+<li>实现自 <code>ICmpAroundAspect</code> 的切面组件</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 组件的扫描发现，扫到之后缓存到类属性map中</span></span><br><span class="line"><span class="keyword">if</span> (NodeComponent.class.isAssignableFrom(clazz)) &#123;</span><br><span class="line">    LOG.info(<span class="string">&quot;component[&#123;&#125;] has been found&quot;</span>, beanName);</span><br><span class="line">    <span class="type">NodeComponent</span> <span class="variable">nodeComponent</span> <span class="operator">=</span> (NodeComponent) bean;</span><br><span class="line">    nodeComponentMap.put(beanName, nodeComponent);</span><br><span class="line">    <span class="keyword">return</span> nodeComponent;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 组件Aop的实现类加载</span></span><br><span class="line"><span class="keyword">if</span> (ICmpAroundAspect.class.isAssignableFrom(clazz)) &#123;</span><br><span class="line">    LOG.info(<span class="string">&quot;component aspect implement[&#123;&#125;] has been found&quot;</span>, beanName);</span><br><span class="line">    cmpAroundAspect = (ICmpAroundAspect) bean;</span><br><span class="line">    <span class="keyword">return</span> cmpAroundAspect;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>扫描组件的逻辑都是这类方式：</p>
+<ol>
+<li>判断是否是其实现</li>
+<li>转型</li>
+<li>保存到对应引用或对象</li>
+</ol>
+<p>可以看到对于逻辑组件，是一个 map 结构，存在多个组件；而对于切面组件，只能存在一个（事实上这段逻辑没有对实现进行判断，也就是说如果有多个实现的 bean 会进行覆盖，测试中也发现是这样）</p>
+<h3 id="脚本组件"><a href="#脚本组件" class="headerlink" title="脚本组件"></a>脚本组件</h3><p>脚本组件也有两种：</p>
+<ul>
+<li><code>@ScriptBean</code> 修饰的脚本 bean</li>
+<li><code>@ScriptMethod</code> 修饰的脚本方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 扫描@ScriptBean修饰的类</span></span><br><span class="line"><span class="type">ScriptBean</span> <span class="variable">scriptBean</span> <span class="operator">=</span> AnnoUtil.getAnnotation(clazz, ScriptBean.class);</span><br><span class="line"><span class="keyword">if</span> (ObjectUtil.isNotNull(scriptBean)) &#123;</span><br><span class="line">    <span class="type">ScriptBeanProxy</span> <span class="variable">proxy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ScriptBeanProxy</span>(bean, clazz, scriptBean);</span><br><span class="line">    ScriptBeanManager.addScriptBean(scriptBean.value(), proxy.getProxyScriptBean());</span><br><span class="line">    <span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 扫描@ScriptMethod修饰的类</span></span><br><span class="line">List&lt;Method&gt; scriptMethods = Arrays.stream(clazz.getMethods()).filter(method -&gt; &#123;</span><br><span class="line">    <span class="type">ScriptMethod</span> <span class="variable">scriptMethod</span> <span class="operator">=</span> AnnoUtil.getAnnotation(method, ScriptMethod.class);</span><br><span class="line">    <span class="keyword">return</span> ObjectUtil.isNotNull(scriptMethod) &amp;&amp; StrUtil.isNotEmpty(scriptMethod.value());</span><br><span class="line">&#125;).collect(Collectors.toList());</span><br><span class="line"><span class="keyword">if</span> (CollUtil.isNotEmpty(scriptMethods)) &#123;</span><br><span class="line">    Map&lt;String, List&lt;Method&gt;&gt; scriptMethodsGroupByValue = CollStreamUtil.groupBy(scriptMethods, method -&gt; &#123;</span><br><span class="line">        <span class="type">ScriptMethod</span> <span class="variable">scriptMethod</span> <span class="operator">=</span> AnnoUtil.getAnnotation(method, ScriptMethod.class);</span><br><span class="line">        <span class="keyword">return</span> scriptMethod.value();</span><br><span class="line">    &#125;, Collectors.toList());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Map.Entry&lt;String, List&lt;Method&gt;&gt; entry : scriptMethodsGroupByValue.entrySet()) &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> entry.getKey();</span><br><span class="line">        List&lt;Method&gt; methods = entry.getValue();</span><br><span class="line">        <span class="type">ScriptMethodProxy</span> <span class="variable">proxy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ScriptMethodProxy</span>(bean, clazz, methods);</span><br><span class="line"></span><br><span class="line">        ScriptBeanManager.addScriptBean(key, proxy.getProxyScriptMethod());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要是将不同的脚本形式包装成代理类，转换成 bean 后放入 <code>ScriptBeanManager</code> 进行管理</p>
+<p>转换的核心在 <code>getProxyScriptMethod</code> 方法，这个会在脚本相关源码中进一步分析</p>
+<h1 id="FlowExecutor"><a href="#FlowExecutor" class="headerlink" title="FlowExecutor"></a>FlowExecutor</h1><p>流程规则主要执行器，也是一个规则表执行的主要入口</p>
+<p>这里主要关注其构造流程，初始化在后面的 <code>LiteflowExecutorInit</code> 中讲解</p>
+<h2 id="构造方法-1"><a href="#构造方法-1" class="headerlink" title="构造方法"></a>构造方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">FlowExecutor</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 设置FlowExecutor的Holder，虽然大部分地方都可以通过Spring上下文获取到，但放入Holder，还是为了某些地方能方便的取到</span></span><br><span class="line">    FlowExecutorHolder.setHolder(<span class="built_in">this</span>);</span><br><span class="line">    <span class="comment">// 初始化DataBus</span></span><br><span class="line">    DataBus.init();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">FlowExecutor</span><span class="params">(LiteflowConfig liteflowConfig)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.liteflowConfig = liteflowConfig;</span><br><span class="line">    <span class="comment">// 把liteFlowConfig设到LiteFlowGetter中去</span></span><br><span class="line">    LiteflowConfigGetter.setLiteflowConfig(liteflowConfig);</span><br><span class="line">    <span class="comment">// 设置FlowExecutor的Holder，虽然大部分地方都可以通过Spring上下文获取到，但放入Holder，还是为了某些地方能方便的取到</span></span><br><span class="line">    FlowExecutorHolder.setHolder(<span class="built_in">this</span>);</span><br><span class="line">    <span class="keyword">if</span> (BooleanUtil.isTrue(liteflowConfig.isParseOnStart())) &#123;</span><br><span class="line">        <span class="built_in">this</span>.init(<span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 初始化DataBus</span></span><br><span class="line">    DataBus.init();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于 Spring 的启动方式，使用了无参构造，随后将 liteflowConfig 用 set 方法进行赋值，带有参数的构造方法应该是为了非 Spring 环境准备的，因为在 Spring 环境中 liteflowConfig 使用了 properties 的机制，而 FlowExecutor 通过 <code>@Bean</code> 进行实例化</p>
+<p>可以看到无参构造中主要进行了 <code>DataBus.init()</code> 操作</p>
+<h2 id="DataBus"><a href="#DataBus" class="headerlink" title="DataBus"></a>DataBus</h2><p>数据 BUS，主要用来管理 Slot，用以分配和回收</p>
+<p>Slot 即整个规则流程调用时的管理者，保存了整个规则进行中的数据、组件步骤等信息，每一次调用会生成新的 Slot，并且互相隔离</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ConcurrentHashMap&lt;Integer, Slot&gt; SLOTS;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ConcurrentLinkedQueue&lt;Integer&gt; QUEUE;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 如果 SLOTS 没有初始化</span></span><br><span class="line">    <span class="keyword">if</span> (MapUtil.isEmpty(SLOTS)) &#123;</span><br><span class="line">        <span class="comment">// 获取 liteflowConfig，在 Spring 环境中这里会使用已经注入的 SpringAware 从 ApplicationContext 中获取</span></span><br><span class="line">        <span class="type">LiteflowConfig</span> <span class="variable">liteflowConfig</span> <span class="operator">=</span> LiteflowConfigGetter.get();</span><br><span class="line">        <span class="comment">// 从配置中获取 slot size 参数</span></span><br><span class="line">        currentIndexMaxValue = liteflowConfig.getSlotSize();</span><br><span class="line">        <span class="comment">// 初始化 SLOTS</span></span><br><span class="line">        SLOTS = <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="comment">// 初始化 QUEUE</span></span><br><span class="line">        QUEUE = IntStream.range(<span class="number">0</span>, currentIndexMaxValue)</span><br><span class="line">            .boxed()</span><br><span class="line">            .collect(Collectors.toCollection(ConcurrentLinkedQueue::<span class="keyword">new</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里 SLOTS 用来保存分配的序号和 Slot 对象，QUEUE 则是用来保存 index</p>
+<p>即在并发的情况下，能够分配的运行资格由 QUEUE 控制，QUEUE 会根据并发情况进行扩容，具体的资格由 0 ~ n 的 int 值来表示</p>
+<h1 id="LiteflowExecutorInit"><a href="#LiteflowExecutorInit" class="headerlink" title="LiteflowExecutorInit"></a>LiteflowExecutorInit</h1><p>执行器初始化类，主要用于在启动时执行执行器的初始化方法，避免在运行执行器时第一次初始化而耗费时间</p>
+<p>该类实例化的意义就是控制上面对象 FlowExecutor 的初始化操作，如果不在配置中设置启动初始化，则 FlowExecutor 的初始化工作会放在调用时进行 <code>@ConditionalOnProperty(prefix = &quot;liteflow&quot;, name = &quot;parse-on-start&quot;, havingValue = &quot;true&quot;)</code></p>
+<h2 id="构造方法-2"><a href="#构造方法-2" class="headerlink" title="构造方法"></a>构造方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LiteflowExecutorInit</span> <span class="keyword">implements</span> <span class="title class_">InitializingBean</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> FlowExecutor flowExecutor;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="title function_">LiteflowExecutorInit</span><span class="params">(FlowExecutor flowExecutor)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.flowExecutor = flowExecutor;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		flowExecutor.init(<span class="literal">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该类实现了 Spring 钩子 InitializingBean，afterPropertiesSet 进行 <code>FlowExecutor</code> 的初始化操作</p>
+<h2 id="FlowExecutor-的-init"><a href="#FlowExecutor-的-init" class="headerlink" title="FlowExecutor 的 init"></a>FlowExecutor 的 init</h2><p><code>LiteflowExecutorInit</code> 的实例化是为了 init <code>FlowExecutor</code>，而 <code>FlowExecutor</code> 的初始化主要目的是 parse 规则文件</p>
+<h3 id="ID-生成器"><a href="#ID-生成器" class="headerlink" title="ID 生成器"></a>ID 生成器</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 进行id生成器的初始化</span></span><br><span class="line">IdGeneratorHolder.init();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 单例创建</span></span><br><span class="line">    INSTANCE = <span class="keyword">new</span> <span class="title class_">IdGeneratorHolder</span>();</span><br><span class="line">    <span class="type">LiteflowConfig</span> <span class="variable">liteflowConfig</span> <span class="operator">=</span> LiteflowConfigGetter.get();</span><br><span class="line">    <span class="comment">// 获取配置项中的生成器类路径</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">requestIdGeneratorClass</span> <span class="operator">=</span> liteflowConfig.getRequestIdGeneratorClass();</span><br><span class="line"></span><br><span class="line">    RequestIdGenerator requestIdGenerator;</span><br><span class="line">    <span class="keyword">if</span> (StrUtil.isBlank(requestIdGeneratorClass)) &#123;</span><br><span class="line">      <span class="comment">// 默认为 DefaultRequestIdGenerator</span></span><br><span class="line">      requestIdGenerator = <span class="keyword">new</span> <span class="title class_">DefaultRequestIdGenerator</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 实例化自定义生成器</span></span><br><span class="line">      Class&lt;RequestIdGenerator&gt; idGenerateClass = (Class&lt;RequestIdGenerator&gt;) Class</span><br><span class="line">        .forName(requestIdGeneratorClass);</span><br><span class="line">      <span class="comment">// 注册进 bean 容器</span></span><br><span class="line">      requestIdGenerator = ContextAwareHolder.loadContextAware().registerBean(idGenerateClass);</span><br><span class="line">    &#125;</span><br><span class="line">    INSTANCE.setRequestIdGenerator(requestIdGenerator);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RequestIdGeneratorException</span>(e.getMessage());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>IdGeneratorHolder</code> 用于保存实例化后的 ID 生成器 <code>RequestIdGenerator</code>，是一个单例</p>
+<p>基本流程就是获取配置项上的生成器类路径，然后通过反射进行实例化，保存到 <code>IdGeneratorHolder</code> 这个角色中，如果没有进行配置则使用默认实现 <code>DefaultRequestIdGenerator</code></p>
+<p><strong>默认实现 DefaultRequestIdGenerator</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DefaultRequestIdGenerator</span> <span class="keyword">implements</span> <span class="title class_">RequestIdGenerator</span> &#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">generate</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> IdUtil.fastSimpleUUID();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>hutool 下的简单 UUID 生成</p>
+<h3 id="规则文件源路径"><a href="#规则文件源路径" class="headerlink" title="规则文件源路径"></a>规则文件源路径</h3><p>在上面流程中加载了逻辑组件，接下来就是解析规则表</p>
+<p><strong>规则路径为空</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">ruleSource</span> <span class="operator">=</span> liteflowConfig.getRuleSource();</span><br><span class="line"><span class="keyword">if</span> (StrUtil.isBlank(ruleSource)) &#123;</span><br><span class="line">   <span class="comment">// 查看有没有Parser的SPI实现</span></span><br><span class="line">   <span class="comment">// 所有的Parser的SPI实现都是以custom形式放入的，且只支持xml形式</span></span><br><span class="line">   ServiceLoader&lt;ParserClassNameSpi&gt; loader = ServiceLoader.load(ParserClassNameSpi.class);</span><br><span class="line">   Iterator&lt;ParserClassNameSpi&gt; it = loader.iterator();</span><br><span class="line">   <span class="keyword">if</span> (it.hasNext()) &#123;</span><br><span class="line">      <span class="type">ParserClassNameSpi</span> <span class="variable">parserClassNameSpi</span> <span class="operator">=</span> it.next();</span><br><span class="line">      ruleSource = <span class="string">&quot;el_xml:&quot;</span> + parserClassNameSpi.getSpiClassName();</span><br><span class="line">      liteflowConfig.setRuleSource(ruleSource);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// ruleSource为空，而且没有spi形式的扩展，那么说明真的没有ruleSource</span></span><br><span class="line">      <span class="comment">// 这种情况有可能是基于代码动态构建的</span></span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这一块逻辑是在判断当配置文件的规则源路径为空的情况，此时会使用 SPI 工具 <code>ServiceLoader</code> 去加载自定义实现的规则加载器去放置新的规则路径</p>
+<p><strong>项目文件和本地文件</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果有前缀的，则不需要再进行分割了，说明是一个整体</span></span><br><span class="line"><span class="comment">// 如果没有前缀，说明是本地文件，可能配置多个，所以需要分割</span></span><br><span class="line">List&lt;String&gt; sourceRulePathList;</span><br><span class="line"><span class="keyword">if</span> (ReUtil.contains(PREFIX_FORMAT_CONFIG_REGEX, ruleSource)) &#123;</span><br><span class="line">   sourceRulePathList = ListUtil.toList(ruleSource);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">   <span class="type">String</span> <span class="variable">afterHandleRuleSource</span> <span class="operator">=</span> ruleSource.replace(StrUtil.SPACE, StrUtil.EMPTY);</span><br><span class="line">   sourceRulePathList = ListUtil.toList(afterHandleRuleSource.split(<span class="string">&quot;,|;&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>LiteFlow 的特性可以支持从本地文件加载规则，所以在此处判断规则是来源于项目文件还是本地文件</p>
+<p>根据规则前缀 <code>String PREFIX_FORMAT_CONFIG_REGEX = &quot;xml:|json:|yml:|el_xml:|el_json:|el_yml:&quot;</code> 的正则来匹配；如果是本地文件则根据 <code>,|;</code> 来进行分割</p>
+<p>将规则文件的路径都放置在 <code>sourceRulePathList</code> 这个集合中</p>
+<h3 id="规则文件解析"><a href="#规则文件解析" class="headerlink" title="规则文件解析"></a>规则文件解析</h3><p>获取规则源后要对规则文件进行解析</p>
+<h4 id="复合规则配置"><a href="#复合规则配置" class="headerlink" title="复合规则配置"></a>复合规则配置</h4><p>这里应该是实现不同格式规则加载的特性，需要进行相关配置 <code>supportMultipleType</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">FlowParser</span> <span class="variable">parser</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">Set&lt;String&gt; parserNameSet = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line">List&lt;String&gt; rulePathList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (String path : sourceRulePathList) &#123;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">// 查找对应的解析器</span></span><br><span class="line">      parser = FlowParserProvider.lookup(path);</span><br><span class="line">      parserNameSet.add(parser.getClass().getName());</span><br><span class="line">      <span class="comment">// 替换掉前缀标识（如：xml:/json:），保留剩下的完整地址</span></span><br><span class="line">      path = ReUtil.replaceAll(path, PREFIX_FORMAT_CONFIG_REGEX, <span class="string">&quot;&quot;</span>);</span><br><span class="line">      rulePathList.add(path);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 支持多类型的配置文件，分别解析</span></span><br><span class="line">      <span class="keyword">if</span> (BooleanUtil.isTrue(liteflowConfig.isSupportMultipleType())) &#123;</span><br><span class="line">         <span class="comment">// 解析文件</span></span><br><span class="line">         parser.parseMain(ListUtil.toList(path));</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">catch</span> (CyclicDependencyException e) &#123;</span><br><span class="line">      LOG.error(e.getMessage());</span><br><span class="line">      <span class="keyword">throw</span> e;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      <span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;init flow executor cause error for path &#123;&#125;,reason:&#123;&#125;&quot;</span>, path,</span><br><span class="line">            e.getMessage());</span><br><span class="line">      LOG.error(e.getMessage(), e);</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">FlowExecutorNotInitException</span>(errorMsg);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>流程如下：</p>
+<ol>
+<li>遍历规则路径，查找对应的解析器</li>
+<li>记录解析器类名（主要是用于后续非多类型解析器判断使用）</li>
+<li>路径放入规则路径集合</li>
+<li>如果支持多类型配置文件解析，则直接进行解析 <code>parser.parseMain(ListUtil.toList(path))</code></li>
+<li>catch 异常，打印日志</li>
+</ol>
+<h4 id="单类型配置"><a href="#单类型配置" class="headerlink" title="单类型配置"></a>单类型配置</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单类型的配置文件，需要一起解析</span></span><br><span class="line"><span class="keyword">if</span> (BooleanUtil.isFalse(liteflowConfig.isSupportMultipleType())) &#123;</span><br><span class="line">   <span class="comment">// 检查Parser是否只有一个，因为多个不同的parser会造成子流程的混乱</span></span><br><span class="line">   <span class="keyword">if</span> (parserNameSet.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> <span class="string">&quot;cannot have multiple different parsers&quot;</span>;</span><br><span class="line">      LOG.error(errorMsg);</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">MultipleParsersException</span>(errorMsg);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 进行多个配置文件的一起解析</span></span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (parser != <span class="literal">null</span>) &#123;</span><br><span class="line">         <span class="comment">// 解析文件</span></span><br><span class="line">         parser.parseMain(rulePathList);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConfigErrorException</span>(<span class="string">&quot;parse error, please check liteflow config property&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">catch</span> (CyclicDependencyException e) &#123;</span><br><span class="line">      LOG.error(e.getMessage(), e);</span><br><span class="line">      LOG.error(e.getMessage());</span><br><span class="line">      <span class="keyword">throw</span> e;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">catch</span> (ChainDuplicateException e) &#123;</span><br><span class="line">      LOG.error(e.getMessage(), e);</span><br><span class="line">      <span class="keyword">throw</span> e;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      <span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;init flow executor cause error for path &#123;&#125;,reason: &#123;&#125;&quot;</span>, rulePathList,</span><br><span class="line">            e.getMessage());</span><br><span class="line">      LOG.error(e.getMessage(), e);</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">FlowExecutorNotInitException</span>(errorMsg);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>单类型的流程主要针对解析器数量进行了判断，也是使用 <code>parser.parseMain(ListUtil.toList(path))</code> 进入解析流程</p>
+<h4 id="解析器"><a href="#解析器" class="headerlink" title="解析器"></a>解析器</h4>
+
+<p>这里主要先来看 <code>LocalXmlFlowELParser</code> 的实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LocalXmlFlowELParser</span> <span class="keyword">extends</span> <span class="title class_">XmlFlowELParser</span> &#123;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">parseMain</span><span class="params">(List&lt;String&gt; pathList)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">      List&lt;String&gt; contentList = PathContentParserHolder.loadContextAware().parseContent(pathList);</span><br><span class="line">      parse(contentList);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>PathContentParserHolder.loadContextAware().parseContent(pathList)</code> 的操作用于获取文件中的内容，即规则的 EL 表达式等（就是读文件，不过会根据不同环境选择不同的实现）</p>
+<p>最后执行 <code>BaseXmlFlowParser</code> 抽象类提供的 <code>parse</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">parse</span><span class="params">(List&lt;String&gt; contentList)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">   <span class="keyword">if</span> (CollectionUtil.isEmpty(contentList)) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   List&lt;Document&gt; documentList = ListUtil.toList();</span><br><span class="line">   <span class="keyword">for</span> (String content : contentList) &#123;</span><br><span class="line">      <span class="comment">// 解析 XML org.dom4j.DocumentHelper，转换为 Document 对象</span></span><br><span class="line">      <span class="type">Document</span> <span class="variable">document</span> <span class="operator">=</span> DocumentHelper.parseText(content);</span><br><span class="line">      documentList.add(document);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 解析 node</span></span><br><span class="line">   ParserHelper.parseNodeDocument(documentList);</span><br><span class="line">   <span class="comment">// 解析 chain</span></span><br><span class="line">   ParserHelper.parseChainDocument(documentList, CHAIN_NAME_SET, <span class="built_in">this</span>::parseOneChain);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="ParserHelper"><a href="#ParserHelper" class="headerlink" title="ParserHelper"></a>ParserHelper</h4><p>以 <code>XML</code> 格式的规则表达为例</p>
+<p><strong>解析 node</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * xml 形式的主要解析过程</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> documentList documentList</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">parseNodeDocument</span><span class="params">(List&lt;Document&gt; documentList)</span> &#123;</span><br><span class="line">   <span class="keyword">for</span> (Document document : documentList) &#123;</span><br><span class="line">      <span class="comment">// 获取 root 标签</span></span><br><span class="line">      <span class="type">Element</span> <span class="variable">rootElement</span> <span class="operator">=</span> document.getRootElement();</span><br><span class="line">      <span class="comment">// 获取 nodes 标签</span></span><br><span class="line">      <span class="type">Element</span> <span class="variable">nodesElement</span> <span class="operator">=</span> rootElement.element(NODES);</span><br><span class="line">      <span class="comment">// 当存在&lt;nodes&gt;节点定义时，解析node节点</span></span><br><span class="line">      <span class="keyword">if</span> (ObjectUtil.isNotNull(nodesElement)) &#123;</span><br><span class="line">         List&lt;Element&gt; nodeList = nodesElement.elements(NODE);</span><br><span class="line">         String id, name, clazz, type, script, file, language;</span><br><span class="line">         <span class="keyword">for</span> (Element e : nodeList) &#123;</span><br><span class="line">            id = e.attributeValue(ID);</span><br><span class="line">            name = e.attributeValue(NAME);</span><br><span class="line">            clazz = e.attributeValue(_CLASS);</span><br><span class="line">            type = e.attributeValue(TYPE);</span><br><span class="line">            script = e.getText();</span><br><span class="line">            file = e.attributeValue(FILE);</span><br><span class="line">            language = e.attributeValue(LANGUAGE);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 构建 node</span></span><br><span class="line">            <span class="type">NodePropBean</span> <span class="variable">nodePropBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">NodePropBean</span>().setId(id)</span><br><span class="line">               .setName(name)</span><br><span class="line">               .setClazz(clazz)</span><br><span class="line">               .setScript(script)</span><br><span class="line">               .setType(type)</span><br><span class="line">               .setFile(file)</span><br><span class="line">               .setLanguage(language);</span><br><span class="line"></span><br><span class="line">            ParserHelper.buildNode(nodePropBean);</span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>从配置的 <code>XML</code> 规则中解析标签</li>
+<li>找到 <code>nodes</code> 的标签；name 常量定义在 <code>ChainConstant.NODES</code></li>
+<li>遍历 <code>nodes</code> 下面的每一个 <code>node</code> 标签，构建 <code>NodePropBean</code> node 对象</li>
+<li><code>ParserHelper.buildNode(nodePropBean)</code> 开始解析节点，解析完成后会放置在 <code>FlowBus</code> 中（解析过程中还在分辨是普通节点还是脚本节点，这个放到脚本相关源码中再看）</li>
+</ol>
+<p><strong>解析 chain</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">parseChainDocument</span><span class="params">(List&lt;Document&gt; documentList, Set&lt;String&gt; chainNameSet,</span></span><br><span class="line"><span class="params">      Consumer&lt;Element&gt; parseOneChainConsumer)</span> &#123;</span><br><span class="line">   <span class="comment">// 先在元数据里放上chain</span></span><br><span class="line">   <span class="comment">// 先放有一个好处，可以在parse的时候先映射到FlowBus的chainMap，然后再去解析</span></span><br><span class="line">   <span class="comment">// 这样就不用去像之前的版本那样回归调用</span></span><br><span class="line">   <span class="comment">// 同时也解决了不能循环依赖的问题</span></span><br><span class="line">   documentList.forEach(document -&gt; &#123;</span><br><span class="line">      <span class="comment">// 解析chain节点</span></span><br><span class="line">      List&lt;Element&gt; chainList = document.getRootElement().elements(CHAIN);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 先在元数据里放上chain</span></span><br><span class="line">      chainList.forEach(e -&gt; &#123;</span><br><span class="line">         <span class="comment">// 校验加载的 chainName 是否有重复的</span></span><br><span class="line">         <span class="comment">// TODO 这里是否有个问题，当混合格式加载的时候，2个同名的Chain在不同的文件里，就不行了</span></span><br><span class="line">         <span class="type">String</span> <span class="variable">chainName</span> <span class="operator">=</span> Optional.ofNullable(e.attributeValue(ID)).orElse(e.attributeValue(NAME));</span><br><span class="line">         <span class="keyword">if</span> (!chainNameSet.add(chainName)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ChainDuplicateException</span>(String.format(<span class="string">&quot;[chain name duplicate] chainName=%s&quot;</span>, chainName));</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         FlowBus.addChain(chainName);</span><br><span class="line">      &#125;);</span><br><span class="line">   &#125;);</span><br><span class="line">   <span class="comment">// 清空</span></span><br><span class="line">   chainNameSet.clear();</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 解析每一个chain</span></span><br><span class="line">   <span class="keyword">for</span> (Document document : documentList) &#123;</span><br><span class="line">      <span class="type">Element</span> <span class="variable">rootElement</span> <span class="operator">=</span> document.getRootElement();</span><br><span class="line">      List&lt;Element&gt; chainList = rootElement.elements(CHAIN);</span><br><span class="line">      chainList.forEach(parseOneChainConsumer);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>从 <code>XML</code> 规则中解析 <code>chain</code> 标签</li>
+<li>遍历标签处理 chain 数据</li>
+<li>获取 chainName，规则为如果没有配置独立的 id 就使用 name</li>
+<li>加入 chainNameSet，如果 name 重复则抛出异常（这种方式无法处理多文件的重复问题，我理解带来的影响就是会导致解析的 chain 被覆盖）</li>
+<li>先将 name 加入元数据管理类 <code>FlowBus</code>；这个流程是预装载，其元数据管理中的 map value 是占位对象</li>
+<li>遍历 chain 标签，调用传入的 <code>Consumer</code> 方法开始解析；<code>Consumer</code> 方法为 <code>Parser</code> 实现的 <code>parseOneChain</code> 方法</li>
+</ol>
+<h4 id="EL-规则组装器"><a href="#EL-规则组装器" class="headerlink" title="EL 规则组装器"></a>EL 规则组装器</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">parseOneChainEl</span><span class="params">(JsonNode chainNode)</span> &#123;</span><br><span class="line">   <span class="comment">// 构建chainBuilder</span></span><br><span class="line">   <span class="type">String</span> <span class="variable">chainId</span> <span class="operator">=</span> Optional.ofNullable(chainNode.get(ID)).orElse(chainNode.get(NAME)).textValue();</span><br><span class="line">   <span class="type">String</span> <span class="variable">el</span> <span class="operator">=</span> chainNode.get(VALUE).textValue();</span><br><span class="line">   <span class="type">LiteFlowChainELBuilder</span> <span class="variable">chainELBuilder</span> <span class="operator">=</span> LiteFlowChainELBuilder.createChain().setChainId(chainId);</span><br><span class="line">   chainELBuilder.setEL(el).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用 <code>parseOneChainEl</code> 后主要是获取 el 规则，创建 <code>LiteFlowChainELBuilder</code> 对象后在 <code>setEL</code> 的步骤中会进行 EL 规则的解析，最终返回 <code>List&lt;Condition&gt; conditionList</code></p>
+<p>规则的解析使用了阿里开源的 QLExpress，后面会单独一篇来讲解</p>
+<p>基本上到这里，相关的执行组件就已经初始化完毕了</p>
+<p>后续具体的执行就是获取 <code>Chain</code> 对象的 <code>conditionList</code>，遍历 list 进行执行</p>
+<h1 id="MonitorBus"><a href="#MonitorBus" class="headerlink" title="MonitorBus"></a>MonitorBus</h1><p>监控类元数据，打印执行器类</p>
+<p>需要配置 condition 参数 <code>monitor.enable-log</code></p>
+<h2 id="构造方法-3"><a href="#构造方法-3" class="headerlink" title="构造方法"></a>构造方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定时线程池</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">ScheduledExecutorService</span> <span class="variable">printLogScheduler</span> <span class="operator">=</span> Executors.newScheduledThreadPool(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">MonitorBus</span><span class="params">(LiteflowConfig liteflowConfig)</span> &#123;</span><br><span class="line">   <span class="built_in">this</span>.liteflowConfig = liteflowConfig;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (BooleanUtil.isTrue(liteflowConfig.getEnableLog())) &#123;</span><br><span class="line">      <span class="built_in">this</span>.printLogScheduler.scheduleAtFixedRate(<span class="keyword">new</span> <span class="title class_">MonitorTimeTask</span>(<span class="built_in">this</span>), liteflowConfig.getDelay(),</span><br><span class="line">            liteflowConfig.getPeriod(), TimeUnit.MILLISECONDS);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>向定时线程池设置任务，任务为 <code>new MonitorTimeTask(this)</code>，是一个 <code>TimerTask</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MonitorTimeTask</span> <span class="keyword">extends</span> <span class="title class_">TimerTask</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> MonitorBus monitorBus;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="title function_">MonitorTimeTask</span><span class="params">(MonitorBus monitorBus)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.monitorBus = monitorBus;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">		monitorBus.printStatistics();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>run</code> 方法为调用 <code>MonitorBus.printStatistics</code></p>
+<h2 id="打印统计数据"><a href="#打印统计数据" class="headerlink" title="打印统计数据"></a>打印统计数据</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentHashMap&lt;String, BoundedPriorityBlockingQueue&lt;CompStatistics&gt;&gt; statisticsMap = <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">printStatistics</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">      Map&lt;String, BigDecimal&gt; compAverageTimeSpent = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, BigDecimal&gt;();</span><br><span class="line"></span><br><span class="line">      <span class="keyword">for</span> (Entry&lt;String, BoundedPriorityBlockingQueue&lt;CompStatistics&gt;&gt; entry : statisticsMap.entrySet()) &#123;</span><br><span class="line">         <span class="type">long</span> <span class="variable">totalTimeSpent</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">         <span class="keyword">for</span> (CompStatistics statistics : entry.getValue()) &#123;</span><br><span class="line">            totalTimeSpent += statistics.getTimeSpent();</span><br><span class="line">         &#125;</span><br><span class="line">         compAverageTimeSpent.put(entry.getKey(), <span class="keyword">new</span> <span class="title class_">BigDecimal</span>(totalTimeSpent)</span><br><span class="line">            .divide(<span class="keyword">new</span> <span class="title class_">BigDecimal</span>(entry.getValue().size()), <span class="number">2</span>, RoundingMode.HALF_UP));</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      List&lt;Entry&lt;String, BigDecimal&gt;&gt; compAverageTimeSpentEntryList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(</span><br><span class="line">            compAverageTimeSpent.entrySet());</span><br><span class="line"></span><br><span class="line">      Collections.sort(compAverageTimeSpentEntryList, (o1, o2) -&gt; o2.getValue().compareTo(o1.getValue()));</span><br><span class="line"></span><br><span class="line">      <span class="type">StringBuilder</span> <span class="variable">logStr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">      logStr.append(<span class="string">&quot;以下为LiteFlow中间件统计信息：\n&quot;</span>);</span><br><span class="line">      logStr.append(<span class="string">&quot;======================================================================================\n&quot;</span>);</span><br><span class="line">      logStr.append(<span class="string">&quot;===================================SLOT INFO==========================================\n&quot;</span>);</span><br><span class="line">      logStr.append(MessageFormat.format(<span class="string">&quot;SLOT TOTAL SIZE : &#123;0&#125;\n&quot;</span>, liteflowConfig.getSlotSize()));</span><br><span class="line">      logStr.append(MessageFormat.format(<span class="string">&quot;SLOT OCCUPY COUNT : &#123;0&#125;\n&quot;</span>, DataBus.OCCUPY_COUNT));</span><br><span class="line">      logStr.append(<span class="string">&quot;===============================TIME AVERAGE SPENT=====================================\n&quot;</span>);</span><br><span class="line">      <span class="keyword">for</span> (Entry&lt;String, BigDecimal&gt; entry : compAverageTimeSpentEntryList) &#123;</span><br><span class="line">         logStr.append(MessageFormat.format(<span class="string">&quot;COMPONENT[&#123;0&#125;] AVERAGE TIME SPENT : &#123;1&#125;\n&quot;</span>, entry.getKey(),</span><br><span class="line">               entry.getValue()));</span><br><span class="line">      &#125;</span><br><span class="line">      logStr.append(<span class="string">&quot;======================================================================================\n&quot;</span>);</span><br><span class="line">      LOG.info(logStr.toString());</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      LOG.error(<span class="string">&quot;print statistics cause error&quot;</span>, e);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>statisticsMap</code> 是用来保存组件执行时上报的数据，在 <code>printStatistics</code> 方法中对数据进行整理和打印</p>
+<p>主要数据：</p>
+<ul>
+<li>slot 槽位现在的大小（用来衡量最大并发度）</li>
+<li>slot 当前的占用数量（展示当前并发度）</li>
+<li>各个组件的平均耗时</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LiteFlow/" rel="tag"># LiteFlow</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81/" rel="tag"># 源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Maison%20Premiere%E2%80%99s%20Tom%20Collins.html" rel="prev" title="RECIPES - Maison Premiere’s Tom Collins">
+      <i class="fa fa-chevron-left"></i> RECIPES - Maison Premiere’s Tom Collins
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Hexo%20%E9%83%A8%E7%BD%B2%20Github%20Pages%20404%20%E9%97%AE%E9%A2%98.html" rel="next" title="Hexo 部署 Github Pages 404 问题">
+      Hexo 部署 Github Pages 404 问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">1.</span> <span class="nav-text">自动装配</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LiteflowPropertyAutoConfiguration"><span class="nav-number">1.1.</span> <span class="nav-text">LiteflowPropertyAutoConfiguration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LiteflowMainAutoConfiguration"><span class="nav-number">1.2.</span> <span class="nav-text">LiteflowMainAutoConfiguration</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ComponentScanner"><span class="nav-number">2.</span> <span class="nav-text">ComponentScanner</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BeanPostProcessor"><span class="nav-number">2.2.</span> <span class="nav-text">BeanPostProcessor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E5%BC%8F%E7%BB%84%E4%BB%B6"><span class="nav-number">2.2.1.</span> <span class="nav-text">声明式组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%B1%BB%E7%BB%84%E4%BB%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">实现类组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC%E7%BB%84%E4%BB%B6"><span class="nav-number">2.2.3.</span> <span class="nav-text">脚本组件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FlowExecutor"><span class="nav-number">3.</span> <span class="nav-text">FlowExecutor</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95-1"><span class="nav-number">3.1.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DataBus"><span class="nav-number">3.2.</span> <span class="nav-text">DataBus</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LiteflowExecutorInit"><span class="nav-number">4.</span> <span class="nav-text">LiteflowExecutorInit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95-2"><span class="nav-number">4.1.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FlowExecutor-%E7%9A%84-init"><span class="nav-number">4.2.</span> <span class="nav-text">FlowExecutor 的 init</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ID-%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">4.2.1.</span> <span class="nav-text">ID 生成器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E6%96%87%E4%BB%B6%E6%BA%90%E8%B7%AF%E5%BE%84"><span class="nav-number">4.2.2.</span> <span class="nav-text">规则文件源路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90"><span class="nav-number">4.2.3.</span> <span class="nav-text">规则文件解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%8D%E5%90%88%E8%A7%84%E5%88%99%E9%85%8D%E7%BD%AE"><span class="nav-number">4.2.3.1.</span> <span class="nav-text">复合规则配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E7%B1%BB%E5%9E%8B%E9%85%8D%E7%BD%AE"><span class="nav-number">4.2.3.2.</span> <span class="nav-text">单类型配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">4.2.3.3.</span> <span class="nav-text">解析器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ParserHelper"><span class="nav-number">4.2.3.4.</span> <span class="nav-text">ParserHelper</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EL-%E8%A7%84%E5%88%99%E7%BB%84%E8%A3%85%E5%99%A8"><span class="nav-number">4.2.3.5.</span> <span class="nav-text">EL 规则组装器</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MonitorBus"><span class="nav-number">5.</span> <span class="nav-text">MonitorBus</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95-3"><span class="nav-number">5.1.</span> <span class="nav-text">构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE"><span class="nav-number">5.2.</span> <span class="nav-text">打印统计数据</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kuga.fun" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>

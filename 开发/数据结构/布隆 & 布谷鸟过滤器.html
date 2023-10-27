@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="背景特征 or 全部 在实际需求中，往往存在类似需求：  黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据 推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送 缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透  最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="布隆 &amp; 布谷鸟过滤器">
+<meta property="og:url" content="http://example.com/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="背景特征 or 全部 在实际需求中，往往存在类似需求：  黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据 推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送 缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透  最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-12-10T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>布隆 & 布谷鸟过滤器 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          布隆 & 布谷鸟过滤器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-12-11 00:00:00" itemprop="dateCreated datePublished" datetime="2022-12-11T00:00:00+08:00">2022-12-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p><strong>特征 or 全部</strong></p>
+<p>在实际需求中，往往存在类似需求：</p>
+<ul>
+<li>黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据</li>
+<li>推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送</li>
+<li>缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透</li>
+</ul>
+<p>最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中</p>
+<p>这样相当于把所有的数据都进行了一遍存储，如果需要的只是过滤功能，而不需要将数据全部存储下来，只需要存储数据的特征值，就可以节省大量的空间</p>
+<p>所以出现了布隆过滤器等概率型结构（probabilistic data structure），可以在使用很少空间的情况下对数据进行过滤操作，当然通过特征值进行存储可能会有以下问题：</p>
+<ul>
+<li>误判率</li>
+<li>扩缩容依然需要数据全集（数据量不匹配会导致空间浪费或误判率上升）</li>
+<li>删除操作难以实现</li>
+</ul>
+<p>需要在技术和业务两方面进行取舍</p>
+<h1 id="布隆"><a href="#布隆" class="headerlink" title="布隆"></a>布隆</h1><p>布隆过滤器（bloom filter）由一串很长的二进制向量组成（位图 bitmap），可以将其看成一个二进制数组</p>
+<p>当一个元素进入时，不是存储该元素本身，而是通过多个哈希算法，计算出该元素的多个下标，随后在位图中将对应的下标打上标记（bit 位置为 1），当需要判断是否存在某个元素时，也是进行哈希后，判断其需要的下标是否全为 1</p>
+<p>可以看出，布隆过滤器带有一定的误判率，如果很多元素的下标正好复合了某一个元素的位置，那么该元素就会被误判存在：</p>
+<ul>
+<li>说存在但不一定存在</li>
+<li>说不存在一定不存在</li>
+</ul>
+<p>图示模拟流程：<a target="_blank" rel="noopener" href="https://www.jasondavies.com/bloomfilter/">https://www.jasondavies.com/bloomfilter/</a></p>
+<p><strong>参数选择</strong></p>
+<p>也可以看出布隆过滤器的误判率和以下参数相关：</p>
+<ul>
+<li>过滤器中位图的位数</li>
+<li>哈希算法的数量和质量</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://hur.st/bloomfilter/?n=400000000&p=0.01&m=&k=">Bloom filter calculator (hur.st)</a> 可以进行布隆过滤器参数的预估</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数值</th>
+<th align="center">含义</th>
+<th align="center">公式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">n</td>
+<td align="center">过滤器中的元素数量</td>
+<td align="center"><code>n = ceil(m / (-k / log(1 - exp(log(p) / k))))</code></td>
+</tr>
+<tr>
+<td align="center">p</td>
+<td align="center">误判率</td>
+<td align="center"><code>p = pow(1 - exp(-k / (m / n)), k)</code></td>
+</tr>
+<tr>
+<td align="center">m</td>
+<td align="center">过滤器使用的空间大小</td>
+<td align="center"><code>m = ceil((n * log(p)) / log(1 / pow(2, log(2))));</code></td>
+</tr>
+<tr>
+<td align="center">k</td>
+<td align="center">哈希算法数量</td>
+<td align="center"><code>k = round((m / n) * log(2));</code></td>
+</tr>
+</tbody></table>
+<p><strong>无法删除</strong></p>
+<p>布隆过滤器是无法删除元素的，因为一旦存储特征后，删除会导致连带其他元素的标记一起删除</p>
+<p>为了能让布隆过滤器支持删除操作，衍生出了变体结构，计数布隆过滤器（counting bloom filter）</p>
+<p><strong>实际应用</strong></p>
+<p><a target="_blank" rel="noopener" href="https://toutiao.io/posts/mtrvsx/preview">Now 直播发现页短视频瀑布流优化 - 开发者头条 (toutiao.io)</a></p>
+<h1 id="计数布隆"><a href="#计数布隆" class="headerlink" title="计数布隆"></a>计数布隆</h1><p>使用一个 counter 数组来替代之前的位图，在进行标记时可以记录一共标记了多少次，显而易见空间占用会扩大不少</p>
+<p>在进行判断时 <code>counter &gt; 0</code> 即表示了之前的 <code>index == 1</code> 操作</p>
+<p>计数器也无法避免误删，只是能大幅度降低误删概率</p>
+<h1 id="布谷鸟"><a href="#布谷鸟" class="headerlink" title="布谷鸟"></a>布谷鸟</h1><p>布谷鸟过滤器是布隆过滤器的升级，有如下优势：</p>
+<ul>
+<li>支持动态的新增和删除元素</li>
+<li>提供了比传统布隆过滤器更高的查找性能，即使在接近满空间的情况下（访问内存次数低）</li>
+<li>要求一定误判率下，空间占用一般更小</li>
+</ul>
+<p><strong>布谷鸟 hash</strong></p>
+<blockquote>
+<p>当发现鸟蛋占用了自己的位置时，就把它推走</p>
+</blockquote>
+<p>假设有两个 hash 表，记为 T1 和 T2</p>
+<p>同时有两套 hash 算法，记为 H1 和 H2</p>
+<p>添加元素流程如下：</p>
+<ol>
+<li>根据 H1 计算其在 T1 的位置下标</li>
+<li>如果该位置没有标记则进行标记，如果标记了则继续</li>
+<li>根据 H2 计算其在 T2 的位置下标</li>
+<li>如果该位置没有标记则进行标记，如果标记了则说明所有位置都已经被占用，随机踢出 T1 或者 T2 上该下标的元素，将自己放入下标</li>
+<li>被踢出的元素重复上述流程查找自己的位置</li>
+<li>经过 <code>MaxLoop </code> 阈值后还存在元素没有合适的位置，则元素添加失败，说明需要进行扩容了</li>
+</ol>
+<p>图示模拟流程：<a target="_blank" rel="noopener" href="http://www.lkozma.net/cuckoo_hashing_visualization/">http://www.lkozma.net/cuckoo_hashing_visualization/</a></p>
+<p><strong>过滤器的 hash</strong></p>
+<p>布谷鸟过滤器的 hash 是对布谷鸟 hash 的改进</p>
+<p>布谷鸟 hash 中，哈希表存储的是元素的原始值 x，下标 p1 p2 的计算公式为</p>
+<ul>
+<li><code>p1 = hash1(x) % L</code></li>
+<li><code>p2 = hash2(x) % L</code></li>
+</ul>
+<p>而布谷鸟过滤器对于下标的计算为：</p>
+<ul>
+<li><code>h1(x) = hash(x)</code></li>
+<li><code>h2(x) = h1(x) ⊕ hash(x&#39;s fingerprint)</code></li>
+</ul>
+<p>我们可以看到，计算 h2（位置 2）时，对 x 的 fingerprint 进行了一个 hash 计算，公式中的异或操作获得了一个重要的特性：位置 h2 可以通过位置 h1 和 h1 中存储的 fingerprint 计算出来，即当元素被踢出时，根据当前位置和元素的指纹，就可以得到元素的下一个位置</p>
+<p><strong>异或与对偶</strong></p>
+<p>由 h2 的计算公式 <code>h2(x) = h1(x) ⊕ hash(x&#39;s fingerprint)</code>，两个位置具有对偶性</p>
+<p>只要保证 <code>hash(x&#39;s fingerprint) !=0</code>，那么就可以确保 <code>h2 != h1</code>，也就可以确保，不会出现自己踢自己的死循环问题</p>
+<p>为什么需要对指纹进行哈希运算呢？因为如果指纹的长度是 8 bit，那么异或操作只会改变当前位置  h1(x)  的低 8 位，高位不会改变，就算低 8 位完全不一样，最后计算出来的位置最远也只有 256 位，为了散列更充分，所以对指纹先进行一次哈希操作</p>
+<p><strong>指纹</strong></p>
+<p>指纹其实就是元数据的特征值，进行哈希后取的固定 n 个 bit 位</p>
+<p><strong>空间利用率</strong></p>
+<p>由于指纹是对数据进行哈希运算后固定的 bit 位，所以必然会出现误判的情况</p>
+<p>在完美的情况下，也就是没有发生哈希冲突之前，它的空间利用率最高只有 50%</p>
+<p>如果对数组进行展开，当一个位置可以存放多个数据时，空间利用率会提升；如果一个下标可以放 2、4、8 个元素的时候，空间利用率就会飙升到 84%、95%、98%</p>
+<p><strong>删除的限制</strong></p>
+<p>如果需要布谷鸟过滤器支持删除，它必须知道一个数据插入过多少次（否则也会误删）</p>
+<p>并且不能让同一个数据插入 <code>kb+1</code> 次；个人认为如果插入超过了 <code>kb+1</code> 次，就会导致插入一定失败</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>布谷鸟的优缺点：</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>访问内存次数低</li>
+<li>Hash 函数计算简单</li>
+<li>支持删除操作</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>内存空间不联系，CPU 消耗大</li>
+<li>容易出现装填循环问题，空间占用越多碰撞越多，插入效率越低</li>
+<li>查询误判率</li>
+<li>删除操作限制多，会影响插入性能和误删除</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf">https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/348865590">布隆，牛逼！布谷鸟，牛逼！ - 知乎 (zhihu.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903861749055502">布隆过滤器过时了，未来属于布谷鸟过滤器？ - 掘金 (juejin.cn)</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/462815302">布隆过滤器与布谷鸟过滤器 - 知乎 (zhihu.com)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%AE%A1%E9%81%93%E6%A8%A1%E5%BC%8F%20-%20Pipeline.html" rel="prev" title="管道模式 - Pipeline">
+      <i class="fa fa-chevron-left"></i> 管道模式 - Pipeline
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html" rel="next" title="桥接模式 - Bridge">
+      桥接模式 - Bridge <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%83%E9%9A%86"><span class="nav-number">2.</span> <span class="nav-text">布隆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E5%B8%83%E9%9A%86"><span class="nav-number">3.</span> <span class="nav-text">计数布隆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%83%E8%B0%B7%E9%B8%9F"><span class="nav-number">4.</span> <span class="nav-text">布谷鸟</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kuga.fun" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>

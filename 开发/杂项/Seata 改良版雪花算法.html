@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="雪花算法雪花算法（Snowflake Algorithm）是一种用于生成唯一标识符（Unique Identifier）的算法 它最初由 Twitter 开发并开源，用于在分布式系统中生成全局唯一 ID   雪花算法的原理就是生成一个的 64 位比特位的 long 类型的 ID">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Seata 改良版雪花算法">
+<meta property="og:url" content="http://example.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Seata%20%E6%94%B9%E8%89%AF%E7%89%88%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="雪花算法雪花算法（Snowflake Algorithm）是一种用于生成唯一标识符（Unique Identifier）的算法 它最初由 Twitter 开发并开源，用于在分布式系统中生成全局唯一 ID   雪花算法的原理就是生成一个的 64 位比特位的 long 类型的 ID">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-10-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-23T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Seata%20%E6%94%B9%E8%89%AF%E7%89%88%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Seata 改良版雪花算法 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Seata%20%E6%94%B9%E8%89%AF%E7%89%88%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Seata 改良版雪花算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-10-24 00:00:00" itemprop="dateCreated datePublished" datetime="2023-10-24T00:00:00+08:00">2023-10-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/" itemprop="url" rel="index"><span itemprop="name">杂项</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h1><p>雪花算法（Snowflake Algorithm）是一种用于生成唯一标识符（Unique Identifier）的算法</p>
+<p>它最初由 Twitter 开发并开源，用于在分布式系统中生成全局唯一 ID</p>
+<br>
+
+<p>雪花算法的原理就是生成一个的 64 位比特位的 long 类型的 ID</p>
+<ul>
+<li>符号位（1 位）：固定固定为 1，因为 ID 都为正数</li>
+<li>时间戳（41 位）：毫秒级别的时间戳，大约可以使用 69 年（事实上很多实现会减去一个 offset）</li>
+<li>机器码（10 位）：分布式服务 ID，2 ^ 10 &#x3D; 1024 台机器</li>
+<li>序列号（12 位）：同一时间戳、同一机器下，通过序列号自增进行 ID 生成，即同一毫秒下可以生成 2 ^ 12 &#x3D; 4096 个不同的 ID</li>
+</ul>
+<br>
+
+<p>64 位如下所示：</p>
+<p><span style="color: green;">0</span> - <span style="color: red;">00000000000000000000000000000000000000000</span> - <span style="color: blue;">0000000000</span> - <span style="color: orange;">000000000000</span></p>
+<ul>
+<li><span style="color: green;">符号位（1 位）</span></li>
+<li><span style="color: red;">时间戳（41 位）</span></li>
+<li><span style="color: blue;">机器码（10 位）</span></li>
+<li><span style="color: orange;">序列号（12 位）</span></li>
+</ul>
+<h1 id="Seata-改良"><a href="#Seata-改良" class="headerlink" title="Seata 改良"></a>Seata 改良</h1><p>在老版 Seata（1.4 以前），内置的 UUID 生成器的实现基于标准版的雪花算法</p>
+<p>在后续的更新中 Seate 对标准雪花算法进行了改良</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>Seata 认为标准的雪花算法有以下几个缺点</p>
+<ul>
+<li><strong>时钟敏感</strong>：因为 ID 生成总是和当前操作系统的时间戳绑定的（利用了时间的单调递增性），如果服务发生了时钟回拨，生成的 ID 就会重复；当然一些实现会避免该问题，方案一般是记录上次生成 ID 时的时间戳，如果发现当前时间小于记录时间，则说明发生了时钟回拨，则拒绝服务<br>意味着出现时钟回拨，会导致服务在一定时间内不可用</li>
+<li><strong>突发性能有限</strong>：序列号的位长度为 12，也就是同一 ms 并发都必须低于 4096；一些实现会自旋等待，当差距较大时则抛出限流异常等拒绝服务</li>
+</ul>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>改进的核心思想是<strong>解除与操作系统时间戳的时刻绑定</strong></p>
+<p>生成器只在初始化时获取了系统当前的时间戳，作为初始时间戳， 但之后就不再与系统时间戳保持同步了；随后 ID 的递增，只递增序列号；当序列号溢出时，进位到时间戳位（低 12 位满），序列号重新归零</p>
+<p>为了方便这种溢出进位，Seata 调整了 64 位 ID 的位分配策略</p>
+<p><span style="color: green;">0</span>  - <span style="color: blue;">0000000000</span> - <span style="color: red;">00000000000000000000000000000000000000000</span> - <span style="color: orange;">000000000000</span></p>
+<ul>
+<li><span style="color: green;">符号位（1 位）</span></li>
+<li><span style="color: blue;">机器码（10 位）</span></li>
+<li><span style="color: red;">时间戳（41 位）</span></li>
+<li><span style="color: orange;">序列号（12 位）</span></li>
+</ul>
+<hr>
+<p>这样时间戳和序列号在内存上是连在一块的，在实现上就很容易用一个 <code>AtomicLong</code> 来同时记录块数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * timestamp and sequence mix in one Long</span></span><br><span class="line"><span class="comment"> * highest 11 bit: not used</span></span><br><span class="line"><span class="comment"> * middle  41 bit: timestamp</span></span><br><span class="line"><span class="comment"> * lowest  12 bit: sequence</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> AtomicLong timestampAndSequence;</span><br></pre></td></tr></table></figure>
+
+<p>高 11 位（符号位 + 机器码）在服务启动时就已经确定，服务运行过程中也不会变化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * business meaning: machine ID (0 ~ 1023)</span></span><br><span class="line"><span class="comment"> * actual layout in memory:</span></span><br><span class="line"><span class="comment"> * highest 1 bit: 0</span></span><br><span class="line"><span class="comment"> * middle 10 bit: workerId</span></span><br><span class="line"><span class="comment"> * lowest 53 bit: all 0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">long</span> workerId;</span><br></pre></td></tr></table></figure>
+
+<p>这样生成 UUID 的代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">long</span> <span class="title function_">nextId</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="comment">// 获得递增后的时间戳和序列号</span></span><br><span class="line">   <span class="type">long</span> <span class="variable">next</span> <span class="operator">=</span> timestampAndSequence.incrementAndGet();</span><br><span class="line">   <span class="comment">// 截取低53位</span></span><br><span class="line">   <span class="type">long</span> <span class="variable">timestampWithSequence</span> <span class="operator">=</span> next &amp; timestampAndSequenceMask;</span><br><span class="line">   <span class="comment">// 跟先前保存好的高11位进行一个或的位运算</span></span><br><span class="line">   <span class="keyword">return</span> workerId | timestampWithSequence;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="收益"><a href="#收益" class="headerlink" title="收益"></a>收益</h2><p>由上可以发现，问题得到了改善：</p>
+<ul>
+<li>生成器不再有 4096&#x2F;ms 的突发性能限制了；如果某个时间戳的序列号空间耗尽，它会直接推进到下一个时间戳</li>
+<li>生成器弱依赖于操作系统时钟；在运行期间，生成器不受时钟回拨的影响<br>无论是人为回拨还是机器的时钟漂移， 因为生成器仅在启动时获取了一遍系统时钟，之后两者不再保持同步； 可能产生重复 ID 的只有在重启时的大幅度时钟回拨</li>
+<li>对于推进到下一个时间戳的 “超前消费” 问题，如果生成器内的时间戳大大超前于系统的时间戳， 从而在重启时造成 ID 重复？实际上不可能，达到这种情况需要特别大的 QPS</li>
+</ul>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="Work-ID-优化"><a href="#Work-ID-优化" class="headerlink" title="Work ID 优化"></a>Work ID 优化</h2><p>Work ID 是分布式下的机器码，基本要求是每个实例拥有唯一的标识</p>
+<p>常见的确定 Work ID 的方式：</p>
+<ul>
+<li><strong>手动配置</strong></li>
+<li><strong>基于网络信息</strong>：因为网络信息一般带有唯一性，例如使用 IP 地址、MAC 地址、主机名等作为 Work ID 的一部分</li>
+<li><strong>自动化生成</strong>：使用一些工具进行生成，比如依赖 ZK 节点来进行唯一的保证</li>
+</ul>
+<p>无论选择哪种方法，都需要确保每个机器或节点的 Work ID 是唯一的，并且在分布式系统中保持稳定；这样可以避免生成重复的 ID，确保整个系统的正确运行</p>
+<p>Seata 基于网络信息进行 Work ID 的确定，截取本地 IPv4 地址的低 10 位作为 Work ID，很明显这样会造成 Work ID 重复，例如如下 IP</p>
+<ul>
+<li>192.168.4.10</li>
+<li>192.168.8.10</li>
+</ul>
+<p>优化后将优先使用网卡 MAC 地址截取，若本机未配置有效的网卡，则在 <code>[0, 1023]</code> 中随机挑一个作为 ID（其实应该依然存在重复问题，只是减少了概率；感觉还是美团的 leaf 等使用 ZK 方式比较好，但是会引入新中间件，增加系统复杂度）</p>
+<h2 id="单调递增和页分裂"><a href="#单调递增和页分裂" class="headerlink" title="单调递增和页分裂"></a>单调递增和页分裂</h2><p>Seata 改良后的雪花算法是否是单调递增的？</p>
+<p>在标准雪花算法中，时间戳排在机器码之前，即多节点服务，依然可以保证一定程度上有序（同一 ms 内生成的 ID 可能无序，不同 ms 之间单调递增）</p>
+<p>在 Seata 改良后的雪花算法中，机器码在时间戳之前，进一步加大了这种无序性</p>
+<br>
+
+<p>那么这种无序性是否会造成页分裂？</p>
+<p>按照 Seata 的解释是短时期内会造成，但在有限次分裂后，不会进行新的页分裂，因为 Work ID 是有限的，最终一定会出现能容纳固定 Work ID 的页</p>
+<blockquote>
+<p>到达终态后，后续的ID只会在该ID所属的子序列上进行顺序增长，而不会造成页分裂</p>
+<p>该状态下的顺序增长与 auto_increment 的顺序增长的区别是，前者有 1024 个增长位点（各个子序列的尾部），后者只有尾部一个</p>
+<p>到这里我们可以回答开头所提出的问题了：新算法从全局来看的确不是全局递增的，但该算法是<strong>收敛</strong>的，达到稳态后，新算法同样能达成像全局顺序递增一样的效果</p>
+</blockquote>
+<h2 id="理论上依然存在的问题"><a href="#理论上依然存在的问题" class="headerlink" title="理论上依然存在的问题"></a>理论上依然存在的问题</h2><p>虽然 Seata 一致在论证改进后 ID 生成方式的优势，但我觉得从理论上来看依然存在一些问题（虽然很多问题从应用层面考虑认为无法出现，但并不是从理论层面解决）</p>
+<ul>
+<li><strong>时钟回拨后重启服务</strong>：虽然 ID 生成过程中不依赖时间戳，但如果回拨时间太长、部署时间短依然会导致 ID 重复的问题<ul>
+<li>应用层面：不会有太长时间回拨，服务部署需要一定时间</li>
+</ul>
+</li>
+<li><strong>超前消费</strong>：虽然 QPS &#x3D; 400w&#x2F;s，但理论上仍然存在超前消费，重新部署后 ID 重复问题<ul>
+<li>应用层面：对 QPS 的要求基本不可能达到</li>
+</ul>
+</li>
+<li><strong>Work ID 重复</strong>：上述 Work ID 生成操作依然会存在重复问题，只不过概率较小</li>
+<li><strong>页合并导致的页分裂无法收敛</strong>：详情见 <a target="_blank" rel="noopener" href="http://seata.io/zh-cn/blog/seata-snowflake-explain">关于新版雪花算法的答疑 | Seata</a></li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="http://seata.io/zh-cn/blog/seata-analysis-UUID-generator/">Seata基于改良版雪花算法的分布式UUID生成器分析 | Seata</a></p>
+<p><a target="_blank" rel="noopener" href="http://seata.io/zh-cn/blog/seata-snowflake-explain">关于新版雪花算法的答疑 | Seata</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/AI/%E4%BD%BF%E7%94%A8%20OpenAI%20API%20%E8%BF%9B%E8%A1%8C%20Prompt%20%E5%B7%A5%E7%A8%8B%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html" rel="prev" title="使用 OpenAI API 进行 Prompt 工程的最佳实践">
+      <i class="fa fa-chevron-left"></i> 使用 OpenAI API 进行 Prompt 工程的最佳实践
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">雪花算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Seata-%E6%94%B9%E8%89%AF"><span class="nav-number">2.</span> <span class="nav-text">Seata 改良</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B"><span class="nav-number">2.2.</span> <span class="nav-text">改进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B6%E7%9B%8A"><span class="nav-number">2.3.</span> <span class="nav-text">收益</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">3.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Work-ID-%E4%BC%98%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">Work ID 优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%B0%83%E9%80%92%E5%A2%9E%E5%92%8C%E9%A1%B5%E5%88%86%E8%A3%82"><span class="nav-number">3.2.</span> <span class="nav-text">单调递增和页分裂</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%AE%BA%E4%B8%8A%E4%BE%9D%E7%84%B6%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.3.</span> <span class="nav-text">理论上依然存在的问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kuga.fun" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
