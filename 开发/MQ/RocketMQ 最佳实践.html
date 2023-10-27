@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Topic 与 Tag在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率 Topic 是消息主题，通过 Topic 对不同的业务消息进行分类Tag  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性   Topic 和 Tag 的选择，建议从以下几个方面">
+  <meta name="description" content="Topic 与 Tag 在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率 Topic 是消息主题，通过 Topic 对不同的业务消息进行分类 Tag  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性 Topic 和 Tag 的选择，建议从以下几个方面">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RocketMQ 最佳实践">
 <meta property="og:url" content="http://example.com/%E5%BC%80%E5%8F%91/MQ/RocketMQ%20%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="Topic 与 Tag在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率 Topic 是消息主题，通过 Topic 对不同的业务消息进行分类Tag  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性   Topic 和 Tag 的选择，建议从以下几个方面">
+<meta property="og:description" content="Topic 与 Tag 在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率 Topic 是消息主题，通过 Topic 对不同的业务消息进行分类 Tag  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性 Topic 和 Tag 的选择，建议从以下几个方面">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-03T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-12-03T16:00:00.000Z">
@@ -249,31 +249,34 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Topic-与-Tag"><a href="#Topic-与-Tag" class="headerlink" title="Topic 与 Tag"></a>Topic 与 Tag</h1><p>在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率</p>
-<p><strong>Topic</strong> 是消息主题，通过 Topic 对不同的业务消息进行分类<br><strong>Tag</strong>  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性  </p>
+        <h1>Topic 与 Tag</h1>
+<p>在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率</p>
+<p><strong>Topic</strong> 是消息主题，通过 Topic 对不同的业务消息进行分类<br>
+<strong>Tag</strong>  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性</p>
 <p>Topic 和 Tag 的选择，建议从以下几个方面判断：</p>
 <ul>
-<li><strong>消息类型是否一致：</strong>普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</li>
-<li><strong>业务是否相关联：</strong>没有关联的业务应该使用不同的 Topic</li>
-<li><strong>消息优先级是否一致：</strong>同一个 Topic 内应该是同样优先级的消息</li>
-<li><strong>量级是否相当：</strong>业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</li>
+<li>**消息类型是否一致：**普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</li>
+<li>**业务是否相关联：**没有关联的业务应该使用不同的 Topic</li>
+<li>**消息优先级是否一致：**同一个 Topic 内应该是同样优先级的消息</li>
+<li>**量级是否相当：**业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</li>
 </ul>
-<p>以电商系统为例，订单消息和支付消息属于不同的业务，设置 TOPIC_ORDER 和 TOPIC_PAY<br>其中订单消息根据商品种类再划分为不同的 tag，例如电器类、服装类、图书类等<br>支付消息根据不同的支付渠道划分，例如银行卡、支付宝、微信支付等</p>
-<h1 id="消费幂等"><a href="#消费幂等" class="headerlink" title="消费幂等"></a>消费幂等</h1><p>为了防止消息重复消费导致业务处理异常，RocketMQ 消费者在接收消息后，有必要根据业务上的唯一 Key 对消息进行幂等处理</p>
+<p>以电商系统为例，订单消息和支付消息属于不同的业务，设置 TOPIC_ORDER 和 TOPIC_PAY<br>
+其中订单消息根据商品种类再划分为不同的 tag，例如电器类、服装类、图书类等<br>
+支付消息根据不同的支付渠道划分，例如银行卡、支付宝、微信支付等</p>
+<h1>消费幂等</h1>
+<p>为了防止消息重复消费导致业务处理异常，RocketMQ 消费者在接收消息后，有必要根据业务上的唯一 Key 对消息进行幂等处理</p>
 <p>个人认为需要注意的是，这个业务上的唯一 Key，无论是在 Consumer 层做去重实现业务幂等（去重表），还是业务逻辑上做幂等（状态机、版本校验），都应该是使用业务意义上的唯一标识，而不是依赖 Message ID</p>
 <p><strong>消息重复的场景</strong></p>
 <ul>
-<li><strong>Producer 端：</strong>发送消息时，Brocker 已经收到消息并持久化，但 ACK 由于网络原因未成功返回给生产者，为了保证消息不丢失，生产者会再一次发送消息；或者上游业务认为失败重新进行了调用，就可能会发送重复的消息，并且是不同的 Message ID</li>
-<li><strong>Brocker 端：</strong>投递消息给消费者，消费者的 offset 因为网络等原因提交失败，为了保证消息至少一次，Brocker 会再次投递消息</li>
-<li><strong>Consumer 端：</strong>服务扩缩容导致的 rebalance 操作，本质上也是消费者的 offset 没有及时提交</li>
+<li>**Producer 端：**发送消息时，Brocker 已经收到消息并持久化，但 ACK 由于网络原因未成功返回给生产者，为了保证消息不丢失，生产者会再一次发送消息；或者上游业务认为失败重新进行了调用，就可能会发送重复的消息，并且是不同的 Message ID</li>
+<li>**Brocker 端：**投递消息给消费者，消费者的 offset 因为网络等原因提交失败，为了保证消息至少一次，Brocker 会再次投递消息</li>
+<li>**Consumer 端：**服务扩缩容导致的 rebalance 操作，本质上也是消费者的 offset 没有及时提交</li>
 </ul>
 <p>因为不同的 Message ID 对应的消息内容可能相同，有可能出现冲突（重复）的情况，所以真正安全的幂等处理，不建议以 Message ID 作为处理依据</p>
 <p>最好的方式是以业务唯一标识作为幂等处理的关键依据，而业务的唯一标识可以通过消息 Key 设置</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">consumer.subscribe(<span class="string">&quot;ons_test&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="keyword">new</span> <span class="title class_">MessageListener</span>() &#123;</span><br><span class="line">    <span class="keyword">public</span> Action <span class="title function_">consume</span><span class="params">(Message message, ConsumeContext context)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> message.getKey()</span><br><span class="line">        <span class="comment">// 根据业务唯一标识的 Key 做幂等处理</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="订阅关系"><a href="#订阅关系" class="headerlink" title="订阅关系"></a>订阅关系</h1><p>订阅关系需要保持一致，一致的定义是：<strong>同一个消费者组下所有 Consumer 实例所订阅的 Topic、Tag、Tag 的顺序必须完全一致</strong></p>
+<h1>订阅关系</h1>
+<p>订阅关系需要保持一致，一致的定义是：<strong>同一个消费者组下所有 Consumer 实例所订阅的 Topic、Tag、Tag 的顺序必须完全一致</strong></p>
 <p>如果订阅关系不一致，消息消费的逻辑就会混乱，甚至导致消息丢失</p>
 <p><strong>为什么会丢失？</strong></p>
 <p>当一个 Consumer 消费一个 Queue 时，会在 ConsumerQueue 中保存该消费者和消息的相关信息</p>
@@ -285,7 +288,8 @@
 </ul>
 <p>假如一个 Consumer 订阅了 Topic1 中的 Tag1，那这个 Consumer 拉取消息时，首先从 Name Server 获取订阅关系，得到当前 Consumer 订阅的所有 tag 的 hashcode 集合 codeSet；每次从 ConsumerQueue 获取一条记录，就要判断最后 8 个字节 tag hashcode 是否在 codeSet 中，比如 Tag2 不在 codeSet 中，就会被过滤掉</p>
 <p>所以不正确的订阅关系会导致该 ConsumerQueue 中的消息被错误丢弃了</p>
-<h1 id="消息堆积"><a href="#消息堆积" class="headerlink" title="消息堆积"></a>消息堆积</h1><p>当客户端消费速度跟不上服务端消息发送的速度，便会出现消息堆积</p>
+<h1>消息堆积</h1>
+<p>当客户端消费速度跟不上服务端消息发送的速度，便会出现消息堆积</p>
 <p>消息堆积的主要影响：</p>
 <ul>
 <li>消费延迟</li>
@@ -298,10 +302,10 @@
 </ul>
 <p>客户端 Push 模式到消费消息有两个阶段：</p>
 <ul>
-<li><strong>获取消息：</strong>通过长轮询批量拉取的方式从 Brocker 拉取消息，这一阶段吞吐量较高，所以一般不会成为性能瓶颈</li>
-<li><strong>消费 &amp; 提交：</strong>依赖业务的处理耗时和消费逻辑的并发度</li>
+<li>**获取消息：**通过长轮询批量拉取的方式从 Brocker 拉取消息，这一阶段吞吐量较高，所以一般不会成为性能瓶颈</li>
+<li>**消费 &amp; 提交：**依赖业务的处理耗时和消费逻辑的并发度</li>
 </ul>
-<p>所以通过消息消费的两大步骤来看，消息堆积的主要问题出现在第二阶段，即<strong>消费耗时</strong>和<strong>消费并发度</strong>    </p>
+<p>所以通过消息消费的两大步骤来看，消息堆积的主要问题出现在第二阶段，即<strong>消费耗时</strong>和<strong>消费并发度</strong></p>
 <p><strong>消费耗时</strong></p>
 <p>影响消费耗时的消费逻辑主要分为 CPU 内存计算和外部 IO 操作；由于大部分服务器场景都是 IO 密集型，业务代码在正常情况下不会涉及复杂的运算，内部耗时相比 IO 耗时来说可以忽略不记</p>
 <p>IO 操作通常包含以下逻辑：</p>
@@ -319,7 +323,8 @@
 <th>并发度</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>普通消息</td>
 <td>单节点线程数 × 节点数量</td>
 </tr>
@@ -335,7 +340,8 @@
 <td>顺序消息</td>
 <td>Min（单节点线程数 × 节点数量，分区数）</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>此外单节点的并发度需要谨慎设置，不能盲目直接调大线程数，设置过大的线程数反而会带来大量的线程切换的开销</p>
 <p>理想环境下单节点的最优线程数计算模型如下：</p>
 <ul>
@@ -345,7 +351,8 @@
 <li>逻辑中 CPU 计算耗时为 T1，外部 IO 操作为 T2</li>
 </ul>
 <p>则单个线程能达到的 TPS 为 <code>1 / (T1 + T2)</code>，如果CPU使用率达到理想状态 100%，那么单机达到最大能力时需要设置 <code>C × (T1 + T2) / T1</code> 个线程</p>
-<h1 id="读写队列"><a href="#读写队列" class="headerlink" title="读写队列"></a>读写队列</h1><p>新建 Topic 需要配置相关的属性 <code>writeQueueNums</code> 和 <code>readQueueNums</code>，分别代表写队列的数量和读队列的数量</p>
+<h1>读写队列</h1>
+<p>新建 Topic 需要配置相关的属性 <code>writeQueueNums</code> 和 <code>readQueueNums</code>，分别代表写队列的数量和读队列的数量</p>
 <p>其中 <code>writeQueueNums</code> 和 <code>readQueueNums</code> 的参数可以自由配置，<strong>为什么可以自由配置呢而不是必须相等呢？</strong></p>
 <blockquote>
 <p><strong>备注</strong>：读写队列和读写分离不是同一个概念</p>
@@ -367,7 +374,8 @@
 <li>缩容读队列（128 调整为 64）；此时 Consumer 重新分配，对应 64 个写队列</li>
 </ol>
 <p><strong>同时缩容写队列和读队列可能会导致部分消息未被消费</strong></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/69109.html">最佳实践 (aliyun.com)</a></p>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/69109.html">最佳实践 (aliyun.com)</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/liaowenhui/p/15717353.html">RocketMQ订阅关系不一致 - JustJavaIt - 博客园 (cnblogs.com)</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qian_348840260/article/details/108975241">rocketmq中的读写队列_八荒六合唯我独尊-CSDN博客_rocketmq读写队列</a></p>
 
@@ -453,7 +461,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Topic-%E4%B8%8E-Tag"><span class="nav-number">1.</span> <span class="nav-text">Topic 与 Tag</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E5%B9%82%E7%AD%89"><span class="nav-number">2.</span> <span class="nav-text">消费幂等</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A2%E9%98%85%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text">订阅关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF"><span class="nav-number">4.</span> <span class="nav-text">消息堆积</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%98%9F%E5%88%97"><span class="nav-number">5.</span> <span class="nav-text">读写队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Topic 与 Tag</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">消费幂等</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">订阅关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">消息堆积</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">读写队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
