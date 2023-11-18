@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="分片（sharding）是一种将数据和负载分布在几个独立数据库实例中的技术 该方法通过将原始数据集拆分为碎片（shards）来利用水平可伸缩性，然后将其分布在多个数据库实例中  但是，即使动词 distributes 出现在分片的定义中，分片数据库也不是分布式数据库 分片解决方案">
+  <meta name="description" content="分片（sharding）是一种将数据和负载分布在几个独立数据库实例中的技术 该方法通过将原始数据集拆分为碎片（shards）来利用水平可伸缩性，然后将其分布在多个数据库实例中     但是，即使动词 distributes 出现在分片的定义中，分片数据库也不是分布式数据库 分片解决方案">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分片不等于分布式">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="分片（sharding）是一种将数据和负载分布在几个独立数据库实例中的技术 该方法通过将原始数据集拆分为碎片（shards）来利用水平可伸缩性，然后将其分布在多个数据库实例中  但是，即使动词 distributes 出现在分片的定义中，分片数据库也不是分布式数据库 分片解决方案">
+<meta property="og:description" content="分片（sharding）是一种将数据和负载分布在几个独立数据库实例中的技术 该方法通过将原始数据集拆分为碎片（shards）来利用水平可伸缩性，然后将其分布在多个数据库实例中     但是，即使动词 distributes 出现在分片的定义中，分片数据库也不是分布式数据库 分片解决方案">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1yg3PV8O2RO4YegyiYeiItA.png">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1kp39_8mQ0E9bIO0Lw3PGFw.png">
@@ -254,15 +254,19 @@
         <p>分片（sharding）是一种将数据和负载分布在几个独立数据库实例中的技术</p>
 <p>该方法通过将原始数据集拆分为碎片（shards）来利用水平可伸缩性，然后将其分布在多个数据库实例中</p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1yg3PV8O2RO4YegyiYeiItA.png" class="" title="img">
+
+
+
 <p>但是，即使动词 <em>distributes</em> 出现在分片的定义中，分片数据库也不是分布式数据库</p>
-<h1>分片解决方案</h1>
-<p>每个分片解决方案在其架构中都有一个至关重要的组件</p>
+<h1 id="分片解决方案"><a href="#分片解决方案" class="headerlink" title="分片解决方案"></a>分片解决方案</h1><p>每个分片解决方案在其架构中都有一个至关重要的组件</p>
 <p>该组件被定义为各种各样的名字，例如：协调者（coordinator）、路由器（router）、代理人（director）</p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1kp39_8mQ0E9bIO0Lw3PGFw.png" class="" title="img">
+
 <p>协调者是唯一知道数据分布的组件，它映射客户端的请求到特殊的分片上，接着映射到对应的数据库实例</p>
 <p>这就是为什么客户端必须通过协调者路由它们的请求</p>
 <p>举一个例子：如果一个客户端希望插入一条数据到 <code>Car</code> 这张表，该请求首先会提交到协调者；协调者会映射该记录的主键（原文中是 <em>primary key</em>，这里应该主要指分表键）到其中一个分片，然后将请求转发给负责该分片的数据库实例</p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1YNUB6y8WJnp0CCVAXSjQ0g.png" class="" title="img">
+
 <p>在上述示意图中，首先协调者映射键 <code>121</code> 到分片 <code>10</code>，接着插入数据到持有分片 <code>10</code>，即表 <code>car_10</code> 的数据库实例上</p>
 <p>可是产生了一个问题：为什么在分片解决方案中需要一个协调者的角色？答案是显而易见的：分片存储在为单服务器部署设计的数据库实例上</p>
 <blockquote>
@@ -270,23 +274,22 @@
 <p>这些数据库实例不相互通信，也不支持任何有助于这种通信的协议。它们彼此不知情，存在于自己孤立的环境中，忽略了它们是一个更大系统的一部分这一事实</p>
 </blockquote>
 <p>因此在分片解决方案中协调者是不可或缺的角色；如果你有兴趣深入研究碎片数据库架构，可以考虑探索 CitusData 或 Azure CosmosDB for PostgreSQL、Vitess for MySQL、Oracle 分布式自治数据库和 MongoDB sharded Cluster</p>
-<h1>分布式数据库</h1>
-<p>与分片数据库解决方案非常相似，分布式数据库也使用类似的分片技术在数据库节点集群中存储和读取数据</p>
+<h1 id="分布式数据库"><a href="#分布式数据库" class="headerlink" title="分布式数据库"></a>分布式数据库</h1><p>与分片数据库解决方案非常相似，分布式数据库也使用类似的分片技术在数据库节点集群中存储和读取数据</p>
 <p>不同的是分布式数据库不依靠协调者组件</p>
 <p><strong>分布式数据库建立在一个无共享的体系结构上</strong>，该体系结构没有像协调者这样的单一组件，承担着许多决策的负担：</p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1deOgcXccWs9lKUSgLPNOww.png" class="" title="img">
+
 <p><em>集群中的所有节点都知道彼此，从而知道数据分布；通过直接通信，每个节点都可以将客户端请求路由到适当的分片所有者；此外它们还可以执行和协调多节点事务，当缩放到更多节点时，集群会自动重新平衡和拆分分片；节点维护数据的冗余副本（基于配置的复制因子），即使某些节点出现故障，也可以在不停机的情况下继续操作</em></p>
 <p>所有这些对客户端来说都是透明的，客户端只需与任何节点建立连接，并允许该节点管理分布式方面</p>
 <p>举个例子：一个客户端可能连接到 <code>node1</code> 然后插入了一条 <code>Car</code> 的新数据，id 为 <code>121</code>；如果 <code>node1</code> 是分片的所有者，那么它将在本地存储记录，并且采用一致性算法（consensus algorithm）将变更复制到其他节点的子集；如果不是所有者，<code>node1</code> 会将请求转发给分片的持有者，比如 <code>node4</code></p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%88%86%E7%89%87%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F/1weEdq2BxIpf6GiLjipns5Q.png" class="" title="img">
+
 <p>如果你有兴趣探索真正的分布式数据库的体系结构，可以考虑研究 Google Spanner、YugabyteDB、CockratchDB、Apache Cassandra 或 Apache Ignite</p>
-<h1>总结</h1>
-<p>在数据库领域，分片和分发经常被混为一谈，但它们有不同的用途</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在数据库领域，分片和分发经常被混为一谈，但它们有不同的用途</p>
 <p>虽然分片涉及在多个独立实例之间拆分数据，但这并不意味着系统是分布式的；在分片解决方案中存在一个协调者，它将客户端请求引导到适当的分片，这是两者之间显著的区别</p>
 <p>另一方面，建立在无共享体系结构上的分布式数据库缺少这种集中式协调者，这些系统中的节点相互了解，管理数据分发，并无缝处理客户端请求</p>
 <p>这两种体系结构都有各自的优点，了解它们的细微差别对于明智的数据库设计和选择至关重要</p>
-<h1>参考</h1>
-<p><a target="_blank" rel="noopener" href="https://medium.com/@magda7817/sharded-does-not-imply-distributed-572fdafc4040">Sharded Does Not Imply Distributed | by Denis Magda | Sep, 2023 | Medium</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://medium.com/@magda7817/sharded-does-not-imply-distributed-572fdafc4040">Sharded Does Not Imply Distributed | by Denis Magda | Sep, 2023 | Medium</a></p>
 
     </div>
 
@@ -308,7 +311,10 @@
     <a href="/%E5%BC%80%E5%8F%91/LiteFlow/LiteFlow%20-%20%E7%BB%84%E4%BB%B6%E7%9A%84%E8%B6%85%E6%97%B6%E6%97%B6%E9%97%B4.html" rel="prev" title="LiteFlow - 组件的超时时间">
       <i class="fa fa-chevron-left"></i> LiteFlow - 组件的超时时间
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Neon%20City.html" rel="next" title="RECIPES - Neon City">
+      RECIPES - Neon City <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -367,7 +373,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">分片解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">分布式数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E7%89%87%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">分片解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">分布式数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -381,7 +387,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
