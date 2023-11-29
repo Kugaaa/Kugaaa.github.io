@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.2%20-%20%E6%8F%90%E7%A4%BA%E6%A8%A1%E6%9D%BF.html</loc>
+    
+    <lastmod>2023-11-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.1%20-%20%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html</loc>
     
     <lastmod>2023-11-24</lastmod>
@@ -445,7 +454,7 @@
 
   <url>
     <loc>https://www.kuga.fun/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -453,154 +462,154 @@
   
   <url>
     <loc>https://www.kuga.fun/tags/%E7%94%B5%E5%90%89%E4%BB%96/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/%E9%B8%A1%E5%B0%BE%E9%85%92/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/recipes/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/tags/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/tags/%E5%90%83%E5%96%9D%E7%8E%A9%E4%B9%90/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/tags/Elasticsearch/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/tags/ES-%E7%A2%8E%E7%89%87/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/Prompt-Engineer/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kuga.fun/tags/Java/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <loc>https://www.kuga.fun/tags/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/tags/%E5%90%83%E5%96%9D%E7%8E%A9%E4%B9%90/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/tags/Elasticsearch/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/tags/ES-%E7%A2%8E%E7%89%87/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/LangChain/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/AI/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kuga.fun/tags/RocketMQ/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <loc>https://www.kuga.fun/tags/Java/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/LiteFlow/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/%E6%BA%90%E7%A0%81/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kuga.fun/tags/Guava/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <loc>https://www.kuga.fun/tags/RocketMQ/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/Redis-%E8%84%9A%E6%9C%AC/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kuga.fun/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/tags/GitHub/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <loc>https://www.kuga.fun/tags/Guava/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/tags/GitHub/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/%E7%BF%BB%E8%AF%91/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -609,119 +618,119 @@
   
   <url>
     <loc>https://www.kuga.fun/categories/%E4%BA%BA%E7%94%9F/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E4%BA%BA%E7%94%9F/%E5%8D%8E%E5%8C%97%E6%97%A0%E6%B5%AA%E6%BC%AB/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/LiteFlow/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/ES/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/AI/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E7%BD%91%E7%BB%9C/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/Java/</loc>
-    <lastmod>2023-11-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/LangChain/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/MQ/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/AI/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/Redis/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/LiteFlow/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/ES/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/LangChain/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/Java/</loc>
+    <lastmod>2023-11-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/%E7%BD%91%E7%BB%9C/</loc>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.kuga.fun/categories/%E5%BC%80%E5%8F%91/MQ/RocketMQ/</loc>
-    <lastmod>2023-11-25</lastmod>
+    <lastmod>2023-11-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
