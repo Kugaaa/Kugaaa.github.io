@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="介绍LangChain 是一个基于语言模型开发应用程序的框架。它可以实现以下功能：  数据感知：将语言模型与其他数据源连接起来 主体性：允许语言模型与其环境进行交互  LangChain 的主要价值包括：  组件：用于处理语言模型的抽象，以及每个抽象的一系列实现。组件是模块化且易于使用的，无论您是否使用 LangChain 框架的其他部分，都可以轻松使用 现成的管道：用于完成特定高级任务的结构化组">
+  <meta name="description" content="介绍 LangChain 是一个基于语言模型开发应用程序的框架。它可以实现以下功能：  数据感知：将语言模型与其他数据源连接起来 主体性：允许语言模型与其环境进行交互  LangChain 的主要价值包括：  组件：用于处理语言模型的抽象，以及每个抽象的一系列实现。组件是模块化且易于使用的，无论您是否使用 LangChain 框架的其他部分，都可以轻松使用 现成的管道：用于完成特定高级任务的结构化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LangChain 文档学习 No.1 - 快速开始">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.1%20-%20%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="介绍LangChain 是一个基于语言模型开发应用程序的框架。它可以实现以下功能：  数据感知：将语言模型与其他数据源连接起来 主体性：允许语言模型与其环境进行交互  LangChain 的主要价值包括：  组件：用于处理语言模型的抽象，以及每个抽象的一系列实现。组件是模块化且易于使用的，无论您是否使用 LangChain 框架的其他部分，都可以轻松使用 现成的管道：用于完成特定高级任务的结构化组">
+<meta property="og:description" content="介绍 LangChain 是一个基于语言模型开发应用程序的框架。它可以实现以下功能：  数据感知：将语言模型与其他数据源连接起来 主体性：允许语言模型与其环境进行交互  LangChain 的主要价值包括：  组件：用于处理语言模型的抽象，以及每个抽象的一系列实现。组件是模块化且易于使用的，无论您是否使用 LangChain 框架的其他部分，都可以轻松使用 现成的管道：用于完成特定高级任务的结构化">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-11-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-11-24T16:00:00.000Z">
@@ -246,7 +246,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><strong>LangChain</strong> 是一个基于语言模型开发应用程序的框架。它可以实现以下功能：</p>
+        <h1>介绍</h1>
+<p><strong>LangChain</strong> 是一个基于语言模型开发应用程序的框架。它可以实现以下功能：</p>
 <ul>
 <li><strong>数据感知</strong>：将语言模型与其他数据源连接起来</li>
 <li><strong>主体性</strong>：允许语言模型与其环境进行交互</li>
@@ -258,35 +259,34 @@
 </ol>
 <p>现成的管道使得入门变得容易。对于更复杂的应用程序和细致入微的用例，组件使得自定义现有管道或构建新管道变得容易</p>
 <br>
-
 <p>实践示例：</p>
 <ul>
 <li>聊天机器人</li>
 <li>使用数据源回答问题（知识库）</li>
 <li>分析结构化数据</li>
 </ul>
-<h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><p>LangChain 为以下模块提供标准、可扩展的接口和外部集成（功能模块）</p>
+<h2 id="模块">模块</h2>
+<p>LangChain 为以下模块提供标准、可扩展的接口和外部集成（功能模块）</p>
 <ul>
-<li><strong>模型 I&#x2F;O</strong>：与语言模型进行接口</li>
+<li><strong>模型 I/O</strong>：与语言模型进行接口</li>
 <li><strong>检索</strong>：与特定于应用程序的数据进行接口</li>
 <li><strong>管道</strong>：构建调用序列</li>
 <li><strong>代理</strong>：让管道根据高级指令选择使用哪些工具</li>
 <li><strong>内存</strong>：在管道运行期间保持应用程序状态</li>
 <li><strong>回调</strong>：记录和流式传输任何管道的中间步骤</li>
 </ul>
-<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><h2 id="LangChain"><a href="#LangChain" class="headerlink" title="LangChain"></a>LangChain</h2><p>LangChain Python 版本的安装</p>
+<h1>环境</h1>
+<h2 id="LangChain">LangChain</h2>
+<p>LangChain Python 版本的安装</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langchain </span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="OpenAI"><a href="#OpenAI" class="headerlink" title="OpenAI"></a>OpenAI</h2><p>使用 LangChain 通常需要与一个或多个模型提供者、数据存储、API等进行集成</p>
+<h2 id="OpenAI">OpenAI</h2>
+<p>使用 LangChain 通常需要与一个或多个模型提供者、数据存储、API等进行集成</p>
 <p>我们可以使用 OpenAI 的模型 API</p>
 <p>本示例使用微软 Azure 的模型 API</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install openai</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="构建模块"><a href="#构建模块" class="headerlink" title="构建模块"></a>构建模块</h2><p>LangChain 提供了许多可以用来构建语言模型应用程序的模块</p>
+<h1>开始</h1>
+<h2 id="构建模块">构建模块</h2>
+<p>LangChain 提供了许多可以用来构建语言模型应用程序的模块</p>
 <p>这些模块可以作为简单应用程序中的独立模块使用，也可以组合在一起用于更复杂的用例</p>
 <p>LangChain 应用程序的核心构建模块是 LLMChain，它结合了三个方面：</p>
 <ul>
@@ -294,12 +294,13 @@
 <li><strong>Prompt Templates</strong>（提示词模板）：提供语言模型的指令；这控制了语言模型的输出，因此了解如何构建提示和不同的提示策略至关重要</li>
 <li><strong>Output Parsers</strong>（输出解析器）：将 LLM 的原始响应转换为更易处理的格式，使得在下游使用输出变得容易</li>
 </ul>
-<h2 id="LLMs"><a href="#LLMs" class="headerlink" title="LLMs"></a>LLMs</h2><p>LangChain 中有两种类型的语言模型，称为：</p>
+<h2 id="LLMs">LLMs</h2>
+<p>LangChain 中有两种类型的语言模型，称为：</p>
 <ul>
 <li><strong>LLMs</strong>：这是一个以字符串作为输入并返回字符串的语言模型</li>
 <li><strong>ChatModels</strong>：这是一个以消息列表作为输入并返回消息的语言模型</li>
 </ul>
-<p>LLMs 的输入&#x2F;输出简单易懂，是字符串</p>
+<p>LLMs 的输入/输出简单易懂，是字符串</p>
 <p>但是 ChatModels 输入是一个 <code>ChatMessage</code> 列表，输出是一个单独的 <code>ChatMessage</code>，一个 <code>ChatMessage</code> 具有两个必需的组件：</p>
 <ul>
 <li><code>content</code>：这是消息的内容</li>
@@ -307,55 +308,50 @@
 </ul>
 <p>LangChain 提供了几个对象，用于方便地区分不同的角色：</p>
 <ul>
-<li><code>HumanMessage</code>：来自人类&#x2F;用户的 <code>ChatMessage</code></li>
-<li><code>AIMessage</code>：来自AI&#x2F;助手的 <code>ChatMessage</code></li>
+<li><code>HumanMessage</code>：来自人类/用户的 <code>ChatMessage</code></li>
+<li><code>AIMessage</code>：来自AI/助手的 <code>ChatMessage</code></li>
 <li><code>SystemMessage</code>：来自系统的 <code>ChatMessage</code></li>
 <li><code>FunctionMessage</code>：来自函数调用的 <code>ChatMessage</code></li>
 </ul>
 <p>如果这些角色都不合适，还可以使用 <code>ChatMessage</code> 类手动指定角色，有关如何最有效地使用这些不同的消息的更多信息，请参阅我们的提示指南</p>
-<p>LangChain 为两者提供了一个标准接口，但了解这种差异以便为给定的语言模型构建提示非常有用<br>LangChain 提供的标准接口有两种方法：</p>
+<p>LangChain 为两者提供了一个标准接口，但了解这种差异以便为给定的语言模型构建提示非常有用<br>
+LangChain 提供的标准接口有两种方法：</p>
 <ul>
 <li><code>predict</code>：接受一个字符串，返回一个字符串</li>
 <li><code>predict_messages</code>：接受一个消息列表，返回一个消息</li>
 </ul>
 <br>
-
 <p>两者的区别，首先，让我们导入 LLM 和 ChatModel</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.llms <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> langchain.chat_models <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"></span><br><span class="line">llm = OpenAI()</span><br><span class="line">chat_model = ChatOpenAI()</span><br><span class="line"></span><br><span class="line">llm.predict(<span class="string">&quot;hi!&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&quot;Hi&quot;</span></span><br><span class="line"></span><br><span class="line">chat_model.predict(<span class="string">&quot;hi!&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&quot;Hi&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>使用 <code>predict</code> 方法对字符串输入进行处理</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">text = <span class="string">&quot;What would be a good company name for a company that makes colorful socks?&quot;</span></span><br><span class="line"></span><br><span class="line">llm.predict(text)</span><br><span class="line"><span class="comment"># &gt;&gt; Feetful of Fun</span></span><br><span class="line"></span><br><span class="line">chat_model.predict(text)</span><br><span class="line"><span class="comment"># &gt;&gt; Socks O&#x27;Color</span></span><br></pre></td></tr></table></figure>
-
 <p>使用 <code>predict_messages</code> 方法对消息列表进行处理</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.schema <span class="keyword">import</span> HumanMessage</span><br><span class="line"></span><br><span class="line">text = <span class="string">&quot;制造多彩袜子的公司的好名字是什么？&quot;</span></span><br><span class="line">messages = [HumanMessage(content=text)]</span><br><span class="line"></span><br><span class="line">llm.predict_messages(messages)</span><br><span class="line"><span class="comment"># &gt;&gt; Feetful of Fun</span></span><br><span class="line"></span><br><span class="line">chat_model.predict_messages(messages)</span><br><span class="line"><span class="comment"># &gt;&gt; Socks O&#x27;Color</span></span><br></pre></td></tr></table></figure>
-
 <p>对于这两种方法，还可以将参数作为关键字参数传递，例如可以传入 <code>temperature=0</code> 来调整使用的温度，该温度将覆盖对象的配置</p>
 <p>需要注意在运行时传入的任何值都将始终覆盖对象的配置</p>
-<h2 id="AzureOpenAI-LLM"><a href="#AzureOpenAI-LLM" class="headerlink" title="AzureOpenAI LLM"></a>AzureOpenAI LLM</h2><p>本示例使用微软 Azure 的模型 API</p>
-<p>可以参考官方文档 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/azure/machine-learning/prompt-flow/how-to-integrate-with-langchain?view=azureml-api-2">在提示流中与 LangChain 集成 - Azure Machine Learning | Microsoft Learn</a><br>或者 LangChain 的 LLM Integrations 文档 <a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/modules/model_io/models/llms/integrations/azure_openai_example">Azure OpenAI | 🦜️🔗 Langchain</a> | <a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/modules/model_io/models/chat/integrations/azure_chat_openai">Azure | 🦜️🔗 Langchain</a></p>
+<h2 id="AzureOpenAI-LLM">AzureOpenAI LLM</h2>
+<p>本示例使用微软 Azure 的模型 API</p>
+<p>可以参考官方文档 <a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/azure/machine-learning/prompt-flow/how-to-integrate-with-langchain?view=azureml-api-2">在提示流中与 LangChain 集成 - Azure Machine Learning | Microsoft Learn</a><br>
+或者 LangChain 的 LLM Integrations 文档 <a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/modules/model_io/models/llms/integrations/azure_openai_example">Azure OpenAI | 🦜️🔗 Langchain</a> | <a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/modules/model_io/models/chat/integrations/azure_chat_openai">Azure | 🦜️🔗 Langchain</a></p>
 <p>创建 <code>LLM</code> 对象</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> langchain.llms.openai <span class="keyword">import</span> AzureOpenAI</span><br><span class="line"></span><br><span class="line">os.environ[<span class="string">&quot;OPENAI_API_TYPE&quot;</span>] = <span class="string">&quot;azure&quot;</span></span><br><span class="line">os.environ[<span class="string">&quot;OPENAI_API_VERSION&quot;</span>] = <span class="string">&quot;2023-03-15-preview&quot;</span></span><br><span class="line">os.environ[<span class="string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">llm = AzureOpenAI(</span><br><span class="line">    deployment_name=<span class="string">&quot;&quot;</span>,</span><br><span class="line">    azure_endpoint=<span class="string">&quot;&quot;</span>,</span><br><span class="line">    model_name=<span class="string">&quot;gpt-35-turbo-16k&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">result = llm.predict(<span class="string">&quot;Hello World&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
-
 <p>这里可能会接收到错误的返回</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span>&#x27;error&#x27;<span class="punctuation">:</span> <span class="punctuation">&#123;</span>&#x27;code&#x27;<span class="punctuation">:</span> &#x27;OperationNotSupported&#x27;<span class="punctuation">,</span> &#x27;message&#x27;<span class="punctuation">:</span> &#x27;The completion operation does not work with the specified model<span class="punctuation">,</span> gpt<span class="number">-35</span>-turbo<span class="number">-16</span>k. Please choose different model and try again. You can learn more about which models can be used with each operation here<span class="punctuation">:</span> https<span class="punctuation">:</span><span class="comment">//go.microsoft.com/fwlink/?linkid=2197993.&#x27;&#125;&#125;</span></span><br></pre></td></tr></table></figure>
-
 <p>原因是 <code>gpt-35-turbo-16k</code> 模型不能用于 <code>AzureOpenAI</code> 对象，应该使用 <code>AzureChatOpenAI</code>；我理解 Azure 的 AI 服务对文本处理（LangChain 中的 LLMs）和问答、聊天（LangChain 中的 ChatModels）做了区分</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 AzureChatOpenAI</span></span><br><span class="line">llm = AzureChatOpenAI(</span><br><span class="line">    deployment_name=<span class="string">&quot;&quot;</span>,</span><br><span class="line">    azure_endpoint=<span class="string">&quot;&quot;</span>,</span><br><span class="line">    model_name=<span class="string">&quot;gpt-35-turbo-16k&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="提示模板"><a href="#提示模板" class="headerlink" title="提示模板"></a>提示模板</h2><p>提示模板可以将用户输入转化为完全格式化的提示的所有逻辑绑定在一起，下面是一个简单应用</p>
+<h2 id="提示模板">提示模板</h2>
+<p>提示模板可以将用户输入转化为完全格式化的提示的所有逻辑绑定在一起，下面是一个简单应用</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prompt = PromptTemplate.from_template(<span class="string">&quot;please tell me in which country is &#123;city_name&#125; located?&quot;</span>)</span><br><span class="line">text = prompt.<span class="built_in">format</span>(city_name=<span class="string">&quot;BeiJing&quot;</span>)</span><br><span class="line"><span class="comment"># text = please tell me in which country is BeiJing located?</span></span><br><span class="line">result = llm.predict(text)</span><br><span class="line"><span class="comment"># &gt;&gt; Beijing is located in China. </span></span><br></pre></td></tr></table></figure>
-
 <p>提示模板不仅是用于将字符串进行格式化，主要的优势：</p>
 <ul>
 <li>多提示中抽出共同变量，只格式化一次</li>
 <li>生成消息列表，系统消息、角色消息等</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template = <span class="string">&quot;You are a helpful assistant that translates &#123;input_language&#125; to &#123;output_language&#125;.&quot;</span></span><br><span class="line">system_message_prompt = SystemMessagePromptTemplate.from_template(template)</span><br><span class="line">human_template = <span class="string">&quot;&#123;text&#125;&quot;</span></span><br><span class="line">human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)</span><br><span class="line">chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])</span><br><span class="line">messages = chat_prompt.format_messages(input_language=<span class="string">&quot;English&quot;</span>, output_language=<span class="string">&quot;French&quot;</span>, text=<span class="string">&quot;I love programming.&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(messages)</span><br><span class="line"><span class="comment"># &gt;&gt; [SystemMessage(content=&#x27;You are a helpful assistant that translates English to French.&#x27;), HumanMessage(content=&#x27;I love programming.&#x27;)]</span></span><br></pre></td></tr></table></figure>
-
 <p>更多详见后续提示词相关内容</p>
-<h2 id="输出解析器"><a href="#输出解析器" class="headerlink" title="输出解析器"></a>输出解析器</h2><p><code>OutputParsers</code> 将 LLM 的原始输出转换为可以在下游使用的格式<br>输出解析器有几种主要类型：</p>
+<h2 id="输出解析器">输出解析器</h2>
+<p><code>OutputParsers</code> 将 LLM 的原始输出转换为可以在下游使用的格式<br>
+输出解析器有几种主要类型：</p>
 <ul>
 <li>将 LLM 的文本转换为结构化信息（例如 JSON）</li>
 <li>将 ChatMessage 转换为字符串</li>
@@ -363,17 +359,16 @@
 </ul>
 <p>官方例子中实现了一个<strong>将逗号分隔的列表转换为列表</strong>的解析器</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.schema <span class="keyword">import</span> BaseOutputParser</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CommaSeparatedListOutputParser</span>(<span class="title class_ inherited__">BaseOutputParser</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Parse the output of an LLM call to a comma-separated list.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, text: <span class="built_in">str</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Parse the output of an LLM call.&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> text.strip().split(<span class="string">&quot;, &quot;</span>)</span><br><span class="line"></span><br><span class="line">CommaSeparatedListOutputParser().parse(<span class="string">&quot;hi, bye&quot;</span>)</span><br><span class="line"><span class="comment"># &gt;&gt; [&#x27;hi&#x27;, &#x27;bye&#x27;]</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="LLMChain"><a href="#LLMChain" class="headerlink" title="LLMChain"></a>LLMChain</h2><p>现在可以将所有这些组合成一个链组件</p>
+<h2 id="LLMChain">LLMChain</h2>
+<p>现在可以将所有这些组合成一个链组件</p>
 <p>这个链组件将接收输入变量，将其传递给提示模板以创建提示，将提示传递给 LLM，然后通过一个（可选的）输出解析器将输出解析后输出</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.chains <span class="keyword">import</span> LLMChain</span><br><span class="line"><span class="keyword">from</span> langchain.chat_models <span class="keyword">import</span> AzureChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain.prompts.chat <span class="keyword">import</span> (</span><br><span class="line">    ChatPromptTemplate,</span><br><span class="line">    SystemMessagePromptTemplate,</span><br><span class="line">    HumanMessagePromptTemplate,</span><br><span class="line">)</span><br><span class="line"><span class="keyword">from</span> langchain.schema <span class="keyword">import</span> BaseOutputParser</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CommaSeparatedListOutputParser</span>(<span class="title class_ inherited__">BaseOutputParser</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Parse the output of an LLM call to a comma-separated list.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">parse</span>(<span class="params">self, text: <span class="built_in">str</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Parse the output of an LLM call.&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> text.strip().split(<span class="string">&quot;, &quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">os.environ[<span class="string">&quot;OPENAI_API_TYPE&quot;</span>] = <span class="string">&quot;azure&quot;</span></span><br><span class="line">os.environ[<span class="string">&quot;OPENAI_API_VERSION&quot;</span>] = <span class="string">&quot;2023-03-15-preview&quot;</span></span><br><span class="line">os.environ[<span class="string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">chat_model = AzureChatOpenAI(</span><br><span class="line">    deployment_name=<span class="string">&quot;&quot;</span>,</span><br><span class="line">    azure_endpoint=<span class="string">&quot;&quot;</span>,</span><br><span class="line">    model_name=<span class="string">&quot;gpt-35-turbo-16k&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">template = <span class="string">&quot;&quot;&quot;You are a helpful assistant who generates comma separated lists.</span></span><br><span class="line"><span class="string">A user will pass in a category, and you should generate 5 objects in that category in a comma separated list.</span></span><br><span class="line"><span class="string">ONLY return a comma separated list, and nothing more.&quot;&quot;&quot;</span></span><br><span class="line">system_message_prompt = SystemMessagePromptTemplate.from_template(template)</span><br><span class="line">human_template = <span class="string">&quot;&#123;text&#125;&quot;</span></span><br><span class="line">human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)</span><br><span class="line"></span><br><span class="line">chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])</span><br><span class="line">chain = LLMChain(</span><br><span class="line">    llm=chat_model,</span><br><span class="line">    prompt=chat_prompt,</span><br><span class="line">    output_parser=CommaSeparatedListOutputParser()</span><br><span class="line">)</span><br><span class="line">result = chain.run(<span class="string">&quot;DC super hero&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; [&#x27;Superman&#x27;, &#x27;Batman&#x27;, &#x27;Wonder Woman&#x27;, &#x27;The Flash&#x27;, &#x27;Aquaman&#x27;]</span></span><br></pre></td></tr></table></figure>
-
 <p>上面的例子让 AI 成为一个输出 5 个指定分类下对象，并且使用逗号分隔的助手</p>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>本文介绍了如何创建 LangChain 应用程序的核心构建块 - LLMChains</p>
+<h1>后续</h1>
+<p>本文介绍了如何创建 LangChain 应用程序的核心构建块 - LLMChains</p>
 <p>在所有这些组件（LLMs、prompts、输出解析器）中还有很多微妙之处，会在后面持续学习</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/get_started/quickstart">快速入门 | 🦜️🔗 Langchain</a></p>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/get_started/quickstart">快速入门 | 🦜️🔗 Langchain</a></p>
 
     </div>
 
@@ -458,7 +453,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97"><span class="nav-number">1.1.</span> <span class="nav-text">模块</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LangChain"><span class="nav-number">2.1.</span> <span class="nav-text">LangChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenAI"><span class="nav-number">2.2.</span> <span class="nav-text">OpenAI</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B"><span class="nav-number">3.</span> <span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-number">3.1.</span> <span class="nav-text">构建模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LLMs"><span class="nav-number">3.2.</span> <span class="nav-text">LLMs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AzureOpenAI-LLM"><span class="nav-number">3.3.</span> <span class="nav-text">AzureOpenAI LLM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.4.</span> <span class="nav-text">提示模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">3.5.</span> <span class="nav-text">输出解析器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LLMChain"><span class="nav-number">3.6.</span> <span class="nav-text">LLMChain</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E7%BB%AD"><span class="nav-number">4.</span> <span class="nav-text">后续</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97"><span class="nav-number">1.1.</span> <span class="nav-text">模块</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LangChain"><span class="nav-number">2.1.</span> <span class="nav-text">LangChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenAI"><span class="nav-number">2.2.</span> <span class="nav-text">OpenAI</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-number">3.1.</span> <span class="nav-text">构建模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LLMs"><span class="nav-number">3.2.</span> <span class="nav-text">LLMs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AzureOpenAI-LLM"><span class="nav-number">3.3.</span> <span class="nav-text">AzureOpenAI LLM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.4.</span> <span class="nav-text">提示模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">3.5.</span> <span class="nav-text">输出解析器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LLMChain"><span class="nav-number">3.6.</span> <span class="nav-text">LLMChain</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">后续</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -472,7 +467,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

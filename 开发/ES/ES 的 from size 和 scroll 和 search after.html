@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="from sizefrom size 是最常见的分页方式，类比 MySQL 的 offset limit 由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 from + size 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 (shards × (from + size)) 条数时在 coordinate">
+  <meta name="description" content="from size from size 是最常见的分页方式，类比 MySQL 的 offset limit 由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 from + size 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 (shards × (from + size)) 条数时在 coordinat">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ES 的 from size 和 scroll 和 search after">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/ES/ES%20%E7%9A%84%20from%20size%20%E5%92%8C%20scroll%20%E5%92%8C%20search%20after.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="from sizefrom size 是最常见的分页方式，类比 MySQL 的 offset limit 由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 from + size 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 (shards × (from + size)) 条数时在 coordinate">
+<meta property="og:description" content="from size from size 是最常见的分页方式，类比 MySQL 的 offset limit 由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 from + size 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 (shards × (from + size)) 条数时在 coordinat">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-11-28T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-11-28T16:00:00.000Z">
@@ -246,10 +246,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="from-size"><a href="#from-size" class="headerlink" title="from size"></a>from size</h1><p>from size 是最常见的分页方式，类比 MySQL 的 offset limit</p>
+        <h1>from size</h1>
+<p>from size 是最常见的分页方式，类比 MySQL 的 offset limit</p>
 <p>由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 <code>from + size</code> 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 <code>(shards × (from + size))</code> 条数时在 coordinate node 再进行一次排序，最终抽取出真正 from 后的 size 条结果</p>
 <p>显而易见，当 shards 较多、分页深度很大时，这种方式存在很大的性能问题，这也是 ES 默认深度为 <code>from + size &lt;= 10000</code> 的原因</p>
-<h2 id="Routing-机制"><a href="#Routing-机制" class="headerlink" title="Routing 机制"></a>Routing 机制</h2><p>写入文档时指定存储的分片</p>
+<h2 id="Routing-机制">Routing 机制</h2>
+<p>写入文档时指定存储的分片</p>
 <p>官方提供的公式如下：<code>shard_num = hash(_routing) % num_primary_shards</code></p>
 <ul>
 <li><code>_routing</code> 代表提供路由的字段。默认情况下为文档的 ID</li>
@@ -259,72 +261,55 @@
 <p>基本流程是 ES 根据路由字段计算其哈希值，再与主分片数量取余，计算得出数据落在的分片编号</p>
 <p>此外如果只根据 <code>_routing</code> 会出现数据倾斜，可以采取折中方案，使用 <code>routing_partition_size</code> 参数，来使同一类 <code>_routing</code> 路由到主分片的一个子集中</p>
 <p><code>shard_num = (hash(_routing) + hash(_id) % routing_partition_size) % num_primary_shards</code></p>
-<h2 id="restful"><a href="#restful" class="headerlink" title="restful"></a>restful</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">POST /hero-index/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;bool&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;must_not&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">				<span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;term&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">						<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line">					<span class="punctuation">&#125;</span></span><br><span class="line">				<span class="punctuation">&#125;</span></span><br><span class="line">			<span class="punctuation">]</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="number">0</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">search</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// searchRequest</span></span><br><span class="line">    <span class="type">SearchRequest</span> <span class="variable">searchRequest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchRequest</span>(<span class="string">&quot;hero-index&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询条件</span></span><br><span class="line">    <span class="type">SearchSourceBuilder</span> <span class="variable">searchSourceBuilder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchSourceBuilder</span>();</span><br><span class="line">    <span class="comment">// 分页条件</span></span><br><span class="line">    searchSourceBuilder.from(<span class="number">0</span>);</span><br><span class="line">    searchSourceBuilder.size(<span class="number">10</span>);</span><br><span class="line">    <span class="comment">// term name = &quot;&quot;</span></span><br><span class="line">    <span class="type">TermQueryBuilder</span> <span class="variable">termQueryBuilder</span> <span class="operator">=</span> QueryBuilders.termQuery(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// bool 类型为 must not</span></span><br><span class="line">    <span class="type">BoolQueryBuilder</span> <span class="variable">boolQueryBuilder</span> <span class="operator">=</span> QueryBuilders.boolQuery().mustNot(termQueryBuilder);</span><br><span class="line">    <span class="comment">// 查询条件组装进 searchSourceBuilder</span></span><br><span class="line">    searchSourceBuilder.query(boolQueryBuilder);</span><br><span class="line">    searchSourceBuilder.timeout(<span class="keyword">new</span> <span class="title class_">TimeValue</span>(<span class="number">60</span>, TimeUnit.SECONDS));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    searchRequest.source(searchSourceBuilder);</span><br><span class="line">    <span class="type">SearchResponse</span> <span class="variable">search</span> <span class="operator">=</span> client.search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;totalHits:&quot;</span> + search.getHits().getTotalHits().value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="search-after"><a href="#search-after" class="headerlink" title="search after"></a>search after</h1><p>ES 5 引入的新机制</p>
+<h2 id="restful">restful</h2>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">POST /hero-index/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;bool&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;must_not&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">				<span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;term&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">						<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line">					<span class="punctuation">&#125;</span></span><br><span class="line">				<span class="punctuation">&#125;</span></span><br><span class="line">			<span class="punctuation">]</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">10</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="number">0</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Java">Java</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">search</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// searchRequest</span></span><br><span class="line">    <span class="type">SearchRequest</span> <span class="variable">searchRequest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchRequest</span>(<span class="string">&quot;hero-index&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询条件</span></span><br><span class="line">    <span class="type">SearchSourceBuilder</span> <span class="variable">searchSourceBuilder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchSourceBuilder</span>();</span><br><span class="line">    <span class="comment">// 分页条件</span></span><br><span class="line">    searchSourceBuilder.from(<span class="number">0</span>);</span><br><span class="line">    searchSourceBuilder.size(<span class="number">10</span>);</span><br><span class="line">    <span class="comment">// term name = &quot;&quot;</span></span><br><span class="line">    <span class="type">TermQueryBuilder</span> <span class="variable">termQueryBuilder</span> <span class="operator">=</span> QueryBuilders.termQuery(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// bool 类型为 must not</span></span><br><span class="line">    <span class="type">BoolQueryBuilder</span> <span class="variable">boolQueryBuilder</span> <span class="operator">=</span> QueryBuilders.boolQuery().mustNot(termQueryBuilder);</span><br><span class="line">    <span class="comment">// 查询条件组装进 searchSourceBuilder</span></span><br><span class="line">    searchSourceBuilder.query(boolQueryBuilder);</span><br><span class="line">    searchSourceBuilder.timeout(<span class="keyword">new</span> <span class="title class_">TimeValue</span>(<span class="number">60</span>, TimeUnit.SECONDS));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    searchRequest.source(searchSourceBuilder);</span><br><span class="line">    <span class="type">SearchResponse</span> <span class="variable">search</span> <span class="operator">=</span> client.search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;totalHits:&quot;</span> + search.getHits().getTotalHits().value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1>search after</h1>
+<p>ES 5 引入的新机制</p>
 <p>简单概括 search after 如何使用：</p>
 <ul>
 <li>必须先指定排序规则（需要获取排序坐标）</li>
 <li>比如从第一页开始（从中间开始也无法知道中间的具体位置）</li>
-<li>从第一页开始以后每次都带上<code>search_after=lastEmittedDocFieldValue</code><br><code>lastEmittedDocFieldValue</code> 就是下一页开始的 keyset 坐标（也就是这个参数把深度分页变成了常数级分页）</li>
+<li>从第一页开始以后每次都带上<code>search_after=lastEmittedDocFieldValue</code><br>
+<code>lastEmittedDocFieldValue</code> 就是下一页开始的 keyset 坐标（也就是这个参数把深度分页变成了常数级分页）</li>
 </ul>
 <p><strong>和 from size 相比，无论去到第几页，coordinate node 向其它 node 发送的请求始终就是请求 size 个 docs；即无论分页深度是多少，都是常量级的开销</strong></p>
 <p>其实现原理和关系型数据库常使用的 keyset 分页思想一致，业务妥协（只能按顺序分页而不能跳转页数）来实现性能的提升</p>
 <p>但需要注意，看似 search after 是一个 O(1) 级别的操作，但随着分页深度的增加，其内部逻辑扫描的 doc 数量也在不断增加，依然会影响查询性能，只是相比 from size 方式有一定提升（MySQL 单表查询的分页也是如此）</p>
 <p>此外，如果字段区分度不高，则会忽略某些数据；例如根据 age 作为排序条件，此时如果每页数据取 1000 条，而某个 age 数据 count &gt; 1000，则会忽略后续数据；<strong>解决方法是排序字段唯一，或者组合后的多个排序条件唯一</strong></p>
-<h2 id="restful-1"><a href="#restful-1" class="headerlink" title="restful"></a>restful</h2><p>第一次查询和普通查询一致</p>
+<h2 id="restful-2">restful</h2>
+<p>第一次查询和普通查询一致</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">POST /hero-index/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;bool&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;must_not&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">				<span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;term&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">						<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line">					<span class="punctuation">&#125;</span></span><br><span class="line">				<span class="punctuation">&#125;</span></span><br><span class="line">			<span class="punctuation">]</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">			<span class="attr">&quot;_id&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
-
 <p>随后的查询增加 <code>search_after</code> 查询条件，值为最后一条数据排序字段的值</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">POST /hero-index/_search</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;bool&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;must_not&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">				<span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;term&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">						<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line">					<span class="punctuation">&#125;</span></span><br><span class="line">				<span class="punctuation">&#125;</span></span><br><span class="line">			<span class="punctuation">]</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">			<span class="attr">&quot;_id&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;search_after&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="number">35</span><span class="punctuation">,</span></span><br><span class="line">		<span class="string">&quot;i-mnlIQBCTaFCHoWJhbM&quot;</span></span><br><span class="line">	<span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Java-1"><a href="#Java-1" class="headerlink" title="Java"></a>Java</h2><p>同 from size 一致</p>
+<h2 id="Java-2">Java</h2>
+<p>同 from size 一致</p>
 <p>第二次查询及之后需要 <code>searchSourceBuilder.searchAfter(new Object[1]);</code> 来设置 <code>search_after</code> 参数</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">searchAfter</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// searchRequest</span></span><br><span class="line">    <span class="type">SearchRequest</span> <span class="variable">searchRequest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchRequest</span>(<span class="string">&quot;hero-index&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询条件</span></span><br><span class="line">    <span class="type">SearchSourceBuilder</span> <span class="variable">searchSourceBuilder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchSourceBuilder</span>();</span><br><span class="line">    <span class="comment">// 分页条件</span></span><br><span class="line">    searchSourceBuilder.from(<span class="number">0</span>);</span><br><span class="line">    searchSourceBuilder.size(<span class="number">10</span>);</span><br><span class="line">    <span class="comment">// term name = &quot;&quot;</span></span><br><span class="line">    <span class="type">TermQueryBuilder</span> <span class="variable">termQueryBuilder</span> <span class="operator">=</span> QueryBuilders.termQuery(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// bool 类型为 must not</span></span><br><span class="line">    <span class="type">BoolQueryBuilder</span> <span class="variable">boolQueryBuilder</span> <span class="operator">=</span> QueryBuilders.boolQuery().mustNot(termQueryBuilder);</span><br><span class="line">    <span class="comment">// 查询条件组装进 searchSourceBuilder</span></span><br><span class="line">    searchSourceBuilder.query(boolQueryBuilder);</span><br><span class="line">    searchSourceBuilder.timeout(<span class="keyword">new</span> <span class="title class_">TimeValue</span>(<span class="number">60</span>, TimeUnit.SECONDS));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 上批数据最后一条的排序字段值</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">lastHitOrderFieldValue</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// set 进 searchAfter 属性中</span></span><br><span class="line">    searchSourceBuilder.searchAfter(<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;lastHitOrderFieldValue&#125;);</span><br><span class="line">    searchRequest.source(searchSourceBuilder);</span><br><span class="line">    <span class="type">SearchResponse</span> <span class="variable">search</span> <span class="operator">=</span> client.search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;totalHits:&quot;</span> + search.getHits().getTotalHits().value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="scroll"><a href="#scroll" class="headerlink" title="scroll"></a>scroll</h1><p>如果一开始就明确地查询全量的数据，无论使用 from size 还是 search after 都不是一个好的选择，要么依然存在深度分页的问题，要么需要多次请求，所以引入了 scroll 方式</p>
+<h1>scroll</h1>
+<p>如果一开始就明确地查询全量的数据，无论使用 from size 还是 search after 都不是一个好的选择，要么依然存在深度分页的问题，要么需要多次请求，所以引入了 scroll 方式</p>
 <p>scroll 就是把一次的查询结果缓存一定的时间，如 <code>scroll = 1m</code> 则把查询结果在下一次请求上来时暂存 1 分钟</p>
 <p>response 比传统的返回多了一个 <code>scroll_id</code>，下次带上这个 <code>scroll_id</code> 即可找回这个缓存的结果</p>
 <p>本质上是让各个 shard 将结果缓存，此外也有很多优化（单 shard 减少请求数量、剪枝等）来提高性能</p>
-<h2 id="restful-2"><a href="#restful-2" class="headerlink" title="restful"></a>restful</h2><p>第一次请求</p>
+<h2 id="restful-3">restful</h2>
+<p>第一次请求</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">POST /hero-index/_search?scroll=<span class="number">1</span>m</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;query&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;bool&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;must_not&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">				<span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;term&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">						<span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line">					<span class="punctuation">&#125;</span></span><br><span class="line">				<span class="punctuation">&#125;</span></span><br><span class="line">			<span class="punctuation">]</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;size&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;sort&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;order&quot;</span><span class="punctuation">:</span> <span class="string">&quot;desc&quot;</span></span><br><span class="line">			<span class="punctuation">&#125;</span></span><br><span class="line">		<span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
-
 <p>随后</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /_search/scroll</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;scroll&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1m&quot;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;scroll_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;FGluY2x1ZGVfY29udGV4dF91dWlkDXF1ZXJ5QW5kRmV0Y2gBFlN0TlRCWW5pUktHLWxvMEdDN3Zya2cAAAAAAAAA_hZkVXh5THJ1SFR1dVVPQlJJX3JDZWRR&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Java-2"><a href="#Java-2" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">scrollSearch</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// searchRequest</span></span><br><span class="line">    <span class="type">SearchRequest</span> <span class="variable">searchRequest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchRequest</span>(<span class="string">&quot;hero-index&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询条件</span></span><br><span class="line">    <span class="type">SearchSourceBuilder</span> <span class="variable">searchSourceBuilder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchSourceBuilder</span>();</span><br><span class="line">    <span class="comment">// 分页条件</span></span><br><span class="line">    searchSourceBuilder.from(<span class="number">0</span>);</span><br><span class="line">    searchSourceBuilder.size(<span class="number">10</span>);</span><br><span class="line">    <span class="comment">// term name = &quot;&quot;</span></span><br><span class="line">    <span class="type">TermQueryBuilder</span> <span class="variable">termQueryBuilder</span> <span class="operator">=</span> QueryBuilders.termQuery(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// bool 类型为 must not</span></span><br><span class="line">    <span class="type">BoolQueryBuilder</span> <span class="variable">boolQueryBuilder</span> <span class="operator">=</span> QueryBuilders.boolQuery().mustNot(termQueryBuilder);</span><br><span class="line">    <span class="comment">// 查询条件组装进 searchSourceBuilder</span></span><br><span class="line">    searchSourceBuilder.query(boolQueryBuilder);</span><br><span class="line">    searchSourceBuilder.timeout(<span class="keyword">new</span> <span class="title class_">TimeValue</span>(<span class="number">60</span>, TimeUnit.SECONDS));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义 scroll</span></span><br><span class="line">    <span class="type">Scroll</span> <span class="variable">scroll</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scroll</span>(TimeValue.timeValueMinutes(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    searchRequest.source(searchSourceBuilder);</span><br><span class="line">    searchRequest.scroll(scroll);</span><br><span class="line">    <span class="type">SearchResponse</span> <span class="variable">search</span> <span class="operator">=</span> client.search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;totalHits:&quot;</span> + search.getHits().getTotalHits().value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
+<h2 id="Java-3">Java</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">scrollSearch</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// searchRequest</span></span><br><span class="line">    <span class="type">SearchRequest</span> <span class="variable">searchRequest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchRequest</span>(<span class="string">&quot;hero-index&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询条件</span></span><br><span class="line">    <span class="type">SearchSourceBuilder</span> <span class="variable">searchSourceBuilder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchSourceBuilder</span>();</span><br><span class="line">    <span class="comment">// 分页条件</span></span><br><span class="line">    searchSourceBuilder.from(<span class="number">0</span>);</span><br><span class="line">    searchSourceBuilder.size(<span class="number">10</span>);</span><br><span class="line">    <span class="comment">// term name = &quot;&quot;</span></span><br><span class="line">    <span class="type">TermQueryBuilder</span> <span class="variable">termQueryBuilder</span> <span class="operator">=</span> QueryBuilders.termQuery(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// bool 类型为 must not</span></span><br><span class="line">    <span class="type">BoolQueryBuilder</span> <span class="variable">boolQueryBuilder</span> <span class="operator">=</span> QueryBuilders.boolQuery().mustNot(termQueryBuilder);</span><br><span class="line">    <span class="comment">// 查询条件组装进 searchSourceBuilder</span></span><br><span class="line">    searchSourceBuilder.query(boolQueryBuilder);</span><br><span class="line">    searchSourceBuilder.timeout(<span class="keyword">new</span> <span class="title class_">TimeValue</span>(<span class="number">60</span>, TimeUnit.SECONDS));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义 scroll</span></span><br><span class="line">    <span class="type">Scroll</span> <span class="variable">scroll</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scroll</span>(TimeValue.timeValueMinutes(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    searchRequest.source(searchSourceBuilder);</span><br><span class="line">    searchRequest.scroll(scroll);</span><br><span class="line">    <span class="type">SearchResponse</span> <span class="variable">search</span> <span class="operator">=</span> client.search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;totalHits:&quot;</span> + search.getHits().getTotalHits().value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>随后应该循环查询</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">scrollAfterSearch</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 定义 scroll</span></span><br><span class="line">    <span class="type">Scroll</span> <span class="variable">scroll</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scroll</span>(TimeValue.timeValueMinutes(<span class="number">1</span>));</span><br><span class="line">    <span class="type">String</span> <span class="variable">scrollId</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="type">SearchScrollRequest</span> <span class="variable">searchScrollRequest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SearchScrollRequest</span>(scrollId);</span><br><span class="line">    searchScrollRequest.scroll(scroll);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    searchScrollRequest.scroll(scroll);</span><br><span class="line">    <span class="type">SearchResponse</span> <span class="variable">search</span> <span class="operator">=</span> client.scroll(searchScrollRequest, RequestOptions.DEFAULT);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;totalHits:&quot;</span> + search.getHits().getTotalHits().value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​	</p>
-<h1 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h1><p>文章 <strong>《业界难题 - ”跨库分页” 的四种方案》</strong></p>
-<h2 id="需求产生"><a href="#需求产生" class="headerlink" title="需求产生"></a>需求产生</h2><p><strong>分页需求</strong></p>
+<p>​</p>
+<h1>拓展</h1>
+<p>文章 <strong>《业界难题 - ”跨库分页” 的四种方案》</strong></p>
+<h2 id="需求产生">需求产生</h2>
+<p><strong>分页需求</strong></p>
 <p>对于数据的查询，很多业务都有分页拉取数据的需求，例如：分页拉取聊天记录、商品信息、图片数据等</p>
 <p>除了对数据集拆分，往往还需要业务字段进行排序</p>
 <p>比如取第 3 页的订单数据，每页 100 条，根据创建时间倒序；可以根据创建时间建立索引</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `<span class="keyword">order</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span> LIMIT <span class="number">200</span>,<span class="number">100</span>;</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>分库分表</strong></p>
 <p>随着业务的发展，为了应对数据量大、请求量大等问题，对数据库进行了横向扩展</p>
 <p>引入分库分表后，数据根据 patition key 路由规则写入不同的库表中</p>
@@ -332,7 +317,8 @@
 <p>当分库分表后需要进行示例的分页需求时，就无法通过简单的请求一个库实现目的了（假设分表键不是使用的创建时间，事实上使用创建时间范围作为分表键也没任何意义）</p>
 <p>排序的依据是时间，分表的依据是其他字段，因此数据库丧失了创建时间排序的全局视野</p>
 <p>本文就在讨论如何满足 跨越多个水平拆分数据库的分页查询问题</p>
-<h2 id="全局视野"><a href="#全局视野" class="headerlink" title="全局视野"></a>全局视野</h2><p>当数据分布在两个库中，无论哪个分库的第三页，都不一定会是全局排序的第三页数据</p>
+<h2 id="全局视野">全局视野</h2>
+<p>当数据分布在两个库中，无论哪个分库的第三页，都不一定会是全局排序的第三页数据</p>
 <p>情况如下：</p>
 <ul>
 <li>一般情况：两个库各占第三页数据的一部分</li>
@@ -346,23 +332,23 @@
 </ul>
 <p><strong>缺点：</strong></p>
 <ul>
-<li><p>每次需要向各分库查询的数据量和 shard 数量倍数级相关，和页码（深度）指数级相关</p>
+<li>
+<p>每次需要向各分库查询的数据量和 shard 数量倍数级相关，和页码（深度）指数级相关</p>
 </li>
-<li><p>需要二次排序</p>
+<li>
+<p>需要二次排序</p>
 </li>
-<li><p>需要更多 IO 资源</p>
+<li>
+<p>需要更多 IO 资源</p>
 </li>
 </ul>
-<h2 id="禁止跳页"><a href="#禁止跳页" class="headerlink" title="禁止跳页"></a>禁止跳页</h2><p>由业务进行妥协，不允许进行页数的随意跳转，只允许依次进行 下一页 操作，就能减少深度分页带来的性能影响</p>
+<h2 id="禁止跳页">禁止跳页</h2>
+<p>由业务进行妥协，不允许进行页数的随意跳转，只允许依次进行 下一页 操作，就能减少深度分页带来的性能影响</p>
 <p>被称为 keyset 分页、search after 等</p>
 <p>首先这种方式需要先进行排序，比如使用创建时间作为排序字段，第一页时各分库执行</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `<span class="keyword">order</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span> LIMIT <span class="number">0</span>,<span class="number">100</span>;</span><br></pre></td></tr></table></figure>
-
 <p>当点击下一页时，根据第一页数据的最后一条，即第一页中最小创建时间的数据（假设是 1669820860000），各分库执行</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `<span class="keyword">order</span>` <span class="keyword">WHERE</span> `createdTime` <span class="operator">&gt;</span> <span class="number">1669820860000</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span> LIMIT <span class="number">0</span>,<span class="number">100</span>;</span><br></pre></td></tr></table></figure>
-
-
-
 <p>可以发现，除第一次查询时，后面每次查询都需要带上排序条件下，上一次查询最后数据的排序值，这也是无法进行跳页的原因，因为不通过查询无法知道所需页数据的 search after 条件是多少</p>
 <p>禁止跳页后每个分库一次都只查询一页数据，查询数据量只和分库数量倍数级相关</p>
 <p><strong>优点：</strong></p>
@@ -374,11 +360,11 @@
 <li>业务进行不能跳页的妥协</li>
 <li>排序字段需要具有区分度</li>
 </ul>
-<h2 id="允许精度损失"><a href="#允许精度损失" class="headerlink" title="允许精度损失"></a>允许精度损失</h2><p>正常情况下，patition key 规则都尽可能使数据均匀分布在各分库中</p>
+<h2 id="允许精度损失">允许精度损失</h2>
+<p>正常情况下，patition key 规则都尽可能使数据均匀分布在各分库中</p>
 <p>所以可以理想认为，每个分库都完整包含了数据的一部分</p>
 <p>假设需要取第 100 页数据，有 2 个分库，可以各取每个分库的半页数据再得到数据的并集</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `<span class="keyword">order</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span> LIMIT <span class="number">9450</span>,<span class="number">50</span>;</span><br></pre></td></tr></table></figure>
-
 <p>这种方式最终结果只能是近似结果，并不精准</p>
 <p><strong>优点：</strong></p>
 <ul>
@@ -388,52 +374,51 @@
 <ul>
 <li>业务进行精度损失的妥协</li>
 </ul>
-<h2 id="二次查询"><a href="#二次查询" class="headerlink" title="二次查询"></a>二次查询</h2><p>这种方式既能做到精准数据，也能减少查询量</p>
+<h2 id="二次查询">二次查询</h2>
+<p>这种方式既能做到精准数据，也能减少查询量</p>
 <p>基本的思想是通过多次查询来获得全局视野，再根据全局视野在结果集中抽取需要的数据</p>
 <p>假设一页查询 5 条数据，查询第 201 页，有三个分库；单表查询如下</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `<span class="keyword">order</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span> LIMIT <span class="number">1000</span>,<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>第一步：</strong></p>
 <p>改写查询，各分库按理想情况下数据分布进行查询，即</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `<span class="keyword">order</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span> LIMIT <span class="number">333</span>,<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
-
 <p>返回结果</p>
 <table>
 <thead>
 <tr>
-<th align="center">A</th>
-<th align="center">B</th>
-<th align="center">C</th>
+<th style="text-align:center">A</th>
+<th style="text-align:center">B</th>
+<th style="text-align:center">C</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">523</td>
-<td align="center">423</td>
-<td align="center">500</td>
+<tbody>
+<tr>
+<td style="text-align:center">523</td>
+<td style="text-align:center">423</td>
+<td style="text-align:center">500</td>
 </tr>
 <tr>
-<td align="center">423</td>
-<td align="center">421</td>
-<td align="center">400</td>
+<td style="text-align:center">423</td>
+<td style="text-align:center">421</td>
+<td style="text-align:center">400</td>
 </tr>
 <tr>
-<td align="center">323</td>
-<td align="center">400</td>
-<td align="center">300</td>
+<td style="text-align:center">323</td>
+<td style="text-align:center">400</td>
+<td style="text-align:center">300</td>
 </tr>
 <tr>
-<td align="center">223</td>
-<td align="center">320</td>
-<td align="center">200</td>
+<td style="text-align:center">223</td>
+<td style="text-align:center">320</td>
+<td style="text-align:center">200</td>
 </tr>
 <tr>
-<td align="center">123</td>
-<td align="center">320</td>
-<td align="center">100</td>
+<td style="text-align:center">123</td>
+<td style="text-align:center">320</td>
+<td style="text-align:center">100</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><strong>第二步：</strong></p>
 <p>结果集排序后，找到排序字段第一位的值，<code>createdTime DESC</code>，即创建时间的最大值</p>
 <p>可以得到是分库 A 返回的 523</p>
@@ -441,58 +426,59 @@
 <p>扩大查询范围，查询条件使用 <code>between</code> 语句，最大值为全局最大值（523），最小值为该分库返回结果集的最大值（B-423，C-500）</p>
 <p>因为最大值在分库 A 结果集中，所以 A 是不需要二次请求的（523 和 123 数据中必然还是上一次的结果集）</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `order_B` <span class="keyword">WHERE</span> `createdTime` <span class="keyword">BETWEEN</span> <span class="number">523</span> <span class="keyword">AND</span> <span class="number">423</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `order_C` <span class="keyword">WHERE</span> `createdTime` <span class="keyword">BETWEEN</span> <span class="number">523</span> <span class="keyword">AND</span> <span class="number">500</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> `createdTime` <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
-
 <p>B、C 可能会返回更多的数据，结果集更新为</p>
 <table>
 <thead>
 <tr>
-<th align="center">A</th>
-<th align="center">B</th>
-<th align="center">C</th>
+<th style="text-align:center">A</th>
+<th style="text-align:center">B</th>
+<th style="text-align:center">C</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center">520</td>
+<tbody>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">520</td>
 </tr>
 <tr>
-<td align="center"></td>
-<td align="center">499</td>
-<td align="center">510</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">499</td>
+<td style="text-align:center">510</td>
 </tr>
 <tr>
-<td align="center">523</td>
-<td align="center">423</td>
-<td align="center">500</td>
+<td style="text-align:center">523</td>
+<td style="text-align:center">423</td>
+<td style="text-align:center">500</td>
 </tr>
 <tr>
-<td align="center">423</td>
-<td align="center">421</td>
-<td align="center">400</td>
+<td style="text-align:center">423</td>
+<td style="text-align:center">421</td>
+<td style="text-align:center">400</td>
 </tr>
 <tr>
-<td align="center">323</td>
-<td align="center">400</td>
-<td align="center">300</td>
+<td style="text-align:center">323</td>
+<td style="text-align:center">400</td>
+<td style="text-align:center">300</td>
 </tr>
 <tr>
-<td align="center">223</td>
-<td align="center">320</td>
-<td align="center">200</td>
+<td style="text-align:center">223</td>
+<td style="text-align:center">320</td>
+<td style="text-align:center">200</td>
 </tr>
 <tr>
-<td align="center">123</td>
-<td align="center">320</td>
-<td align="center">100</td>
+<td style="text-align:center">123</td>
+<td style="text-align:center">320</td>
+<td style="text-align:center">100</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><strong>第四步：</strong></p>
 <p>推断全局视野</p>
 <p>在分库 A 中，523 是第 333 条数据</p>
-<p>在分库 B 中，加上新返回的 1 条数据，523 是第 333 - 1 - 1 &#x3D; 331 条数据</p>
-<p>在分库 C 中，加上新返回的 2 条数据，523 是第 333 - 2 -1 &#x3D; 330 条数据</p>
-<p>此时得到整个结果集中的最大值 523 在全局的 offset 应该是 333 + 331 + 330 &#x3D; 994</p>
+<p>在分库 B 中，加上新返回的 1 条数据，523 是第 333 - 1 - 1 = 331 条数据</p>
+<p>在分库 C 中，加上新返回的 2 条数据，523 是第 333 - 2 -1 = 330 条数据</p>
+<p>此时得到整个结果集中的最大值 523 在全局的 offset 应该是 333 + 331 + 330 = 994</p>
 <p><strong>第五步：</strong></p>
 <p>已经有了 523 这个数据的全局视野，offset 994</p>
 <p>又有了结果集 18 条数据</p>
@@ -503,42 +489,48 @@
 </ul>
 <p><strong>缺点：</strong></p>
 <ul>
-<li><p>逻辑复杂</p>
+<li>
+<p>逻辑复杂</p>
 </li>
-<li><p>需要多次查询</p>
+<li>
+<p>需要多次查询</p>
 </li>
 </ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<h2 id="总结">总结</h2>
+<table>
 <thead>
 <tr>
-<th align="center">方式</th>
-<th align="center">优点</th>
-<th align="center">缺点</th>
+<th style="text-align:center">方式</th>
+<th style="text-align:center">优点</th>
+<th style="text-align:center">缺点</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">全局视野</td>
-<td align="center">精确</td>
-<td align="center">性能问题</td>
+<tbody>
+<tr>
+<td style="text-align:center">全局视野</td>
+<td style="text-align:center">精确</td>
+<td style="text-align:center">性能问题</td>
 </tr>
 <tr>
-<td align="center">禁止跳页</td>
-<td align="center">避免深度分页</td>
-<td align="center">业务妥协</td>
+<td style="text-align:center">禁止跳页</td>
+<td style="text-align:center">避免深度分页</td>
+<td style="text-align:center">业务妥协</td>
 </tr>
 <tr>
-<td align="center">允许精度损失</td>
-<td align="center">避免深度分页</td>
-<td align="center">业务妥协</td>
+<td style="text-align:center">允许精度损失</td>
+<td style="text-align:center">避免深度分页</td>
+<td style="text-align:center">业务妥协</td>
 </tr>
 <tr>
-<td align="center">二次查询</td>
-<td align="center">精确 + 避免深度分页</td>
-<td align="center">多次查询</td>
+<td style="text-align:center">二次查询</td>
+<td style="text-align:center">精确 + 避免深度分页</td>
+<td style="text-align:center">多次查询</td>
 </tr>
-</tbody></table>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/91d03b16af77">Elasticsearch 5.x 源码分析（3）from size, scroll 和 search after - 简书 (jianshu.com)</a></p>
-<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/713865">业界难题-“跨库分页”的四种方案-阿里云开发者社区 (aliyun.com)</a>	</p>
+</tbody>
+</table>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/91d03b16af77">Elasticsearch 5.x 源码分析（3）from size, scroll 和 search after - 简书 (jianshu.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/713865">业界难题-“跨库分页”的四种方案-阿里云开发者社区 (aliyun.com)</a></p>
 
     </div>
 
@@ -623,7 +615,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#from-size"><span class="nav-number">1.</span> <span class="nav-text">from size</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Routing-%E6%9C%BA%E5%88%B6"><span class="nav-number">1.1.</span> <span class="nav-text">Routing 机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#restful"><span class="nav-number">1.2.</span> <span class="nav-text">restful</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java"><span class="nav-number">1.3.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#search-after"><span class="nav-number">2.</span> <span class="nav-text">search after</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#restful-1"><span class="nav-number">2.1.</span> <span class="nav-text">restful</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-1"><span class="nav-number">2.2.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#scroll"><span class="nav-number">3.</span> <span class="nav-text">scroll</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#restful-2"><span class="nav-number">3.1.</span> <span class="nav-text">restful</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-2"><span class="nav-number">3.2.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8B%93%E5%B1%95"><span class="nav-number">4.</span> <span class="nav-text">拓展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E4%BA%A7%E7%94%9F"><span class="nav-number">4.1.</span> <span class="nav-text">需求产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%A7%86%E9%87%8E"><span class="nav-number">4.2.</span> <span class="nav-text">全局视野</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A6%81%E6%AD%A2%E8%B7%B3%E9%A1%B5"><span class="nav-number">4.3.</span> <span class="nav-text">禁止跳页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%81%E8%AE%B8%E7%B2%BE%E5%BA%A6%E6%8D%9F%E5%A4%B1"><span class="nav-number">4.4.</span> <span class="nav-text">允许精度损失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.5.</span> <span class="nav-text">二次查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.6.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">from size</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Routing-%E6%9C%BA%E5%88%B6"><span class="nav-number">1.1.</span> <span class="nav-text">Routing 机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#restful"><span class="nav-number">1.2.</span> <span class="nav-text">restful</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java"><span class="nav-number">1.3.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">search after</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#restful-2"><span class="nav-number">2.1.</span> <span class="nav-text">restful</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-2"><span class="nav-number">2.2.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">scroll</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#restful-3"><span class="nav-number">3.1.</span> <span class="nav-text">restful</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-3"><span class="nav-number">3.2.</span> <span class="nav-text">Java</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">拓展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E4%BA%A7%E7%94%9F"><span class="nav-number">4.1.</span> <span class="nav-text">需求产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%A7%86%E9%87%8E"><span class="nav-number">4.2.</span> <span class="nav-text">全局视野</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A6%81%E6%AD%A2%E8%B7%B3%E9%A1%B5"><span class="nav-number">4.3.</span> <span class="nav-text">禁止跳页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%81%E8%AE%B8%E7%B2%BE%E5%BA%A6%E6%8D%9F%E5%A4%B1"><span class="nav-number">4.4.</span> <span class="nav-text">允许精度损失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.5.</span> <span class="nav-text">二次查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.6.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -637,7 +629,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

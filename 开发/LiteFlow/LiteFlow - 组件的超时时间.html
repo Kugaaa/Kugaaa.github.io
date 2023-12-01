@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="背景允许对EL中的每⼀个组件设置超时时间控制 · Issue #I7I3LL · dromara&#x2F;liteFlow - Gitee.com issue 中需求了更细粒度的超时时间设置，允许 EL 中的每⼀个组件设置超时时间控制 如何使用可以参考官方文档 ⏱️超时控制 | LiteFlow">
+  <meta name="description" content="背景 允许对EL中的每⼀个组件设置超时时间控制 · Issue #I7I3LL · dromara&#x2F;liteFlow - Gitee.com issue 中需求了更细粒度的超时时间设置，允许 EL 中的每⼀个组件设置超时时间控制 如何使用可以参考官方文档 ⏱️超时控制 | LiteFlow">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LiteFlow - 组件的超时时间">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LiteFlow/LiteFlow%20-%20%E7%BB%84%E4%BB%B6%E7%9A%84%E8%B6%85%E6%97%B6%E6%97%B6%E9%97%B4.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="背景允许对EL中的每⼀个组件设置超时时间控制 · Issue #I7I3LL · dromara&#x2F;liteFlow - Gitee.com issue 中需求了更细粒度的超时时间设置，允许 EL 中的每⼀个组件设置超时时间控制 如何使用可以参考官方文档 ⏱️超时控制 | LiteFlow">
+<meta property="og:description" content="背景 允许对EL中的每⼀个组件设置超时时间控制 · Issue #I7I3LL · dromara&#x2F;liteFlow - Gitee.com issue 中需求了更细粒度的超时时间设置，允许 EL 中的每⼀个组件设置超时时间控制 如何使用可以参考官方文档 ⏱️超时控制 | LiteFlow">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-11-01T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-11-01T16:00:00.000Z">
@@ -246,31 +246,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p><a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I7I3LL">允许对EL中的每⼀个组件设置超时时间控制 · Issue #I7I3LL · dromara&#x2F;liteFlow - Gitee.com</a></p>
+        <h1>背景</h1>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I7I3LL">允许对EL中的每⼀个组件设置超时时间控制 · Issue #I7I3LL · dromara/liteFlow - Gitee.com</a></p>
 <p>issue 中需求了更细粒度的超时时间设置，允许 EL 中的每⼀个组件设置超时时间控制</p>
 <p>如何使用可以参考官方文档</p>
 <p><a target="_blank" rel="noopener" href="https://liteflow.cc/pages/fd5984/#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">⏱️超时控制 | LiteFlow</a></p>
-<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="EL-关键字"><a href="#EL-关键字" class="headerlink" title="EL 关键字"></a>EL 关键字</h2><p>在 EL 解析器中注册相关的表达式和 <code>BaseOperator</code> 实现</p>
+<h1>实现</h1>
+<h2 id="EL-关键字">EL 关键字</h2>
+<p>在 EL 解析器中注册相关的表达式和 <code>BaseOperator</code> 实现</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment"> * EL解析引擎</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">ExpressRunner</span> <span class="variable">EXPRESS_RUNNER</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ExpressRunner</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">	<span class="comment">// 初始化QLExpress的Runner</span></span><br><span class="line">	EXPRESS_RUNNER.addFunction(ChainConstant.THEN, <span class="keyword">new</span> <span class="title class_">ThenOperator</span>());</span><br><span class="line">	EXPRESS_RUNNER.addFunction(ChainConstant.WHEN, <span class="keyword">new</span> <span class="title class_">WhenOperator</span>());</span><br><span class="line">	...</span><br><span class="line">   <span class="comment">// 这里 MAX_WAIT_SECONDS = maxWaitSeconds</span></span><br><span class="line">	EXPRESS_RUNNER.addFunctionAndClassMethod(ChainConstant.MAX_WAIT_SECONDS, Object.class, <span class="keyword">new</span> <span class="title class_">MaxWaitSecondsOperator</span>());</span><br><span class="line">	EXPRESS_RUNNER.addFunctionAndClassMethod(ChainConstant.PARALLEL, Object.class, <span class="keyword">new</span> <span class="title class_">ParallelOperator</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="MaxWaitSecondsOperator"><a href="#MaxWaitSecondsOperator" class="headerlink" title="MaxWaitSecondsOperator"></a>MaxWaitSecondsOperator</h2><p><code>MaxWaitSecondsOperator</code> 实现自 <code>BaseOperator</code></p>
+<h2 id="MaxWaitSecondsOperator">MaxWaitSecondsOperator</h2>
+<p><code>MaxWaitSecondsOperator</code> 实现自 <code>BaseOperator</code></p>
 <blockquote>
 <p><code>BaseOperator</code> 为了强化 <code>executeInner</code> 方法，会捕获抛出的 <code>QLException</code> 错误，输出友好的错误提示</p>
 </blockquote>
 <p><code>build</code> 方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> Condition <span class="title function_">build</span><span class="params">(Object[] objects)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">  	<span class="comment">// 校验参数数量</span></span><br><span class="line">    OperatorHelper.checkObjectSizeEqTwo(objects);</span><br><span class="line">  	<span class="comment">// 转换参数 1 为执行对象</span></span><br><span class="line">    <span class="type">Executable</span> <span class="variable">executable</span> <span class="operator">=</span> OperatorHelper.convert(objects[<span class="number">0</span>], Executable.class);</span><br><span class="line">    <span class="comment">// 获取传入的时间参数</span></span><br><span class="line">    <span class="type">Integer</span> <span class="variable">maxWaitSeconds</span> <span class="operator">=</span> OperatorHelper.convert(objects[<span class="number">1</span>], Integer.class);</span><br><span class="line">    <span class="keyword">if</span> (executable <span class="keyword">instanceof</span> WhenCondition) &#123;</span><br><span class="line">        <span class="comment">// WhenCondition，直接设置等待时间</span></span><br><span class="line">        <span class="type">WhenCondition</span> <span class="variable">whenCondition</span> <span class="operator">=</span> OperatorHelper.convert(executable, WhenCondition.class);</span><br><span class="line">        whenCondition.setMaxWaitTime(maxWaitSeconds);</span><br><span class="line">        whenCondition.setMaxWaitTimeUnit(TimeUnit.SECONDS);</span><br><span class="line">        <span class="keyword">return</span> whenCondition;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (executable <span class="keyword">instanceof</span> FinallyCondition) &#123;</span><br><span class="line">        <span class="comment">// FINALLY，报错</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> StrFormatter.format(<span class="string">&quot;The caller [&#123;&#125;] cannot use the keyword \&quot;maxWaitSeconds&#x27;\&quot;&quot;</span>, executable.toString());</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">QLException</span>(errorMsg);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (containsFinally(executable)) &#123;</span><br><span class="line">        <span class="comment">// 处理 THEN 中的 FINALLY</span></span><br><span class="line">        <span class="type">ThenCondition</span> <span class="variable">thenCondition</span> <span class="operator">=</span> OperatorHelper.convert(executable, ThenCondition.class);</span><br><span class="line">        <span class="keyword">return</span> handleFinally(thenCondition, maxWaitSeconds);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 其他情况，被 WHEN 包装</span></span><br><span class="line">        <span class="keyword">return</span> wrappedByTimeout(executable, maxWaitSeconds);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>流程可以概括为：</p>
 <ul>
-<li>校验 &amp; 准备工作<ul>
+<li>校验 &amp; 准备工作
+<ul>
 <li>校验参数数量；参数数量需要为 2（执行对象、超时时间）</li>
 <li>转换第一个参数为执行对象；调用 <code>OperatorHelper.convert</code>，逻辑中很多对象都用 <code>Object</code> 引用承接，在转换方法中进行校验；个人理解是牺牲了一些可读性换取了开发的灵活性</li>
 <li>获取超时时间参数</li>
 </ul>
 </li>
-<li>包装 Condition<ul>
+<li>包装 Condition
+<ul>
 <li><code>WhenCondition</code> 直接设置等待时间</li>
 <li><code>FinallyCondition</code> 不允许设置超时时间</li>
 <li><code>ThenCondition</code> 中如果包含 <code>FinallyCondition</code>，会在 <code>handleFinally</code> 方法中包装成一个 <code>WhenCondition</code>，外层套一个 <code>ThenCondition</code>，将 <code>FinallyCondition</code> 排除出去，时间设置在里层的 <code>WhenCondition</code> 中</li>
@@ -278,40 +280,37 @@
 </ul>
 </li>
 </ul>
-<h2 id="WhenCondition"><a href="#WhenCondition" class="headerlink" title="WhenCondition"></a>WhenCondition</h2><p><code>WhenCondition</code> 在早期版本就支持超时设置</p>
+<h2 id="WhenCondition">WhenCondition</h2>
+<p><code>WhenCondition</code> 在早期版本就支持超时设置</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 异步线程最⻓的等待时间(只⽤于when)，默认值为15000</span><br><span class="line">liteflow.when-max-wait-time=15000</span><br><span class="line"></span><br><span class="line"># 异步线程最⻓的等待时间单位(只⽤于when)，默认值为MILLISECONDS，毫秒</span><br><span class="line">liteflow.when-max-wait-time-unit=MILLISECONDS</span><br></pre></td></tr></table></figure>
-
 <p>所以对于 <code>WhenCondition</code> 的处理只需要设置合适的属性值即可</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (executable <span class="keyword">instanceof</span> WhenCondition) &#123;</span><br><span class="line">        <span class="comment">// WhenCondition，直接设置等待时间</span></span><br><span class="line">        <span class="type">WhenCondition</span> <span class="variable">whenCondition</span> <span class="operator">=</span> OperatorHelper.convert(executable, WhenCondition.class);</span><br><span class="line">        whenCondition.setMaxWaitTime(maxWaitSeconds);</span><br><span class="line">        whenCondition.setMaxWaitTimeUnit(TimeUnit.SECONDS);</span><br><span class="line">        <span class="keyword">return</span> whenCondition;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>在 <code>WhenCondition</code> 执行时，会启动一个 <code>ScheduledThreadPoolExecutor</code> 来实现超时效果</p>
 <p>具体流程可以阅读 [LiteFlow - WhenCondition 和异步超时机制 | 贫瘠之地 (kuga.fun)](<a href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LiteFlow/LiteFlow">https://www.kuga.fun/开发/LiteFlow/LiteFlow</a> WhenCondition 和异步超时机制.html)</p>
-<h2 id="FinallyCondition"><a href="#FinallyCondition" class="headerlink" title="FinallyCondition"></a>FinallyCondition</h2><p><code>FinallyCondition</code> 不允许设置超时时间，会抛出异常</p>
+<h2 id="FinallyCondition">FinallyCondition</h2>
+<p><code>FinallyCondition</code> 不允许设置超时时间，会抛出异常</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (executable <span class="keyword">instanceof</span> FinallyCondition) &#123;</span><br><span class="line">            <span class="comment">// FINALLY，报错</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> StrFormatter.format(<span class="string">&quot;The caller [&#123;&#125;] cannot use the keyword \&quot;maxWaitSeconds&#x27;\&quot;&quot;</span>, executable.toString());</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">QLException</span>(errorMsg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>为什么 <code>FinallyCondition</code> 不能设置超时时间呢</p>
 <p>在 issue 里可以看到这样的表达</p>
 <blockquote>
-<p>如果不使用 <code>maxWaitSeconds</code> 则表示不使用超时控制。<br>此外，<code>FINALLY</code> 不能使用 <code>maxWaitSeconds</code>，其一定会被执行</p>
+<p>如果不使用 <code>maxWaitSeconds</code> 则表示不使用超时控制。<br>
+此外，<code>FINALLY</code> 不能使用 <code>maxWaitSeconds</code>，其一定会被执行</p>
 </blockquote>
 <p>这样的实现应该是为了避免作为兜底的后置处理，因为超时反而无法正常执行了</p>
-<h2 id="ThenCondition"><a href="#ThenCondition" class="headerlink" title="ThenCondition"></a>ThenCondition</h2><p>这个 case 的入口是一个判断方法 <code>containsFinally</code></p>
+<h2 id="ThenCondition">ThenCondition</h2>
+<p>这个 case 的入口是一个判断方法 <code>containsFinally</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 判断 THEN 中是否含有 FINALLY 组件</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> executable 判断对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 含有 FINALLY 组件返回 true，否则返回 false</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">boolean</span> <span class="title function_">containsFinally</span><span class="params">(Executable executable)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> executable <span class="keyword">instanceof</span> ThenCondition</span><br><span class="line">            &amp;&amp; CollUtil.isNotEmpty(((ThenCondition) executable).getFinallyConditionList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这里其实判断了两部分内容：</p>
 <ul>
 <li><code>executable</code> 对象是一个 <code>ThenCondition</code></li>
 <li>这个 <code>ThenCondition</code> 后置处理器不为空</li>
 </ul>
 <br>
-
 <p>满足条件后就会进入</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (containsFinally(executable)) &#123;</span><br><span class="line">        <span class="comment">// 处理 THEN 中的 FINALLY</span></span><br><span class="line">        <span class="type">ThenCondition</span> <span class="variable">thenCondition</span> <span class="operator">=</span> OperatorHelper.convert(executable, ThenCondition.class);</span><br><span class="line">        <span class="keyword">return</span> handleFinally(thenCondition, maxWaitSeconds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>在这里首先提取了 <code>ThenCondition</code> 对象</p>
 <p>然后调用 <code>handleFinally</code> 方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将 FINALLY 排除在超时控制之外</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> thenCondition  待处理的 ThenCondition</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> maxWaitSeconds 最大等待秒数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 处理后的 ThenCondition</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> ThenCondition <span class="title function_">handleFinally</span><span class="params">(ThenCondition thenCondition, Integer maxWaitSeconds)</span> &#123;</span><br><span class="line">    <span class="comment">// 进行如下转换</span></span><br><span class="line">    <span class="comment">// THEN(PRE(a),b,FINALLY(c))</span></span><br><span class="line">    <span class="comment">// =&gt; THEN(</span></span><br><span class="line">    <span class="comment">//      WHEN(THEN(PRE(a),b)),</span></span><br><span class="line">    <span class="comment">//      FINALLY(c))</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义外层 THEN</span></span><br><span class="line">    <span class="type">ThenCondition</span> <span class="variable">outerThenCondition</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThenCondition</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把 FINALLY 转移到外层 THEN</span></span><br><span class="line">    List&lt;Executable&gt; finallyList = thenCondition.getExecutableList(ConditionKey.FINALLY_KEY);</span><br><span class="line">    finallyList.forEach(executable</span><br><span class="line">            -&gt; outerThenCondition</span><br><span class="line">            .addFinallyCondition((FinallyCondition) executable));</span><br><span class="line">    finallyList.clear();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 包装内部 THEN</span></span><br><span class="line">    <span class="type">WhenCondition</span> <span class="variable">whenCondition</span> <span class="operator">=</span> wrappedByTimeout(thenCondition, maxWaitSeconds);</span><br><span class="line">    outerThenCondition.addExecutable(whenCondition);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> outerThenCondition;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这里为了实现正常执行 <code>THEN</code> 操作的超时而不影响到后置组件，选择对 <code>ThenCondition</code> 进了一层包装</p>
 <p>这里包装的目的：</p>
 <ul>
@@ -319,41 +318,44 @@
 <li>最外层包装一层 <code>ThenCondition</code> 将 <code>FinallyCondition</code> 放在外面避免超时影响（因为 <code>WHEN</code> 也不支持后置处理）</li>
 </ul>
 <p>最终将包装好的 <code>ThenCondition</code> 返回上游业务使用</p>
-<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>对于其他的类型，会被包装为 <code>TimeoutCondition</code></p>
+<h2 id="其他">其他</h2>
+<p>对于其他的类型，会被包装为 <code>TimeoutCondition</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将一个 Executable 包装为带有单独超时控制的 TimeoutCondition</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> executable     待包装对象</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> maxWaitSeconds 最大等待秒数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 包装后的 TimeoutCondition</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> TimeoutCondition <span class="title function_">wrappedByTimeout</span><span class="params">(Executable executable, Integer maxWaitSeconds)</span> &#123;</span><br><span class="line">    <span class="type">TimeoutCondition</span> <span class="variable">timeoutCondition</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TimeoutCondition</span>();</span><br><span class="line">    timeoutCondition.addExecutable(executable);</span><br><span class="line">    timeoutCondition.setMaxWaitTime(maxWaitSeconds);</span><br><span class="line">    timeoutCondition.setMaxWaitTimeUnit(TimeUnit.SECONDS);</span><br><span class="line">    <span class="keyword">return</span> timeoutCondition;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>TimeoutCondition</code> 本质上是 <code>WhenCondition</code> 的子类，优化了超时日志</p>
-<h1 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h1><p>一开始写这个标题是因为感觉 <code>ThenCondition</code> 的包装会影响到日志的输出（毕竟包装了一个 <code>WhenCondition</code> 和一个 <code>ThenCondition</code>）</p>
+<h1>日志处理</h1>
+<p>一开始写这个标题是因为感觉 <code>ThenCondition</code> 的包装会影响到日志的输出（毕竟包装了一个 <code>WhenCondition</code> 和一个 <code>ThenCondition</code>）</p>
 <p>但是又看了一下代码发现日志是只有 <code>Component</code> 才会输出的</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">getExecuteStepStr</span><span class="params">(<span class="type">boolean</span> withTimeSpent)</span> &#123;</span><br><span class="line">    <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>();</span><br><span class="line">    CmpStep cmpStep;</span><br><span class="line">    <span class="keyword">for</span> (Iterator&lt;CmpStep&gt; it = executeSteps.iterator(); it.hasNext();) &#123;</span><br><span class="line">        cmpStep = it.next();</span><br><span class="line">        <span class="keyword">if</span> (withTimeSpent) &#123;</span><br><span class="line">            str.append(cmpStep.buildStringWithTime());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            str.append(cmpStep.buildString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (it.hasNext()) &#123;</span><br><span class="line">            str.append(<span class="string">&quot;==&gt;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">this</span>.executeStepsStr = str.toString();</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.executeStepsStr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>不过想到又看到的一个 issue</p>
-<p><a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I8B0MI">希望框架对并行日志进行优化 · Issue #I8B0MI · dromara&#x2F;liteFlow - Gitee.com</a></p>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I8B0MI">希望框架对并行日志进行优化 · Issue #I8B0MI · dromara/liteFlow - Gitee.com</a></p>
 <p>这里会不会产生影响？</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><table>
+<h1>总结</h1>
+<table>
 <thead>
 <tr>
-<th align="center">类型</th>
-<th align="center">操作</th>
+<th style="text-align:center">类型</th>
+<th style="text-align:center">操作</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">WhenCondition</td>
-<td align="center">直接设置属性</td>
+<tbody>
+<tr>
+<td style="text-align:center">WhenCondition</td>
+<td style="text-align:center">直接设置属性</td>
 </tr>
 <tr>
-<td align="center">FinallyCondition</td>
-<td align="center">不允许</td>
+<td style="text-align:center">FinallyCondition</td>
+<td style="text-align:center">不允许</td>
 </tr>
 <tr>
-<td align="center">ThenCondition</td>
-<td align="center">内部逻辑包装为 <code>WHEN</code>，外部包装一个 <code>THEN</code>，将后置处理器移至外部</td>
+<td style="text-align:center">ThenCondition</td>
+<td style="text-align:center">内部逻辑包装为 <code>WHEN</code>，外部包装一个 <code>THEN</code>，将后置处理器移至外部</td>
 </tr>
 <tr>
-<td align="center">其他</td>
-<td align="center">包装为 <code>WhenCondition</code> 的子类 <code>TimeoutCondition</code></td>
+<td style="text-align:center">其他</td>
+<td style="text-align:center">包装为 <code>WhenCondition</code> 的子类 <code>TimeoutCondition</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>可以看到随着迭代关键字越来越多</p>
 <p>功能和功能之间互相影响也越来越大</p>
 <p>一个功能的添加需要考虑对不同已有功能的影响，需要对应出不同的实现方式</p>
@@ -441,7 +443,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EL-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">2.1.</span> <span class="nav-text">EL 关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MaxWaitSecondsOperator"><span class="nav-number">2.2.</span> <span class="nav-text">MaxWaitSecondsOperator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WhenCondition"><span class="nav-number">2.3.</span> <span class="nav-text">WhenCondition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FinallyCondition"><span class="nav-number">2.4.</span> <span class="nav-text">FinallyCondition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThenCondition"><span class="nav-number">2.5.</span> <span class="nav-text">ThenCondition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">2.6.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">日志处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EL-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">2.1.</span> <span class="nav-text">EL 关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MaxWaitSecondsOperator"><span class="nav-number">2.2.</span> <span class="nav-text">MaxWaitSecondsOperator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WhenCondition"><span class="nav-number">2.3.</span> <span class="nav-text">WhenCondition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FinallyCondition"><span class="nav-number">2.4.</span> <span class="nav-text">FinallyCondition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThenCondition"><span class="nav-number">2.5.</span> <span class="nav-text">ThenCondition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">2.6.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">日志处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -455,7 +457,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

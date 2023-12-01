@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="列表解析器 返回逗号分隔的项目列表时，可以使用此输出解析器 解析器和 prompt 1234567891011# 列表解析器output_parser &#x3D; CommaSeparatedListOutputParser()# 列表解析器自带格式说明format_instructions &#x3D; output_parser.get_format_instructions()# prompt templat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 文档学习 No.4 - 输出解析器">
+<meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="列表解析器 返回逗号分隔的项目列表时，可以使用此输出解析器 解析器和 prompt 1234567891011# 列表解析器output_parser &#x3D; CommaSeparatedListOutputParser()# 列表解析器自带格式说明format_instructions &#x3D; output_parser.get_format_instructions()# prompt templat">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-30T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="LangChain">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LangChain 文档学习 No.4 - 输出解析器 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangChain 文档学习 No.4 - 输出解析器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-12-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-01T00:00:00+08:00">2023-12-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1>列表解析器</h1>
+<p>返回逗号分隔的项目列表时，可以使用此输出解析器</p>
+<p><strong>解析器和 prompt</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列表解析器</span></span><br><span class="line">output_parser = CommaSeparatedListOutputParser()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列表解析器自带格式说明</span></span><br><span class="line">format_instructions = output_parser.get_format_instructions()</span><br><span class="line"><span class="comment"># prompt template</span></span><br><span class="line">prompt_template = PromptTemplate(</span><br><span class="line">    template=<span class="string">&quot;列举出五个&#123;subject&#125;.\n&#123;format_instructions&#125;&quot;</span>,</span><br><span class="line">    input_variables=[<span class="string">&quot;subject&quot;</span>],</span><br><span class="line">    partial_variables=&#123;<span class="string">&quot;format_instructions&quot;</span>: format_instructions&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>使用</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># AI 模型</span></span><br><span class="line">model = Azure.chat_model</span><br><span class="line">output = model.predict(prompt_template.<span class="built_in">format</span>(subject=<span class="string">&quot;棒棒糖口味&quot;</span>))</span><br><span class="line"><span class="comment"># 解析</span></span><br><span class="line"><span class="built_in">print</span>(output_parser.parse(output))</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; [&#x27;草莓味&#x27;, &#x27;葡萄味&#x27;, &#x27;橙子味&#x27;, &#x27;苹果味&#x27;, &#x27;蓝莓味&#x27;]</span></span><br></pre></td></tr></table></figure>
+<h1>日期解析器</h1>
+<p>输出解析为日期时间格式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 日期解析器</span></span><br><span class="line">output_parser = DatetimeOutputParser()</span><br><span class="line">template = <span class="string">&quot;&quot;&quot;Answer the users question:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#123;question&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#123;format_instructions&#125;&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># prompt template</span></span><br><span class="line">prompt_template = PromptTemplate.from_template(</span><br><span class="line">    template,</span><br><span class="line">    partial_variables=&#123;<span class="string">&quot;format_instructions&quot;</span>: output_parser.get_format_instructions()&#125;,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>使用</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># AI 模型</span></span><br><span class="line">model = Azure.chat_model</span><br><span class="line">chain = LLMChain(prompt=prompt, llm=model)</span><br><span class="line">output = chain.run(<span class="string">&quot;around when was bitcoin founded?&quot;</span>)</span><br><span class="line"><span class="comment"># 解析</span></span><br><span class="line"><span class="built_in">print</span>(output_parser.parse(output))</span><br></pre></td></tr></table></figure>
+<p>这里可能是因为使用了 AzureOpenAI，没法按照限制的格式输出，不太稳定</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ValueError: time data <span class="string">&#x27;Bitcoin was founded on January 3, 2009. The corresponding datetime string would be &quot;2009-01-03T00:00:00.000000Z&quot;.&#x27;</span> does not match format <span class="string">&#x27;%Y-%m-%dT%H:%M:%S.%fZ&#x27;</span></span><br></pre></td></tr></table></figure>
+<h1>枚举解析器</h1>
+<p>枚举解析器用来解析枚举</p>
+<p><strong>定义枚举</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Colors</span>(<span class="title class_ inherited__">Enum</span>):</span><br><span class="line">    WHITE = <span class="string">&quot;白色&quot;</span></span><br><span class="line">    RED = <span class="string">&quot;红色&quot;</span></span><br><span class="line">    GREEN = <span class="string">&quot;绿色&quot;</span></span><br><span class="line">    BLUE = <span class="string">&quot;蓝色&quot;</span></span><br><span class="line">    YELLOW = <span class="string">&quot;黄色&quot;</span></span><br></pre></td></tr></table></figure>
+<p><strong>解析器和 prompt</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">parser = EnumOutputParser(enum=Colors)</span><br><span class="line">prompt_template = PromptTemplate.from_template(<span class="string">&quot;选择一个你最喜欢的颜色\n&#123;format_instructions&#125;&quot;</span>)</span><br><span class="line">prompt = prompt_template.<span class="built_in">format</span>(format_instructions=parser.get_format_instructions())</span><br><span class="line"><span class="built_in">print</span>(prompt)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; 选择一个你最喜欢的颜色\nSelect one of the following options: 白色, 红色, 绿色, 蓝色, 黄色</span></span><br></pre></td></tr></table></figure>
+<p><strong>使用</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model = Azure.chat_model</span><br><span class="line">result = model.predict(prompt)</span><br><span class="line"><span class="built_in">print</span>(parser.parse(result))</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; Colors.BLUE</span></span><br></pre></td></tr></table></figure>
+<h1>结构化解析器</h1>
+<p>当需要返回多个字段时，可以使用这种输出解析器，Pydantic \ JSON 解析器相比之下更强大</p>
+<p><strong>定义我们想要接收的响应结构</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 结构定义</span></span><br><span class="line">response_schemas = [</span><br><span class="line">    ResponseSchema(name=<span class="string">&quot;answer&quot;</span>, description=<span class="string">&quot;回答用户的问题&quot;</span>),</span><br><span class="line">    ResponseSchema(name=<span class="string">&quot;source&quot;</span>, description=<span class="string">&quot;用于回答用户问题的来源，应该是一个网站&quot;</span>),</span><br><span class="line">    ResponseSchema(name=<span class="string">&quot;score&quot;</span>, description=<span class="string">&quot;给自己的回答打分，满分 100&quot;</span>, <span class="built_in">type</span>=<span class="string">&quot;num&quot;</span>)</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建解析器</span></span><br><span class="line">output_parser = StructuredOutputParser.from_response_schemas(response_schemas)</span><br></pre></td></tr></table></figure>
+<p><strong>提示模板</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成的格式说明</span></span><br><span class="line">format_instructions = output_parser.get_format_instructions()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提示模板</span></span><br><span class="line">prompt_template = PromptTemplate(</span><br><span class="line">    template=<span class="string">&quot;尽可能回答用户的问题.\n&#123;format_instructions&#125;\n&#123;question&#125;&quot;</span>,</span><br><span class="line">    input_variables=[<span class="string">&quot;question&quot;</span>],</span><br><span class="line">    partial_variables=&#123;<span class="string">&quot;format_instructions&quot;</span>: format_instructions&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>使用</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">model = Azure.chat_model</span><br><span class="line">prompt = prompt.<span class="built_in">format</span>(question=<span class="string">&quot;中国的首都是哪个城市？&quot;</span>)</span><br><span class="line">output = model.predict(prompt)</span><br><span class="line">result = output_parser.parse(output)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 类型</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">type</span>(result))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">type</span>(result[<span class="string">&quot;answer&quot;</span>]))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">type</span>(result[<span class="string">&quot;source&quot;</span>]))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">type</span>(result[<span class="string">&quot;score&quot;</span>]))</span><br><span class="line"><span class="comment"># &gt;&gt; &lt;class &#x27;dict&#x27;&gt;</span></span><br><span class="line"><span class="comment"># &gt;&gt; &lt;class &#x27;str&#x27;&gt;</span></span><br><span class="line"><span class="comment"># &gt;&gt; &lt;class &#x27;str&#x27;&gt;</span></span><br><span class="line"><span class="comment"># &gt;&gt; &lt;class &#x27;int&#x27;&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 答案</span></span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;answer&#x27;: &#x27;中国的首都是北京。&#x27;, &#x27;source&#x27;: &#x27;https://zh.wikipedia.org/wiki/%E5%8C%97%E4%BA%AC&#x27;, &#x27;score&#x27;: 100&#125;</span></span><br></pre></td></tr></table></figure>
+<h1>Pydantic \ JSON 解析器</h1>
+<p>该输出解析器允许用户指定任意的 JSON 模式，并查询符合该模式的 JSON 输出</p>
+<blockquote>
+<p>需要注意</p>
+<p>大型语言模型是有漏洞的，必须使用具有足够容量的 LLM 来生成格式正确的 JSON<br>
+在 OpenAI 家族中，DaVinci 的能力可靠，但 Curie 的能力不足</p>
+</blockquote>
+<p>使用 Pydantic 来声明数据模型；Pydantic 的。BaseModel 类似于 Python 的数据类，但具有真正的类型检查和强制转换功能</p>
+<p><strong>定义结构</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Define your desired data structure.</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Joke</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    setup: <span class="built_in">str</span> = Field(description=<span class="string">&quot;question to set up a joke&quot;</span>)</span><br><span class="line">    punchline: <span class="built_in">str</span> = Field(description=<span class="string">&quot;answer to resolve the joke&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 您可以使用 Pydantic 轻松添加自定义验证逻辑</span></span><br><span class="line"><span class="meta">    @validator(<span class="params"><span class="string">&quot;setup&quot;</span></span>)</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">question_ends_with_question_mark</span>(<span class="params">cls, field</span>):</span><br><span class="line">        <span class="keyword">if</span> field[-<span class="number">1</span>] != <span class="string">&quot;?&quot;</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">&quot;Badly formed question!&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> field</span><br><span class="line">      </span><br><span class="line"><span class="comment"># PydanticOutputParser 解析器</span></span><br><span class="line">parser = PydanticOutputParser(pydantic_object=Joke)</span><br></pre></td></tr></table></figure>
+<p><strong>定义模板</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># And a query intented to prompt a language model to populate the data structure.</span></span><br><span class="line">joke_query = <span class="string">&quot;Tell me a joke.&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># prompt template</span></span><br><span class="line">prompt_template = PromptTemplate(</span><br><span class="line">    template=<span class="string">&quot;Answer the user query.\n&#123;format_instructions&#125;\n&#123;query&#125;\n&quot;</span>,</span><br><span class="line">    input_variables=[<span class="string">&quot;query&quot;</span>],</span><br><span class="line">    partial_variables=&#123;<span class="string">&quot;format_instructions&quot;</span>: parser.get_format_instructions()&#125;,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>使用</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prompt = prompt_template.format_prompt(query=joke_query)</span><br><span class="line">output = model(_<span class="built_in">input</span>.to_string())</span><br><span class="line"><span class="built_in">print</span>(parser.parse(prompt))</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; Joke(setup=&#x27;Why did the chicken cross the road?&#x27;, punchline=&#x27;To get to the other side!&#x27;)</span></span><br></pre></td></tr></table></figure>
+<p>复合类型字段的示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Here&#x27;s another example, but with a compound typed field.</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Actor</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    name: <span class="built_in">str</span> = Field(description=<span class="string">&quot;name of an actor&quot;</span>)</span><br><span class="line">    film_names: <span class="type">List</span>[<span class="built_in">str</span>] = Field(description=<span class="string">&quot;list of names of films they starred in&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h1>自动修复解析器</h1>
+<p>自动修复解析器包装另一个输出解析器，如果第一个解析器失败，它会调用另一个 LLM 来修复错误</p>
+<p>但除了抛出错误，我们还可以做其他事情，例如我们可以将格式错误的输出和格式化的指令一起传递给模型，并要求它进行修复</p>
+<p><strong>定义结构</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Actor</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    name: <span class="built_in">str</span> = Field(description=<span class="string">&quot;name of an actor&quot;</span>)</span><br><span class="line">    film_names: <span class="type">List</span>[<span class="built_in">str</span>] = Field(description=<span class="string">&quot;list of names of films they starred in&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># Pydantic 解析器</span></span><br><span class="line">parser = PydanticOutputParser(pydantic_object=Actor)</span><br></pre></td></tr></table></figure>
+<p><strong>错误语句解析</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mis_formatted = <span class="string">&quot;&#123;&#x27;name&#x27;: &#x27;汤姆汉克斯&#x27;, &#x27;film_names&#x27;: [&#x27;阿甘正传&#x27;]&#125;&quot;</span></span><br><span class="line">parser.parse(mis_formatted)</span><br></pre></td></tr></table></figure>
+<p>上面的 JSON 格式是错误的（单引号），所以抛出异常</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">langchain.schema.output_parser.OutputParserException: Failed to parse Actor from completion &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;汤姆汉克斯&#x27;</span>, <span class="string">&#x27;film_names&#x27;</span>: [<span class="string">&#x27;阿甘正传&#x27;</span>]&#125;. Got: Expecting property name enclosed <span class="keyword">in</span> double quotes: line 1 column 2 (char 1)</span><br></pre></td></tr></table></figure>
+<p><strong>使用自动修复解析器包装解析器和 LLM</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">new_parser = OutputFixingParser.from_llm(parser=parser, llm=Azure.chat_model, max_retries=<span class="number">2</span>)</span><br><span class="line">result = new_parser.parse(mis_formatted)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; name=&#x27;Tom Hanks&#x27; film_names=[&#x27;Forrest Gump&#x27;]</span></span><br><span class="line"><span class="comment"># 呃，这里被 AI 修复成了英文</span></span><br></pre></td></tr></table></figure>
+<p>实现原理就是进行重试，将解析器的格式说明和错误内容交给 AI 重新进行处理</p>
+<h1>重试解析器</h1>
+<p>某些情况下查看输出就可以修复解析错误</p>
+<p>但是例如输出不仅格式不正确，而且不完整则完全无法解析</p>
+<p><strong>假设定义结构和错误返回</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Action</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    action: <span class="built_in">str</span> = Field(description=<span class="string">&quot;action to take&quot;</span>)</span><br><span class="line">    action_input: <span class="built_in">str</span> = Field(description=<span class="string">&quot;input to the action&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 错误返回并没有 action_input 的信息</span></span><br><span class="line">bad_response = <span class="string">&#x27;&#123;&quot;action&quot;: &quot;search&quot;&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>如果我们使用 <code>OutputFixingParser</code> 也无法完整修复，因为 AI 并不清楚数据是什么（感觉可以理解为修复的更多是格式错误，无法修复内容的不完整）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fix_parser = OutputFixingParser.from_llm(parser=parser, llm=Azure.chat_model)</span><br><span class="line"><span class="built_in">print</span>(fix_parser.parse(bad_response))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修复结果依然是不完整的</span></span><br><span class="line"><span class="comment"># &gt;&gt; Action(action=&#x27;search&#x27;, action_input=&#x27;&#x27;)</span></span><br></pre></td></tr></table></figure>
+<p>此时就需要重试进行解决</p>
+<p><strong>使用 RetryOutputParser</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 RetryWithErrorOutputParser</span></span><br><span class="line">retry_parser = RetryWithErrorOutputParser.from_llm(</span><br><span class="line">    parser=parser, llm=Azure.chat_model</span><br><span class="line">)</span><br><span class="line">retry_parser.parse_with_prompt(bad_response, prompt_value)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &gt;&gt; Action(action=&#x27;search&#x27;, action_input=&#x27;who is leo di caprios gf?&#x27;)</span></span><br></pre></td></tr></table></figure>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/modules/model_io/output_parsers/">输出解析器 (Output Parsers) | 🦜️🔗 Langchain</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+              <a href="/tags/AI/" rel="tag"># AI</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.2%20-%20%E6%8F%90%E7%A4%BA%E6%A8%A1%E6%9D%BF.html" rel="prev" title="LangChain 文档学习 No.2 - 提示模板">
+      <i class="fa fa-chevron-left"></i> LangChain 文档学习 No.2 - 提示模板
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.3%20-%20%E7%A4%BA%E4%BE%8B%E9%80%89%E6%8B%A9%E5%99%A8.html" rel="next" title="LangChain 文档学习 No.3 - 示例选择器">
+      LangChain 文档学习 No.3 - 示例选择器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">列表解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">日期解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">枚举解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">结构化解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">Pydantic \ JSON 解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">自动修复解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">7.</span> <span class="nav-text">重试解析器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kuga.fun" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
