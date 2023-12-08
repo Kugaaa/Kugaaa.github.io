@@ -242,10 +242,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<p>一段时间没有使用 github SSH 操作，今天突然发现 Hexo deploy 无法正常 push 到仓库</p>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>一段时间没有使用 github SSH 操作，今天突然发现 Hexo deploy 无法正常 push 到仓库</p>
 <p>报错信息为</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ssh: connect to host github.com port 22: Connection refused</span><br><span class="line">fatal: Could not <span class="built_in">read</span> from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br></pre></td></tr></table></figure>
+
 <p>开始以为是 SSH 配置存在问题，但是检查了配置以及仓库情况并没有发现问题</p>
           <!--noindex-->
             <div class="post-button">
@@ -325,10 +325,13 @@
 
       
           <blockquote>
-<p>从 Ferrari  到 Hard Start，这里有 9 款我们最爱的 50/50 shots 酒单</p>
+<p>从 Ferrari  到 Hard Start，这里有 9 款我们最爱的 50&#x2F;50 shots 酒单</p>
 </blockquote>
 <img src="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/%E4%B8%80%E4%BA%9B%2050-50%20shots%20%E9%85%92%E5%8D%95/Article-50-50-Shots.jpg" class title="img">
-<p>50/50 shots 诸如 Ferrari 和 M&amp;M 多年来一致是业内宠儿；不过随着越来越受欢迎，派对者们找到了将鸡尾酒作为配料的方式，这种形式已经扩展为一种易于复制并创作的模式</p>
+
+
+
+<p>50&#x2F;50 shots 诸如 Ferrari 和 M&amp;M 多年来一致是业内宠儿；不过随着越来越受欢迎，派对者们找到了将鸡尾酒作为配料的方式，这种形式已经扩展为一种易于复制并创作的模式</p>
 <p>这是一个简单的模板：取一杯苦杏仁酒（amaro），将其与另一种利口酒或更高度烈酒等分</p>
 <p>各种各样的变化，无论你是在寻找一种令人大开眼界的宿醉方式：例如 Hard Start，或者是一杯复杂性堪比鸡尾酒的 shot：例如 Mezcaletti</p>
           <!--noindex-->
@@ -408,11 +411,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>可继承 Inheritable</h1>
-<p><code>InheritableThreadLocal</code> 是官方提供的类，区别于 <code>ThreadLocal</code> 的功能就是使子线程创建时会赋值父线程当时的 <code>ThreadLocal</code> 值（引用），实现开启线程后将线程本地变量传递</p>
+          <h1 id="可继承-Inheritable"><a href="#可继承-Inheritable" class="headerlink" title="可继承 Inheritable"></a>可继承 Inheritable</h1><p><code>InheritableThreadLocal</code> 是官方提供的类，区别于 <code>ThreadLocal</code> 的功能就是使子线程创建时会赋值父线程当时的 <code>ThreadLocal</code> 值（引用），实现开启线程后将线程本地变量传递</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThreadLocalTest</span> &#123;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 这里如果将 ThreadLocal 实现换为 ThreadLocal，则子线程内获取为 null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; THREAD_LOCAL = <span class="keyword">new</span> <span class="title class_">InheritableThreadLocal</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        THREAD_LOCAL.set(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot; &quot;</span> + THREAD_LOCAL.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Thread[main,<span class="number">5</span>,main] Hello World</span><br><span class="line">Thread[Thread-<span class="number">0</span>,<span class="number">5</span>,main] Hello World</span><br></pre></td></tr></table></figure>
-<h2 id="实现">实现</h2>
+
+
+
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/TransmittableThreadLocal%20%E6%BA%90%E7%A0%81%20&%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8.html#more" rel="contents">
@@ -493,8 +499,7 @@
           <p>在很长的一段时间，REST 都是一种且唯一一种构建 API 的 “标准”；它在某种程度上取代了 SOAP，后者是一个 “太多 XML” 的丑陋烂摊子</p>
 <p>但是近些年新的选择出现了，2015 年，Facebook 向公众发布了 GraphQL，2016 年谷歌紧随其后发布了 gRPC</p>
 <p>在本文中，我们将关注仍然被广泛使用的后者，并将其与 REST 进行比较</p>
-<h1>概述</h1>
-<p>下表将概述所讨论的要点，并显示 REST 和 gRPC 的亮点</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>下表将概述所讨论的要点，并显示 REST 和 gRPC 的亮点</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/REST%20VS%20gRPC.html#more" rel="contents">
@@ -572,9 +577,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>基本使用</h1>
-<p>在项目中我们可以通过 <code>ThreadLocal</code> 来存储用户信息</p>
-<p>其中一般会在过滤器/拦截器的入口处初始化用户信息，并在执行结束后对其进行清理</p>
+          <h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><p>在项目中我们可以通过 <code>ThreadLocal</code> 来存储用户信息</p>
+<p>其中一般会在过滤器&#x2F;拦截器的入口处初始化用户信息，并在执行结束后对其进行清理</p>
 <p>这样从请求进来一直到返回，我们只需要通过线程变量 <code>ThreadLocal</code> 获取用户信息即可，而不用每次都从数据库查出来</p>
 <p>因为 <code>ThreadLocal</code> 是线程安全的，<strong>所以通常声明为一个静态单例变量</strong></p>
           <!--noindex-->
@@ -654,11 +658,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>介绍</h1>
-<h2 id="什么是泛型">什么是泛型</h2>
-<p>泛型，即<strong>参数化类型</strong></p>
+          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><h2 id="什么是泛型"><a href="#什么是泛型" class="headerlink" title="什么是泛型"></a>什么是泛型</h2><p>泛型，即<strong>参数化类型</strong></p>
 <p>一提到参数，最熟悉的就是定义方法时有形参，然后调用此方法时传递实参。那么参数化类型怎么理解呢？顾名思义，就是将类型由原来的具体的类型参数化，类似于方法中的变量参数，此时类型也定义成参数形式（可以称之为类型形参），然后在调用时传入具体的类型（类型实参）</p>
-<h2 id="为什么要引入泛型">为什么要引入泛型</h2>
+<h2 id="为什么要引入泛型"><a href="#为什么要引入泛型" class="headerlink" title="为什么要引入泛型"></a>为什么要引入泛型</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/Java/Java%20%E6%B3%9B%E5%9E%8B.html#more" rel="contents">

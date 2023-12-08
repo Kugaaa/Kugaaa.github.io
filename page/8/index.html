@@ -242,8 +242,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<p><strong>特征 or 全部</strong></p>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p><strong>特征 or 全部</strong></p>
 <p>在实际需求中，往往存在类似需求：</p>
 <ul>
 <li>黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据</li>
@@ -328,13 +327,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<p>管道模式（Pipeline Pattern）是责任链模式（Chain of Command Pattern）的变体；区别在于责任链是将处理器按照链条组织起来，待处理的上下文按照链条找到能够处理自己的处理器，一般只有唯一的一个处理器；而管道模式是链条中的每一个处理器都需要对上下文进行处理</p>
-<p><strong>目的</strong><br>
-降低业务逻辑流程的耦合性，将整个过程中所有的处理器隔离开，更方便扩展流程上新的业务逻辑</p>
-<p><strong>现实世界类比</strong><br>
-工厂的生产流水线，车架 -&gt; 发送机 -&gt; 外壳 -&gt; 内饰 -&gt; 总装 -&gt; 质检，整辆车在传送带又一个环节运输至另一个环节，每个处理环节都对汽车处理自己的部分，最终产出成品</p>
-<h1>实践</h1>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>管道模式（Pipeline Pattern）是责任链模式（Chain of Command Pattern）的变体；区别在于责任链是将处理器按照链条组织起来，待处理的上下文按照链条找到能够处理自己的处理器，一般只有唯一的一个处理器；而管道模式是链条中的每一个处理器都需要对上下文进行处理</p>
+<p><strong>目的</strong><br>降低业务逻辑流程的耦合性，将整个过程中所有的处理器隔离开，更方便扩展流程上新的业务逻辑</p>
+<p><strong>现实世界类比</strong><br>工厂的生产流水线，车架 -&gt; 发送机 -&gt; 外壳 -&gt; 内饰 -&gt; 总装 -&gt; 质检，整辆车在传送带又一个环节运输至另一个环节，每个处理环节都对汽车处理自己的部分，最终产出成品</p>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%AE%A1%E9%81%93%E6%A8%A1%E5%BC%8F%20-%20Pipeline.html#more" rel="contents">
@@ -416,16 +412,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>Topic 与 Tag</h1>
-<p>在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率</p>
-<p><strong>Topic</strong> 是消息主题，通过 Topic 对不同的业务消息进行分类<br>
-<strong>Tag</strong>  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性</p>
+          <h1 id="Topic-与-Tag"><a href="#Topic-与-Tag" class="headerlink" title="Topic 与 Tag"></a>Topic 与 Tag</h1><p>在 RocketMQ 中，Topic 和 Tag 都是业务上用来归类的标识，通过合理的使用 Topic 和 Tag 可以让业务结构清晰，更可以提高效率</p>
+<p><strong>Topic</strong> 是消息主题，通过 Topic 对不同的业务消息进行分类<br><strong>Tag</strong>  是消息标签，用来进一步区分某个 Topic 下的消息分类，是消息生产时即由消息生产者设置的属性  </p>
 <p>Topic 和 Tag 的选择，建议从以下几个方面判断：</p>
 <ul>
-<li>**消息类型是否一致：**普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</li>
-<li>**业务是否相关联：**没有关联的业务应该使用不同的 Topic</li>
-<li>**消息优先级是否一致：**同一个 Topic 内应该是同样优先级的消息</li>
-<li>**量级是否相当：**业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</li>
+<li><strong>消息类型是否一致：</strong>普通消息、事务消息、延迟消息、顺序消息；不同消息使用不同的 Topic，无法通过 Tag 进行区分</li>
+<li><strong>业务是否相关联：</strong>没有关联的业务应该使用不同的 Topic</li>
+<li><strong>消息优先级是否一致：</strong>同一个 Topic 内应该是同样优先级的消息</li>
+<li><strong>量级是否相当：</strong>业务量小但实时性高的消息和业务量大的消息放在一个 Topic 内，可能会导致饥饿</li>
 </ul>
           <!--noindex-->
             <div class="post-button">
@@ -504,11 +498,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>基数聚合</h1>
-<p>基数聚合属于聚合中的度量聚合，计算不同值的<strong>近似计数</strong></p>
+          <h1 id="基数聚合"><a href="#基数聚合" class="headerlink" title="基数聚合"></a>基数聚合</h1><p>基数聚合属于聚合中的度量聚合，计算不同值的<strong>近似计数</strong></p>
 <p>需要注意，聚合出的结果是一个近似值，原因是底层结构使用的 HyperLogLog，具有一定误差</p>
-<h2 id="基本操作">基本操作</h2>
-<p>假定 index 存储的售卖数据，希望查询有多少种不同的商品类型</p>
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><p>假定 index 存储的售卖数据，希望查询有多少种不同的商品类型</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/ES/ES%20cardinality%20%E5%92%8C%20HyperLogLog.html#more" rel="contents">
@@ -593,9 +585,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>背景</h1>
-<h2 id="折叠和聚合">折叠和聚合</h2>
-<p>日常会有很多场景希望将平面数据按照一定的条件组合起来，并按照一定规则进行计算</p>
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><h2 id="折叠和聚合"><a href="#折叠和聚合" class="headerlink" title="折叠和聚合"></a>折叠和聚合</h2><p>日常会有很多场景希望将平面数据按照一定的条件组合起来，并按照一定规则进行计算</p>
 <p>聚合将您的数据汇总为指标、统计或其他分析</p>
 <p>可以帮助你回答类似如下问题：</p>
           <!--noindex-->
@@ -675,11 +665,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1>from size</h1>
-<p>from size 是最常见的分页方式，类比 MySQL 的 offset limit</p>
+          <h1 id="from-size"><a href="#from-size" class="headerlink" title="from size"></a>from size</h1><p>from size 是最常见的分页方式，类比 MySQL 的 offset limit</p>
 <p>由于 ES 是天然分布式的，数据分散在各个 shards 上，所以需要查询 <code>from + size</code> 的条数时，coordinate node 就向该 index 的其余的  shards 发送同样的请求，等汇总到 <code>(shards × (from + size))</code> 条数时在 coordinate node 再进行一次排序，最终抽取出真正 from 后的 size 条结果</p>
 <p>显而易见，当 shards 较多、分页深度很大时，这种方式存在很大的性能问题，这也是 ES 默认深度为 <code>from + size &lt;= 10000</code> 的原因</p>
-<h2 id="Routing-机制">Routing 机制</h2>
+<h2 id="Routing-机制"><a href="#Routing-机制" class="headerlink" title="Routing 机制"></a>Routing 机制</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/ES/ES%20%E7%9A%84%20from%20size%20%E5%92%8C%20scroll%20%E5%92%8C%20search%20after.html#more" rel="contents">
