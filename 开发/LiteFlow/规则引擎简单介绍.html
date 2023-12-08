@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="介绍 如果你一直在开发一种产品或业务，那么经常发生的场景就是不断变化的业务需求；开发人员基于一组条件构建解决方案，随着时间的推移，这些逻辑条件可能会因业务需求或其他外部市场因素的变化而发生改变 规则引擎是解决此类问题的有效方法 Guide to Rule Engines – Mohit Khare 美团外卖的 CRM 业务步入成熟期，规则类需求几乎撑起了这个业务所有需求的半边天；一方面规则唯一不变">
+  <meta name="description" content="介绍  如果你一直在开发一种产品或业务，那么经常发生的场景就是不断变化的业务需求；开发人员基于一组条件构建解决方案，随着时间的推移，这些逻辑条件可能会因业务需求或其他外部市场因素的变化而发生改变 规则引擎是解决此类问题的有效方法 Guide to Rule Engines – Mohit Khare 美团外卖的 CRM 业务步入成熟期，规则类需求几乎撑起了这个业务所有需求的半边天；一方面规则唯一不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="规则引擎简单介绍">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="介绍 如果你一直在开发一种产品或业务，那么经常发生的场景就是不断变化的业务需求；开发人员基于一组条件构建解决方案，随着时间的推移，这些逻辑条件可能会因业务需求或其他外部市场因素的变化而发生改变 规则引擎是解决此类问题的有效方法 Guide to Rule Engines – Mohit Khare 美团外卖的 CRM 业务步入成熟期，规则类需求几乎撑起了这个业务所有需求的半边天；一方面规则唯一不变">
+<meta property="og:description" content="介绍  如果你一直在开发一种产品或业务，那么经常发生的场景就是不断变化的业务需求；开发人员基于一组条件构建解决方案，随着时间的推移，这些逻辑条件可能会因业务需求或其他外部市场因素的变化而发生改变 规则引擎是解决此类问题的有效方法 Guide to Rule Engines – Mohit Khare 美团外卖的 CRM 业务步入成熟期，规则类需求几乎撑起了这个业务所有需求的半边天；一方面规则唯一不">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/image-20230625034858176.png">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/image-20230627104922361.png">
@@ -270,7 +270,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><blockquote>
+        <h1>介绍</h1>
+<blockquote>
 <p>如果你一直在开发一种产品或业务，那么经常发生的场景就是不断变化的业务需求；开发人员基于一组条件构建解决方案，随着时间的推移，这些逻辑条件可能会因业务需求或其他外部市场因素的变化而发生改变</p>
 <p>规则引擎是解决此类问题的有效方法</p>
 <p><a target="_blank" rel="noopener" href="https://www.mohitkhare.com/blog/guide-to-rule-engines/">Guide to Rule Engines – Mohit Khare</a></p>
@@ -278,7 +279,8 @@
 <p>如何解决规则开发的效率问题，最大化解放开发团队成为目前的一个 KPI</p>
 <p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/06/09/maze-framework.html">从0到1：构建强大且易用的规则引擎 - 美团技术团队 (meituan.com)</a></p>
 </blockquote>
-<h2 id="什么是规则引擎"><a href="#什么是规则引擎" class="headerlink" title="什么是规则引擎"></a>什么是规则引擎</h2><p>业务规则引擎是在执行一个或多个业务规则的系统，这些规定可能来自各种业务规则：</p>
+<h2 id="什么是规则引擎">什么是规则引擎</h2>
+<p>业务规则引擎是在执行一个或多个业务规则的系统，这些规定可能来自各种业务规则：</p>
 <ul>
 <li>员工可以因任何原因或无原因被解雇，但不能因非法原因</li>
 <li>所有一次性消费超过 100 美元的客户都将获得 10% 的折扣</li>
@@ -286,45 +288,49 @@
 <p>业务规则系统使这些倾向于运营决策、公司策略的规则能够与应用程序代码分开定义、测试、执行和维护；规则集用于检查条件并选择合适的业务执行操作</p>
 <p>规则可以简单抽象为如下结构</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">When</span><br><span class="line">   &lt;Condition is <span class="literal">true</span>&gt;</span><br><span class="line">Then</span><br><span class="line">   &lt;Take desired Action&gt;</span><br></pre></td></tr></table></figure>
-
 <p>例如一个提供折扣优惠的规则</p>
-<p><strong>条件：</strong>当用户满足以下所有条件时</p>
+<p>**条件：**当用户满足以下所有条件时</p>
 <ul>
 <li>至少下单过 10 个订单</li>
 <li>平均订单价格大于 150 元</li>
 <li>用户年龄在 20 ~ 30</li>
 </ul>
-<p><strong>行为：</strong>提供 20% 的折扣</p>
+<p>**行为：**提供 20% 的折扣</p>
 <p>规则引擎在解决面向业务的逻辑时比较有效，这些逻辑使用许多业务属性来产生某种决策</p>
 <p>难道我们不能把这个逻辑嵌入我们的代码中吗？可以这样做，但规则化提供了修改条件和添加更多逻辑的灵活性；这些条件也许更多来由产品或业务产出，这会让它们更加容易变更，也许不需要由开发人员进行修改</p>
-<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine#advantages-of-a-rule-engine">grule-rule-engine: Rule engine implementation in Golang Advantages of a Rule Engine</a></p>
+<h2 id="优点">优点</h2>
+<p><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine#advantages-of-a-rule-engine">grule-rule-engine: Rule engine implementation in Golang Advantages of a Rule Engine</a></p>
 <ul>
 <li><strong>声明式编程</strong>（Declarative Programming）：规则可以很容易地表达难题的解决方案并进行验证；与代码不同，规则是用不那么复杂的语言编写的；业务分析师可以很容易地阅读和验证一套规则</li>
 <li><strong>逻辑和数据分离</strong>（Logic and Data Separation）：数据驻留在域对象中（Domain Objects），业务逻辑驻留在规则中（Rules）；根据项目的类型，这种分离可能非常有利</li>
 <li><strong>知识集中化</strong>（Centralization of Knowledge）：通过使用规则，您可以创建一个可执行的知识库（a repository of knowledge | a knowledge base）；这是商业政策的唯一真理；理想情况下规则是可读的，因此它们也可以作为文档</li>
 <li><strong>改变的敏捷性</strong>（Agility To Change）：由于业务规则实际上被视为数据，根据业务的动态性质调整规则变得微不足道；不需要像正常的软件开发那样重新构建代码或部署，只需要推出规则集并将其应用于知识库即可</li>
 </ul>
-<h2 id="使用案例"><a href="#使用案例" class="headerlink" title="使用案例"></a>使用案例</h2><p><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine#use-cases">grule-rule-engine: Rule engine implementation in Golang use-cases</a></p>
+<h2 id="使用案例">使用案例</h2>
+<p><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine#use-cases">grule-rule-engine: Rule engine implementation in Golang use-cases</a></p>
 <p>使用规则引擎可以更好地解决以下情况：</p>
 <ul>
-<li><strong>专家系统</strong>（Expert System）：必须评估事实以提供某种现实世界的结论；如果不使用 RETE 风格的规则引擎，就会编写一组 If&#x2F;else 语句的级联集，而如何评估这些语句的组合的排列将很快变得无法管理</li>
+<li><strong>专家系统</strong>（Expert System）：必须评估事实以提供某种现实世界的结论；如果不使用 RETE 风格的规则引擎，就会编写一组 If/else 语句的级联集，而如何评估这些语句的组合的排列将很快变得无法管理</li>
 <li><strong>评级系统</strong>（Rating System）：例如银行系统可能希望根据客户的交易记录（事实）为每个客户创建一个 “分数”；我们可以根据他们与银行互动的频率、进出资金的多少、支付账单的速度、累计利息的多少、为自己或银行赚了多少等等来查看他们的分数变化，随后银行客户分析部门的专家可以来提供事实和规则的说明</li>
 <li><strong>电脑游戏</strong>：玩家状态、奖励、惩罚、伤害、分数和概率系统是规则在大多数电脑游戏中发挥重要作用的许多不同例子</li>
 <li><strong>分类系统</strong>（Classification Systems）：使用规则引擎，我们可以对信用资格、生物化学识别、保险产品风险评估、潜在安全威胁等进行分类</li>
 <li><strong>建议系统</strong>（Suggestion System）：“规则” 只是另一种数据，这使它可以成为另一个程序的产出；这个程序可以是另一个专家系统或人工智能，规则可以由其他系统操纵以便处理关于规则集针对业务域新建模型来处理新的事实</li>
 </ul>
 <p>还有许多其他用例将受益于规则引擎的使用，上述情况只是潜在情况中的一小部分</p>
-<p>不过规则引擎当然不是银弹，存在许多替代方案来解决软件中的 “知识” 问题，并且应该在最合适的地方使用这些替代方案；例如如果一个简单的 if&#x2F;else 分支就足够了，那么就不需要使用规则引擎</p>
+<p>不过规则引擎当然不是银弹，存在许多替代方案来解决软件中的 “知识” 问题，并且应该在最合适的地方使用这些替代方案；例如如果一个简单的 if/else 分支就足够了，那么就不需要使用规则引擎</p>
 <p>还有一点需要注意：一些规则引擎实现非常昂贵，但许多企业从中获得了如此多的价值，以至于运行它们的成本很容易被这些价值所抵消；对于即使是中等复杂的场景，强大的规则引擎对于解耦团队并解决业务复杂性也有显著的优势</p>
 <div STYLE="page-break-after: always;"></div>
-
-<h2 id="开源生态"><a href="#开源生态" class="headerlink" title="开源生态"></a>开源生态</h2><h3 id="Drools"><a href="#Drools" class="headerlink" title="Drools"></a>Drools</h3><p><a target="_blank" rel="noopener" href="https://www.drools.org/learn/documentation.html">Drools - Documentation</a><br>Drools 使用基于规则的编程模型，允许开发人员通过编写规则来描述应用程序中的业务逻辑</p>
+<h2 id="开源生态">开源生态</h2>
+<h3 id="Drools">Drools</h3>
+<p><a target="_blank" rel="noopener" href="https://www.drools.org/learn/documentation.html">Drools - Documentation</a><br>
+Drools 使用基于规则的编程模型，允许开发人员通过编写规则来描述应用程序中的业务逻辑</p>
 <p>特点：</p>
 <ul>
 <li><strong>基于规则的编程模型</strong>：Drools 使用规则引擎来编写业务规则，允许开发人员将业务逻辑从应用程序中分离出来，使其更加灵活和易于维护</li>
 <li><strong>支持多种规则格式</strong>：包括 <strong>DRL</strong>（<em>Drools 规则语法</em>  | Drools Rule Language）、<strong>DSL</strong>（<em>领域特定语法</em> | Domain Specific Language），支持 OMG^1^ 标准下的 <strong>DMN</strong>（<em>决策模型与符号</em> | Decision Model and Notation）  ，甚至数据领域 DMG^2^ 标准的 <strong>PMML</strong>（<em>预测模型标记语言</em> | Predictive Model Markup Language）</li>
 <li><strong>多语言支持</strong>：Drools 不仅支持 Java 语言，还支持其他编程语言如 Python 等</li>
-<li><strong>完善的生态</strong>：Drools 下生态丰富，涉及多种工具<ul>
+<li><strong>完善的生态</strong>：Drools 下生态丰富，涉及多种工具
+<ul>
 <li><strong>Drools Engine</strong>：核心 Drools 规则引擎</li>
 <li><strong>Drools and jBPM integration</strong>：规则引擎 Drools 和工作流 jBPM 整合</li>
 <li><strong>Business Central Workbench^3^</strong>：可视化工作台</li>
@@ -336,7 +342,8 @@
 <hr>
 <p>缺点：</p>
 <blockquote>
-<p><em>开源 Drools 从入门到放弃</em><br>                                    ——《<a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/06/09/maze-framework.html">从0到1：构建强大且易用的规则引擎 - 美团技术团队 (meituan.com)</a>》</p>
+<p><em>开源 Drools 从入门到放弃</em><br>
+——《<a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/06/09/maze-framework.html">从0到1：构建强大且易用的规则引擎 - 美团技术团队 (meituan.com)</a>》</p>
 </blockquote>
 <ul>
 <li>业务分析师无法独立完成规则配置：由于规则主体 DSL 是编程语言（支持 Java, Groovy, Python 等），因此仍然需要开发工程师维护</li>
@@ -346,16 +353,21 @@
 <p>备注</p>
 <blockquote>
 <ol>
-<li><p>OMG 是Object Management Group的缩写，是一个国际性的技术标准组织，成立于 1989 年，总部位于美国马萨诸塞州的 Needham。OMG 的成员包括软件和硬件供应商、工具提供商、服务提供商、企业和政府机构等，旨在推动和制定面向对象技术的标准和规范<br><a target="_blank" rel="noopener" href="https://www.omg.org/spec/DMN">About the Decision Model and Notation Specification Version 1.4 (omg.org)</a></p>
+<li>
+<p>OMG 是Object Management Group的缩写，是一个国际性的技术标准组织，成立于 1989 年，总部位于美国马萨诸塞州的 Needham。OMG 的成员包括软件和硬件供应商、工具提供商、服务提供商、企业和政府机构等，旨在推动和制定面向对象技术的标准和规范<br>
+<a target="_blank" rel="noopener" href="https://www.omg.org/spec/DMN">About the Decision Model and Notation Specification Version 1.4 (omg.org)</a></p>
 </li>
-<li><p>Data Mining Group（DMG）是一个非营利性组织，成立于 1994 年，旨在推动数据挖掘和知识发现技术的发展和应用。DMG 的成员包括数据挖掘和机器学习领域的专家、学者和工业界代表，致力于制定和推广数据挖掘标准和规范</p>
+<li>
+<p>Data Mining Group（DMG）是一个非营利性组织，成立于 1994 年，旨在推动数据挖掘和知识发现技术的发展和应用。DMG 的成员包括数据挖掘和机器学习领域的专家、学者和工业界代表，致力于制定和推广数据挖掘标准和规范</p>
 </li>
-<li><p>Business Central Workbench GUI</p>
+<li>
+<p>Business Central Workbench GUI</p>
 </li>
 </ol>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/image-20230625034858176.png" class="" title="image-20230625034858176">
 </blockquote>
-<h3 id="LiteFlow"><a href="#LiteFlow" class="headerlink" title="LiteFlow"></a>LiteFlow</h3><p><a target="_blank" rel="noopener" href="https://liteflow.yomahub.com/">LiteFlow (yomahub.com)</a></p>
+<h3 id="LiteFlow">LiteFlow</h3>
+<p><a target="_blank" rel="noopener" href="https://liteflow.yomahub.com/">LiteFlow (yomahub.com)</a></p>
 <p>可以将瀑布流式的代码，转变成以组件为核心概念的代码结构，这种结构的好处是可以任意编排，组件与组件之间是解耦的，组件可以用脚本来定义，组件之间的流转全靠规则来驱动</p>
 <p>特点：</p>
 <ul>
@@ -364,7 +376,8 @@
 <li><strong>并发编排</strong>：规则逻辑可以快速编排组件之间的同步、异步关系，可以自定义执行线程池</li>
 <li><strong>丰富的脚本组件支持</strong>：支持多种脚本语言（Groovy，Javascript，QLExpress，Python，Lua，Aviator）；采用 SPI 机制进行选择脚本框架来动态编译脚本；同时支持规则文件内多脚本语言混合使用</li>
 <li><strong>多数据源和热刷新</strong>：EL 规则和脚本组件都支持多种数据源（项目内文件、本地文件、ZK、SQL、Nacos、Apollo 等数据源），同时支持自定义实现相关规则解析类 <code>ClassXmlFlowELParser</code> 等；支持平滑热刷新</li>
-<li><strong>补充功能丰富</strong>：有丰富的小功能支持<ul>
+<li><strong>补充功能丰富</strong>：有丰富的小功能支持
+<ul>
 <li>声明式组件</li>
 <li>前置、后置组件、组件切面</li>
 <li>组件重试</li>
@@ -381,14 +394,16 @@
 <li>流程图式编排使组件规则调整需要考虑前后关系</li>
 <li>生态不完全，没有管理平台、可视化编排工具</li>
 </ul>
-<h3 id="Ice"><a href="#Ice" class="headerlink" title="Ice"></a>Ice</h3><p><a target="_blank" rel="noopener" href="http://waitmoon.com/zh/">开源框架学习与分享 | ice (waitmoon.com)</a></p>
+<h3 id="Ice">Ice</h3>
+<p><a target="_blank" rel="noopener" href="http://waitmoon.com/zh/">开源框架学习与分享 | ice (waitmoon.com)</a></p>
 <p>Ice 使用全新的设计思想，契合解耦和复用的属性，满足最大的编排自由度</p>
 <p>特点：</p>
 <ul>
 <li><strong>独特的规则编排思想</strong>：引入关系节点的与或非控制流程，在一些场景下可以更好的对流程进行控制，避免流程前后的组件影响，降低心智负担</li>
 <li><strong>组件的时间属性</strong>：组件天然带有时间属性，可以控制执行组件生效的时间范围（对于活动类配置非常有用）</li>
 <li><strong>组件参数</strong>：组件参数由 Json 格式的数据进行配置，对于同样的组件不同的参数不需要从业务入口或进行中的 Context 进行控制</li>
-<li><strong>可视化后台配置</strong>：拥有可视化后台配置，对规则和节点进行配置<br><a target="_blank" rel="noopener" href="http://eg.waitmoon.com/">ice配置后台 (waitmoon.com)</a></li>
+<li><strong>可视化后台配置</strong>：拥有可视化后台配置，对规则和节点进行配置<br>
+<a target="_blank" rel="noopener" href="http://eg.waitmoon.com/">ice配置后台 (waitmoon.com)</a></li>
 </ul>
 <p>官方介绍：<a target="_blank" rel="noopener" href="http://waitmoon.com/ice-logic/zh/">ice 编排逻辑</a></p>
 <hr>
@@ -397,26 +412,35 @@
 <li>新项目，热度低，案例少</li>
 <li>文档简陋</li>
 </ul>
-<h3 id="Aviator"><a href="#Aviator" class="headerlink" title="Aviator"></a>Aviator</h3><p><a target="_blank" rel="noopener" href="https://github.com/killme2008/aviatorscript">killme2008&#x2F;aviatorscript: A high performance scripting language hosted on the JVM. (github.com)</a></p>
+<h3 id="Aviator">Aviator</h3>
+<p><a target="_blank" rel="noopener" href="https://github.com/killme2008/aviatorscript">killme2008/aviatorscript: A high performance scripting language hosted on the JVM. (github.com)</a></p>
 <p>严格来说 AviatorScript 并不是一个规则引擎，而是一个可以编译为 Java 字节码的表达式引擎</p>
 <p>在美团的技术文章中使用该脚本语言作为规则框架使用（具体怎么实现也看不懂，可能是因为支持自定义函数）</p>
 <p>AviatorScript 的优势</p>
 <ul>
-<li><p><strong>高性能</strong>：将表达式直接翻译成对应的 Java 字节码执行，编译优先模式只扫一遍，保证了性能超越绝大部分解释性的表达式引擎</p>
+<li>
+<p><strong>高性能</strong>：将表达式直接翻译成对应的 Java 字节码执行，编译优先模式只扫一遍，保证了性能超越绝大部分解释性的表达式引擎</p>
 </li>
-<li><p><strong>轻量级</strong>：其次，除了依赖 <code>commons-beanutils</code> 这个库之外（用于做反射）不依赖任何第三方库，因此整体非常轻量级，整个 jar 包大小哪怕发展到现在 5.0 这个大版本，也才 430K</p>
+<li>
+<p><strong>轻量级</strong>：其次，除了依赖 <code>commons-beanutils</code> 这个库之外（用于做反射）不依赖任何第三方库，因此整体非常轻量级，整个 jar 包大小哪怕发展到现在 5.0 这个大版本，也才 430K</p>
 </li>
-<li><p><strong>开放能力</strong>：Aviator 内置的函数库非常节制，除了必须的字符串处理、数学函数和集合处理之外只能自定义函数实现，保证了安全性</p>
+<li>
+<p><strong>开放能力</strong>：Aviator 内置的函数库非常节制，除了必须的字符串处理、数学函数和集合处理之外只能自定义函数实现，保证了安全性</p>
 </li>
-<li><p><strong>特色</strong>：</p>
+<li>
+<p><strong>特色</strong>：</p>
 <ul>
-<li><p>支持运算符重载</p>
+<li>
+<p>支持运算符重载</p>
 </li>
-<li><p>原生支持大整数和 <code>BigDecimal</code> 类型及运算，并且通过运算符重载和一般数字类型保持一致的运算方式</p>
+<li>
+<p>原生支持大整数和 <code>BigDecimal</code> 类型及运算，并且通过运算符重载和一般数字类型保持一致的运算方式</p>
 </li>
-<li><p>原生支持正则表达式类型及匹配运算符 <code>=~</code></p>
+<li>
+<p>原生支持正则表达式类型及匹配运算符 <code>=~</code></p>
 </li>
-<li><p>类 <code>clojure</code> 的 <code>seq</code> 库及 lambda 支持，可以灵活地处理各种集合</p>
+<li>
+<p>类 <code>clojure</code> 的 <code>seq</code> 库及 lambda 支持，可以灵活地处理各种集合</p>
 </li>
 </ul>
 </li>
@@ -434,7 +458,8 @@
 <th>含义</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>equals</td>
 <td>equals(message.orderType, 0)</td>
 <td>判断订单类型是否为 0</td>
@@ -459,29 +484,43 @@
 <td>userBlackList(message.userId)</td>
 <td>根据 userId 判断用户是否为黑名单用户</td>
 </tr>
-</tbody></table>
-<h3 id="Grule"><a href="#Grule" class="headerlink" title="Grule"></a>Grule</h3><p><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine">hyperjumptech&#x2F;grule-rule-engine: Rule engine implementation in Golang (github.com)</a></p>
+</tbody>
+</table>
+<h3 id="Grule">Grule</h3>
+<p><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine">hyperjumptech/grule-rule-engine: Rule engine implementation in Golang (github.com)</a></p>
 <p>Grule 是 Go（Golang）编程语言的规则引擎库，灵感来自广受好评的 JBOSS Drools，并以更简单的方式完成</p>
 <p>与 Drools 一样，Grule 也有自己的 DSL 或领域特定语言</p>
-<h2 id="应用情况"><a href="#应用情况" class="headerlink" title="应用情况"></a>应用情况</h2><ul>
-<li>美团<br><a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/06/09/maze-framework.html">从0到1：构建强大且易用的规则引擎 - 美团技术团队</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903593326182414">大数据：美团酒旅实时数据规则引擎应用实践</a><ul>
+<h2 id="应用情况">应用情况</h2>
+<ul>
+<li>美团<br>
+<a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/06/09/maze-framework.html">从0到1：构建强大且易用的规则引擎 - 美团技术团队</a><br>
+<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903593326182414">大数据：美团酒旅实时数据规则引擎应用实践</a>
+<ul>
 <li>外卖业务绩效指标</li>
 <li>美团点评酒旅实时触达</li>
 </ul>
 </li>
-<li>京东<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7216143702123987005">履约核心引擎低代码化原理与实践 - 掘金</a><ul>
+<li>京东<br>
+<a target="_blank" rel="noopener" href="https://juejin.cn/post/7216143702123987005">履约核心引擎低代码化原理与实践 - 掘金</a>
+<ul>
 <li>订单生产履约</li>
 </ul>
 </li>
-<li>货拉拉<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7195452429154910263">货拉拉大数据基于规则引擎构建运力资源供需调节系统</a><ul>
+<li>货拉拉<br>
+<a target="_blank" rel="noopener" href="https://juejin.cn/post/7195452429154910263">货拉拉大数据基于规则引擎构建运力资源供需调节系统</a>
+<ul>
 <li>大数据，运力供需平衡</li>
 </ul>
 </li>
-<li>雪球<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7234763686475219003">规则引擎在内容管理中的探索与应用</a><ul>
+<li>雪球<br>
+<a target="_blank" rel="noopener" href="https://juejin.cn/post/7234763686475219003">规则引擎在内容管理中的探索与应用</a>
+<ul>
 <li>内容风控</li>
 </ul>
 </li>
-<li>陌陌<br><a target="_blank" rel="noopener" href="https://github.com/momosecurity/aswan">momosecurity&#x2F;aswan: 陌陌风控系统静态规则引擎，零基础简易便捷的配置多种复杂规则，实时高效管控用户异常行为。 (github.com)</a><ul>
+<li>陌陌<br>
+<a target="_blank" rel="noopener" href="https://github.com/momosecurity/aswan">momosecurity/aswan: 陌陌风控系统静态规则引擎，零基础简易便捷的配置多种复杂规则，实时高效管控用户异常行为。 (github.com)</a>
+<ul>
 <li>用户风控</li>
 </ul>
 </li>
@@ -489,21 +528,17 @@
 <p>各种工具、云服务其实也离不开各种规则配置</p>
 <p><strong>Octopus 告警规则</strong></p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/image-20230627104922361.png" class="" title="image-20230627104922361">
-
-
-
 <p><strong>Sentry Alert Rule</strong></p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/image-20230627105038925.png" class="" title="image-20230627105038925">
-
-
-
 <p><strong>阿里云物联网平台</strong></p>
 <p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/42733.html?spm=a2c4g.42733.0.i3">阿里云物联网平台 - 设置数据流转规则 (aliyun.com)</a></p>
 <p><strong>CDN</strong></p>
 <p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/424607.html?spm=5176.21213303.J_6704733920.7.1c1453c9rubSy5">阿里云 CDN - 规则引擎</a></p>
-<h1 id="规则编排思想"><a href="#规则编排思想" class="headerlink" title="规则编排思想"></a>规则编排思想</h1><p>规则引擎的核心之一就在于规则的编排方式，上面的开源框架、工具都有其不同的规则编排思想</p>
+<h1>规则编排思想</h1>
+<p>规则引擎的核心之一就在于规则的编排方式，上面的开源框架、工具都有其不同的规则编排思想</p>
 <p>这里就单独聊一聊不同工具的不同规则表达</p>
-<h2 id="when-…-then"><a href="#when-…-then" class="headerlink" title="when … then"></a>when … then</h2><p><em>代表：Drools、Grule</em></p>
+<h2 id="when-…-then">when … then</h2>
+<p><em>代表：Drools、Grule</em></p>
 <p><code>when ... then</code> 是最典型的规则编排思想，一组规则由两部分组成：</p>
 <ul>
 <li>LHS（Left Hand Side）：条件分支逻辑</li>
@@ -515,52 +550,55 @@
 </blockquote>
 <p>Drools 规则</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;SpeedUp&quot;</span></span><br><span class="line">    salience <span class="number">10</span></span><br><span class="line">    when</span><br><span class="line">        $TestCar : TestCarClass( speedUp == <span class="literal">true</span> &amp;&amp; speed &lt; maxSpeed )</span><br><span class="line">        $DistanceRecord : DistanceRecordClass()</span><br><span class="line">    then</span><br><span class="line">        $TestCar.setSpeed($TestCar.Speed + $TestCar.SpeedIncrement);</span><br><span class="line">        update($TestCar);</span><br><span class="line">        $DistanceRecord.setTotalDistance($DistanceRecord.getTotalDistance() + $TestCar.Speed);</span><br><span class="line">        update($DistanceRecord);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <p>Grule 规则</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rule SpeedUp <span class="string">&quot;When testcar is speeding up we keep increase the speed.&quot;</span> salience <span class="number">10</span>  &#123;</span><br><span class="line">    when</span><br><span class="line">        TestCar.SpeedUp == <span class="literal">true</span> &amp;&amp; TestCar.Speed &lt; TestCar.MaxSpeed</span><br><span class="line">    then</span><br><span class="line">        TestCar.Speed = TestCar.Speed + TestCar.SpeedIncrement;</span><br><span class="line">        DistanceRecord.TotalDistance = DistanceRecord.TotalDistance + TestCar.Speed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 <p><code>when ... then</code> 的形式适合大量事实对象进入然后进行大量规则的匹配、执行操作</p>
 <p>整个规则是平铺式的，可以使用表格来进行展示（下面就要提到 Drools 的决策表机制）</p>
 <p>不适合处理带有流程性的规则</p>
-<h2 id="决策表-树"><a href="#决策表-树" class="headerlink" title="决策表 \ 树"></a>决策表 \ 树</h2><p><em>代表：Drools</em></p>
-<p>决策表其实就是另一种形式的 <code>when ... then</code> 表达，之间可以互相转换；此外 Drools 还支持非常多的规则形式，在这里列举一部分<br><a target="_blank" rel="noopener" href="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#drools.AuthoringAssets">Drools Documentation#Authoring rule assets</a></p>
+<h2 id="决策表-树">决策表 \ 树</h2>
+<p><em>代表：Drools</em></p>
+<p>决策表其实就是另一种形式的 <code>when ... then</code> 表达，之间可以互相转换；此外 Drools 还支持非常多的规则形式，在这里列举一部分<br>
+<a target="_blank" rel="noopener" href="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#drools.AuthoringAssets">Drools Documentation#Authoring rule assets</a></p>
 <p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/newItemMenu.png" alt="Authoring rule assets"></p>
-<h3 id="电子表格决策表"><a href="#电子表格决策表" class="headerlink" title="电子表格决策表"></a>电子表格决策表</h3><p>Spreadsheet decision tables</p>
+<h3 id="电子表格决策表">电子表格决策表</h3>
+<p>Spreadsheet decision tables</p>
 <p>电子表格决策表是包含以表格格式定义的业务规则的 XLS 或 XLSX 电子表格</p>
 <p>决策表中的每一行都是一条规则，每一列都是一个条件、一个操作或另一个规则属性；创建并上传电子表格决策表后，定义的规则将与所有其他规则资产一样被编译为 DRL 规则</p>
-<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/decision-table-example-02.png"></p>
-<p><img src="https://img-blog.csdnimg.cn/18216cde2ef74a6aa4fbed071c4aad89.png#pic_center"></p>
+<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/decision-table-example-02.png" alt=""></p>
+<p><img src="https://img-blog.csdnimg.cn/18216cde2ef74a6aa4fbed071c4aad89.png#pic_center" alt=""></p>
 <p>上面的决策表例子转换为 DRL 格式的规则文件内容如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> rules.excels;</span><br><span class="line"><span class="comment">//generated from Decision Table</span></span><br><span class="line"><span class="keyword">import</span> com.ppl.demo.entity.Account;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line">global List&lt;String&gt; list;</span><br><span class="line"><span class="comment">// rule values at B11, header at B6</span></span><br><span class="line">rule <span class="string">&quot;ExcelTable_11&quot;</span></span><br><span class="line">	salience <span class="number">65535</span></span><br><span class="line">	agenda-group <span class="string">&quot;rule-group-001&quot;</span></span><br><span class="line">	when</span><br><span class="line">		$account: Account(sex != <span class="string">&quot;女&quot;</span>)</span><br><span class="line">	then</span><br><span class="line">		list.add(<span class="string">&quot;性别不对&quot;</span>);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line"><span class="comment">// rule values at B12, header at B6</span></span><br><span class="line">rule <span class="string">&quot;ExcelTable_12&quot;</span></span><br><span class="line">	salience <span class="number">65534</span></span><br><span class="line">	agenda-group <span class="string">&quot;rule-group-001&quot;</span></span><br><span class="line">	when</span><br><span class="line">		$account: Account(age &lt; <span class="number">22</span> || age&gt; <span class="number">28</span>)</span><br><span class="line">	then</span><br><span class="line">		list.add(<span class="string">&quot;年龄不合适&quot;</span>);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line"><span class="comment">// rule values at B13, header at B6</span></span><br><span class="line">rule <span class="string">&quot;ExcelTable_13&quot;</span></span><br><span class="line">	salience <span class="number">65533</span></span><br><span class="line">	agenda-group <span class="string">&quot;rule-group-002&quot;</span></span><br><span class="line">	when</span><br><span class="line">		$account: Account(balance &lt; <span class="number">1000</span>)</span><br><span class="line">	then</span><br><span class="line">		list.add(<span class="string">&quot;工资太低&quot;</span>);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="引导式决策表"><a href="#引导式决策表" class="headerlink" title="引导式决策表"></a>引导式决策表</h3><p>Guided decision tables</p>
+<h3 id="引导式决策表">引导式决策表</h3>
+<p>Guided decision tables</p>
 <p>Drools 支持两种类型的决策表：扩展条目表（Extended entry）和有限条目表（Limited entry）</p>
 <ul>
-<li><p><strong>扩展条目表</strong>：扩展条目决策表是列定义指定 Pattern、Field 和 Operator 但不指定值的决策表。值或状态本身保存在决策表的主体中<br><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/dtable-extended-entry.png" alt="扩展条目表"></p>
+<li>
+<p><strong>扩展条目表</strong>：扩展条目决策表是列定义指定 Pattern、Field 和 Operator 但不指定值的决策表。值或状态本身保存在决策表的主体中<br>
+<img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/dtable-extended-entry.png" alt="扩展条目表"></p>
 </li>
-<li><p><strong>有限条目表</strong>：除了 Pattern、Field 和 Operator 之外，Limited Entry 决策表的列定义还为其指定值<br>决策表状态保存在表的主体中，是布尔值，其中 true 具有应用或匹配列的效果；false 表示该列不适用</p>
+<li>
+<p><strong>有限条目表</strong>：除了 Pattern、Field 和 Operator 之外，Limited Entry 决策表的列定义还为其指定值<br>
+决策表状态保存在表的主体中，是布尔值，其中 true 具有应用或匹配列的效果；false 表示该列不适用</p>
 <p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/dtable-limited-entry.png" alt="有限条目表"></p>
 </li>
 </ul>
-<h3 id="引导式决策图"><a href="#引导式决策图" class="headerlink" title="引导式决策图"></a>引导式决策图</h3><p>虽然可以编写单个引导决策表，但也可以编写相关表的图，其中一个表的动作可以提供另一个表条件的潜在匹配，在这种情况下表被认为是相关的</p>
-<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/dtable-graph-radar.png"></p>
-<h3 id="引导式决策树"><a href="#引导式决策树" class="headerlink" title="引导式决策树"></a>引导式决策树</h3><p>Business Central 支持编写简单的决策树</p>
-<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/GuidedDecisionTreeEditorCollapse1.png"></p>
+<h3 id="引导式决策图">引导式决策图</h3>
+<p>虽然可以编写单个引导决策表，但也可以编写相关表的图，其中一个表的动作可以提供另一个表条件的潜在匹配，在这种情况下表被认为是相关的</p>
+<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/dtable-graph-radar.png" alt=""></p>
+<h3 id="引导式决策树">引导式决策树</h3>
+<p>Business Central 支持编写简单的决策树</p>
+<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/Workbench/AuthoringAssets/GuidedDecisionTreeEditorCollapse1.png" alt=""></p>
 <p><a target="_blank" rel="noopener" href="http://49.235.87.129:8080/business-central">http://49.235.87.129:8080/business-central</a></p>
-<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><em>代表：LiteFlow</em></p>
+<h2 id="流程图">流程图</h2>
+<p><em>代表：LiteFlow</em></p>
 <p>LiteFlow 的规则语法相当于构造出一个流程图，组件作为节点，规则描述组件间执行关系：</p>
 <ul>
 <li>串行 <code>THEN</code></li>
 <li>并行 <code>WHEN</code></li>
 <li>选择 <code>SWITCH</code></li>
 <li>条件 <code>IF</code></li>
-<li>循环<ul>
+<li>循环
+<ul>
 <li>for 循环 <code>FOR...DO</code></li>
 <li>while 循环 <code>WHILE...DO</code></li>
 <li>迭代器循环 <code>ITERATOR...DO</code></li>
@@ -572,13 +610,10 @@
 </ul>
 <p><img src="https://liteflow.yomahub.com/img/flow_example/e10.svg" alt="LiteFlow 复杂流程编排"></p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;chain1&quot;</span>&gt;</span></span><br><span class="line">    THEN(</span><br><span class="line">        A,</span><br><span class="line">        WHEN(</span><br><span class="line">            THEN(B, C),</span><br><span class="line">            THEN(D, E, F),</span><br><span class="line">            THEN(</span><br><span class="line">                SWITCH(G).to(</span><br><span class="line">                    THEN(H, I, WHEN(J, K)).id(&quot;t1&quot;),</span><br><span class="line">                    THEN(L, M).id(&quot;t2&quot;)</span><br><span class="line">                ),</span><br><span class="line">                N</span><br><span class="line">            )</span><br><span class="line">        ),</span><br><span class="line">        Z</span><br><span class="line">    );</span><br><span class="line"><span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>使用子变量优化</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;chain1&quot;</span>&gt;</span></span><br><span class="line">    item1 = THEN(B, C);</span><br><span class="line">    item2 = THEN(D, E, F);</span><br><span class="line">    item3_1 = THEN(H, I, WHEN(J, K)).id(&quot;t1&quot;);</span><br><span class="line">    item3_2 = THEN(L, M).id(&quot;t2&quot;);</span><br><span class="line">    item3 = THEN(SWITCH(G).to(item3_1, item3_2), N);</span><br><span class="line">    </span><br><span class="line">    THEN(</span><br><span class="line">        A,</span><br><span class="line">        WHEN(item1, item2, item3),</span><br><span class="line">        Z</span><br><span class="line">    );</span><br><span class="line"><span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="关系控制"><a href="#关系控制" class="headerlink" title="关系控制"></a>关系控制</h2><p><em>代表：ice</em></p>
+<h2 id="关系控制">关系控制</h2>
+<p><em>代表：ice</em></p>
 <blockquote>
 <p>流程图式和执行树式实现的主要缺点在于，牵一发而动全身，改动一个节点需要瞻前顾后，如果考虑不到位，很容易弄错，而且这还只是一个简单的例子，现实的活动内容要比这复杂的多的多，时间线也是很多条</p>
 <p>往往得不偿失，到头来发现还不如硬编码</p>
@@ -587,7 +622,8 @@
 <p>Ice 的规则编排强调组件生效时间和规则之间的关系</p>
 <p>Ice 中分为两种规则节点：</p>
 <ul>
-<li><strong>关系节点</strong>：关系节点为了控制业务流转<ul>
+<li><strong>关系节点</strong>：关系节点为了控制业务流转
+<ul>
 <li>AND：<code>&amp;&amp;</code>，在执行到 false 的地方终止执行</li>
 <li>ANY：<code>||</code>，在执行到 true 的地方终止执行</li>
 <li>ALL：所有子节点都会执行，根据节点返回值进行不同的返回</li>
@@ -595,7 +631,8 @@
 <li>TRUE：所有子节点都会执行，无论子节点返回什么，都返回 true</li>
 </ul>
 </li>
-<li><strong>叶子节点</strong>：叶子节点为真正处理的节点<ul>
+<li><strong>叶子节点</strong>：叶子节点为真正处理的节点
+<ul>
 <li>Flow：一些条件与规则节点，如例子中的 ScoreFlow</li>
 <li>Result：一些结果性质的节点，如例子中的 AmountResult，PointResult</li>
 <li>None：一些不干预流程的动作，如装配工作等</li>
@@ -607,7 +644,8 @@
 <p>X 公司将在国庆放假期间，开展一个为期七天的充值小活动，活动内容如下：</p>
 <ul>
 <li>活动时间（10.1 - 10.7）</li>
-<li>活动内容<ul>
+<li>活动内容
+<ul>
 <li>充值 100 元 送 5 元余额 （10.1 - 10.7）</li>
 <li>充值 50 元 送 10 积分 （10.5 - 10.7）</li>
 <li>不叠加送（充值 100 元只能获得 5 元余额，不会叠加赠送 10 积分）</li>
@@ -615,20 +653,19 @@
 </li>
 </ul>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/ice%E4%BF%AE%E6%94%B9%E5%89%8D.png" class="" title="ice修改前">
-
-
-
 <p>需要对规则进行调整：</p>
 <ol>
-<li><p>充值 100 元改成 80，10 积分变 20 积分，时间改成 10.8 号结束</p>
+<li>
+<p>充值 100 元改成 80，10 积分变 20 积分，时间改成 10.8 号结束</p>
 </li>
-<li><p>去掉不叠加送</p>
+<li>
+<p>去掉不叠加送</p>
 </li>
-<li><p>5 元余额不能送太多，设置个库存 100 个；库存不足充 100 元还是得送 10 积分</p>
+<li>
+<p>5 元余额不能送太多，设置个库存 100 个；库存不足充 100 元还是得送 10 积分</p>
 </li>
 </ol>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/ice%E4%BF%AE%E6%94%B9%E5%90%8E.png" class="" title="ice修改后">
-
 <p>优势：</p>
 <ul>
 <li>对于 1 的改动，只需要修改节点逻辑（<code>ScoreFlow</code>、<code>PointResult</code>）</li>
@@ -641,39 +678,31 @@
 <p><em>Drools 或者传统的规则引擎倾向于大量业务规则下的匹配，所以也被称为决策（Decision）引擎</em></p>
 <p><em>而 LiteFlow 更像是设计模式的延伸，组件的执行编排，但是也称为 “规则引擎”</em></p>
 </blockquote>
-<h1 id="一些概念"><a href="#一些概念" class="headerlink" title="一些概念"></a>一些概念</h1><h2 id="DSL"><a href="#DSL" class="headerlink" title="DSL"></a>DSL</h2><p>DSL（Domain Specific Language，领域特定语言）是一种专门用于解决特定领域问题的编程语言，它是一种特定领域的专用语言，通常具有简单、易用、高效等特点；DSL 的语法和语义通常与特定领域的问题密切相关，可以大大简化问题的表达和解决</p>
+<h1>一些概念</h1>
+<h2 id="DSL">DSL</h2>
+<p>DSL（Domain Specific Language，领域特定语言）是一种专门用于解决特定领域问题的编程语言，它是一种特定领域的专用语言，通常具有简单、易用、高效等特点；DSL 的语法和语义通常与特定领域的问题密切相关，可以大大简化问题的表达和解决</p>
 <p>这里以 Drools 为例，Drools 可以根据定义的 DSL 文件和 DSLR 文件，将其转换为 DRL 表达</p>
 <p><strong>DSL</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[&lt;scope&gt;][&lt;type definition&gt;]&lt;dsl expression&gt;=&lt;replacement text&gt;</span><br><span class="line">[when] or [condition] 定义的语法应用于LHS</span><br><span class="line">[then] or [consequence] 定义的语法应用于RHS</span><br><span class="line">[*]  以上两者都适用</span><br><span class="line">[keyword] 关键字，比如 no-loop 这一类属性</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[when] There is <span class="type">a</span> <span class="variable">person</span> <span class="operator">=</span> $p:Person()</span><br><span class="line">[when] - id greater than &#123;id:\d*&#125; = id &gt; &#123;id&#125;</span><br><span class="line">[then] print = System.out.println(<span class="string">&quot;I am fired!&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>DSLR</strong></p>
 <p>这样整个 DSLR 文件讲使用语义化的表达来描述存在 DSL 定义的特定领域内规则</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&#x27;test-dsl&#x27;</span></span><br><span class="line"></span><br><span class="line">when</span><br><span class="line">    There is a person</span><br><span class="line">    - id greater than <span class="number">10</span></span><br><span class="line">then</span><br><span class="line">    print</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>转换后的 DRL 规则</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&#x27;test-dsl&#x27;</span></span><br><span class="line"></span><br><span class="line">when</span><br><span class="line">    $p:Person(id &gt; <span class="number">10</span>)</span><br><span class="line">then</span><br><span class="line">    System.out.println(<span class="string">&quot;I am fired!&quot;</span>)</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="DMN"><a href="#DMN" class="headerlink" title="DMN"></a>DMN</h2><p>DMN 全称 Decision Model and Notation（决策模型与符号）,是一种用于表示业务决策和规则的规范，旨在帮助参与决策的人都能简单快速理解决策过程</p>
+<h2 id="DMN">DMN</h2>
+<p>DMN 全称 Decision Model and Notation（决策模型与符号）,是一种用于表示业务决策和规则的规范，旨在帮助参与决策的人都能简单快速理解决策过程</p>
 <p>DMN 是由 OMG 管理的一种规范，该组织下比较知名的还有 UML 等</p>
 <p>Drools 对 DMN 有良好的支持，支持 DMN 1.3，功能完善</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/kiegroup/kogito-examples">kiegroup&#x2F;kogito-examples: Kogito examples - Kogito is a cloud-native business automation technology for building cloud-ready business applications. (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kiegroup/kogito-examples">kiegroup/kogito-examples: Kogito examples - Kogito is a cloud-native business automation technology for building cloud-ready business applications. (github.com)</a></p>
 <p><a target="_blank" rel="noopener" href="https://learn-dmn-in-15-minutes.com/learn/introduction">Learn DMN in 15 minutes | Introduction (learn-dmn-in-15-minutes.com)</a></p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/image-20230625000439860.png" class="" title="image-20230625000439860">
-
 <p>DMN 中支持 FEEL 规则表达式</p>
 <p>足够友好的表达语言（Friendly Enough Expression Language ）FEEL 表达式定义了 DMN 模型中决策的逻辑，FEEL 旨在通过为决策模型结构分配语义来促进决策建模和执行</p>
 <p><a target="_blank" rel="noopener" href="https://kiegroup.github.io/dmn-feel-handbook/#dmn-feel-handbook">DMN FEEL handbook – Drools DMN FEEL handbook (kiegroup.github.io)</a></p>
 <div STYLE="page-break-after: always;"></div>
-
-<h2 id="CEP"><a href="#CEP" class="headerlink" title="CEP"></a>CEP</h2><p>CEP 是复杂事件处理（Complex event processing）的缩写</p>
+<h2 id="CEP">CEP</h2>
+<p>CEP 是复杂事件处理（Complex event processing）的缩写</p>
 <p>事件是某个时间点应用程序域中状态发生重大变化的记录，根据域的建模方式，状态的变化可以由单个事件、多个原子事件或相关事件的层次结构表示</p>
 <p>从复杂事件处理（CEP）的角度来看，事件是发生在特定时间点的一种事实或对象，而业务规则是如何对来自该事实或对象的数据做出反应的定义：例如在股票经纪人应用程序中，证券价格的变化、所有权从卖方到买方的变化或账户持有人余额的变化都被视为事件，因为在给定时间应用程序域的状态发生了变化</p>
 <p>Drools 中的 Drools engine 使用复杂事件处理（CEP）来检测和处理事件集合中的多个事件，揭示事件之间存在的关系，并从事件及其关系中推断新数据</p>
@@ -700,9 +729,6 @@
 <hr>
 <p><strong>声明事件</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">declare VoiceCall</span><br><span class="line">  <span class="meta">@role( event )</span></span><br><span class="line">  <span class="meta">@timestamp( callDateTime )</span></span><br><span class="line">  <span class="meta">@duration( callDuration )</span></span><br><span class="line">  <span class="meta">@expires( 1h35m )</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>Drools 对于 CEP 有着丰富的时间规则支持</strong></p>
 <p>在流模式下，Drools 引擎对工作内存的事件支持以下时态运算符：</p>
 <ul>
@@ -717,25 +743,23 @@
 <p>表示：如果 <code>$eventA</code> 在 <code>$eventB</code> 结束后 3 分 30 秒到 4 分之间开始，则以下模式匹配；如果 <code>$eventA</code> 在 <code>$eventB</code> 结束后 3 分 30 秒之前开始，或在 <code>$eventA</code> 结束后 4 分钟之后开始，则不匹配</p>
 <p><strong>时间 \ 长度滑动窗口</strong></p>
 <ul>
-<li>处理最后 2 分钟的库存点（时间滑动窗口）<br><code>StockPoint() over window:time(2m)</code></li>
-<li>处理最后10个库存点（长度滑动窗口）<br>  <code>StockPoint() over window:length(10)</code></li>
+<li>处理最后 2 分钟的库存点（时间滑动窗口）<br>
+<code>StockPoint() over window:time(2m)</code></li>
+<li>处理最后10个库存点（长度滑动窗口）<br>
+<code>StockPoint() over window:length(10)</code></li>
 </ul>
 <p>例如以下两个 DRL 规则根据平均温度激活火灾警报；第一条规则使用滑动时间窗口来计算最后 10 分钟的平均值，而第二条规则使用滚动长度窗口来计算最近一百个温度读数的平均值</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Sound the alarm if temperature rises above threshold&quot;</span></span><br><span class="line">when</span><br><span class="line">  <span class="title function_">TemperatureThreshold</span><span class="params">($max : max)</span></span><br><span class="line">  Number(doubleValue &gt; $max) from <span class="title function_">accumulate</span><span class="params">(</span></span><br><span class="line"><span class="params">    SensorReading($temp : temperature)</span> over window:time(10m),</span><br><span class="line">    average($temp))</span><br><span class="line">then</span><br><span class="line">  <span class="comment">// Sound the alarm.</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Sound the alarm if temperature rises above threshold&quot;</span></span><br><span class="line">when</span><br><span class="line">  <span class="title function_">TemperatureThreshold</span><span class="params">($max : max)</span></span><br><span class="line">  Number(doubleValue &gt; $max) from <span class="title function_">accumulate</span><span class="params">(</span></span><br><span class="line"><span class="params">    SensorReading($temp : temperature)</span> over window:length(<span class="number">100</span>),</span><br><span class="line">    average($temp))</span><br><span class="line">then</span><br><span class="line">  <span class="comment">// Sound the alarm.</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <div STYLE="page-break-after: always;"></div>
-
-<h2 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h2><blockquote>
+<h2 id="行为型模式">行为型模式</h2>
+<blockquote>
 <p>Behavioral design patterns are concerned with algorithms and the assignment of responsibilities between objects.</p>
 <p>行为模式负责对象间的高效沟通和职责委派</p>
 </blockquote>
 <p>对于流程图式规则，我认为是行为模式的扩展，将分支组件选择同样进行了组件化</p>
-<h3 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h3><img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.drawio.png" class="" title="策略模式.drawio">
-
+<h3 id="策略">策略</h3>
+<img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.drawio.png" class="" title="策略模式.drawio">
 <p>策略模式（Strategy Pattern）定义了一系列算法，并将每个算法封装起来，使它们可以相互替换，从而使得算法可以独立于使用它们的客户端而变化</p>
 <p>策略模式的优点：</p>
 <ul>
@@ -745,8 +769,8 @@
 <li>组合代替继承</li>
 <li>符合开闭原则，无需对上下文进行修改就能够引入新的策略</li>
 </ul>
-<h3 id="责任链"><a href="#责任链" class="headerlink" title="责任链"></a>责任链</h3><img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F.drawio.png" class="" title="责任链模式.drawio">
-
+<h3 id="责任链">责任链</h3>
+<img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F.drawio.png" class="" title="责任链模式.drawio">
 <p>责任链模式（Chain of Responsibility Pattern）通过将请求发送给一系列处理对象，使得每个处理对象都有机会处理请求，从而实现请求的处理与发送者的解耦</p>
 <p>责任链模式的优点：</p>
 <ul>
@@ -755,8 +779,8 @@
 <li>满足单一职责原则，可对发起操作和执行操作的类进行解耦</li>
 <li>符合开闭原则，可以在不更改现有代码的情况下在程序中新增处理者</li>
 </ul>
-<h3 id="流水线"><a href="#流水线" class="headerlink" title="流水线"></a>流水线</h3><img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%A8%A1%E5%BC%8F.drawio.png" class="" title="流水线模式.drawio">
-
+<h3 id="流水线">流水线</h3>
+<img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%A8%A1%E5%BC%8F.drawio.png" class="" title="流水线模式.drawio">
 <p>管道设计模式（Pipeline Pattern）将一个复杂的任务分解为多个独立的阶段，每个阶段都由一个独立的处理器来完成，并且处理器之间通过管道进行连接，从而形成一个处理流程</p>
 <p>流水线模式的优点：</p>
 <ul>
@@ -765,40 +789,31 @@
 <li>提高代码的可重用性和可测试性，因为每个处理器都可以单独测试和调试</li>
 <li>可以利用多核处理器的优势，提高代码的并发性能</li>
 </ul>
-<h1 id="核心能力"><a href="#核心能力" class="headerlink" title="核心能力"></a>核心能力</h1><p>这里列举了一些规则引擎的核心机制</p>
+<h1>核心能力</h1>
+<p>这里列举了一些规则引擎的核心机制</p>
 <p>对于 Drools 支持的能力主要结合文档进行简单的介绍，对于 LiteFlow 等支持的能力会结合源码</p>
-<h2 id="规则编排"><a href="#规则编排" class="headerlink" title="规则编排"></a>规则编排</h2><p>Drools 使用了 RETE 算法的变体 Phreak 来做为规则算法</p>
+<h2 id="规则编排">规则编排</h2>
+<p>Drools 使用了 RETE 算法的变体 Phreak 来做为规则算法</p>
 <p>LiteFlow 使用了 alibaba 开源的 QLExpress 作为规则的解析工具（QLExpress 也是一款表达式引擎，或者说是脚本语言）</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/QLExpress">alibaba&#x2F;QLExpress: QLExpress is a powerful, lightweight, dynamic language for the Java platform aimed at improving developers’ productivity in different business scenes. (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/alibaba/QLExpress">alibaba/QLExpress: QLExpress is a powerful, lightweight, dynamic language for the Java platform aimed at improving developers’ productivity in different business scenes. (github.com)</a></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ExpressRunner</span> <span class="variable">runner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ExpressRunner</span>();</span><br><span class="line">DefaultContext&lt;String, Object&gt; context = <span class="keyword">new</span> <span class="title class_">DefaultContext</span>&lt;String, Object&gt;();</span><br><span class="line">context.put(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>);</span><br><span class="line">context.put(<span class="string">&quot;b&quot;</span>, <span class="number">2</span>);</span><br><span class="line">context.put(<span class="string">&quot;c&quot;</span>, <span class="number">3</span>);</span><br><span class="line"><span class="type">String</span> <span class="variable">express</span> <span class="operator">=</span> <span class="string">&quot;a + b * c&quot;</span>;</span><br><span class="line"><span class="type">Object</span> <span class="variable">r</span> <span class="operator">=</span> runner.execute(express, context, <span class="literal">null</span>, <span class="literal">true</span>, <span class="literal">false</span>);</span><br><span class="line">System.out.println(r);</span><br></pre></td></tr></table></figure>
-
 <p>因为 QLExpress 还支持扩展操作符，所以被 LiteFlow 用来解析其 DSL 定义的规则</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">flow</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">nodes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">node</span> <span class="attr">id</span>=<span class="string">&quot;a&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.yomahub.liteflow.test.parser.cmp.ACmp&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">node</span> <span class="attr">id</span>=<span class="string">&quot;b&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.yomahub.liteflow.test.parser.cmp.BCmp&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">node</span> <span class="attr">id</span>=<span class="string">&quot;c&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.yomahub.liteflow.test.parser.cmp.CCmp&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">node</span> <span class="attr">id</span>=<span class="string">&quot;d&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.yomahub.liteflow.test.parser.cmp.DCmp&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">nodes</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;chain1&quot;</span>&gt;</span></span><br><span class="line">        THEN(</span><br><span class="line">            a, b, WHEN(c,d)</span><br><span class="line">        );</span><br><span class="line">    <span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">flow</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">flow:</span></span><br><span class="line">  <span class="attr">nodes:</span></span><br><span class="line">    <span class="attr">node:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">a</span></span><br><span class="line">        <span class="attr">class:</span> <span class="string">com.yomahub.liteflow.test.parser.cmp.ACmp</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">b</span></span><br><span class="line">        <span class="attr">class:</span> <span class="string">com.yomahub.liteflow.test.parser.cmp.BCmp</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">c</span></span><br><span class="line">        <span class="attr">class:</span> <span class="string">com.yomahub.liteflow.test.parser.cmp.CCmp</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">d</span></span><br><span class="line">        <span class="attr">class:</span> <span class="string">com.yomahub.liteflow.test.parser.cmp.DCmp</span></span><br><span class="line">  <span class="attr">chain:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">chain1</span></span><br><span class="line">      <span class="attr">value:</span> <span class="string">&quot;THEN(a, b, WHEN(c, d))&quot;</span></span><br></pre></td></tr></table></figure>
-
 <p>最终的 EL <code>THEN(a, b, WHEN(c, d))</code> 都是交由 QLExpress 进行处理</p>
 <hr>
 <p>LiteFlowChainELBuilder#setEL</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> LiteFlowChainELBuilder <span class="title function_">setEL</span><span class="params">(String elStr)</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (StrUtil.isBlank(elStr)) &#123;</span><br><span class="line">			<span class="type">String</span> <span class="variable">errMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;no content in this chain[&#123;&#125;]&quot;</span>, chain.getChainId());</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">FlowSystemException</span>(errMsg);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		List&lt;String&gt; errorList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			...</span><br><span class="line">                </span><br><span class="line">			<span class="comment">// 解析 el 成为一个 Condition</span></span><br><span class="line">			<span class="type">Condition</span> <span class="variable">condition</span> <span class="operator">=</span> (Condition) EXPRESS_RUNNER.execute(elStr, context, errorList, <span class="literal">true</span>, <span class="literal">true</span>);</span><br><span class="line">		...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 <p>静态成员 <code>EXPRESS_RUNNER</code> 即为 QLExpress 提供的 <code>ExpressRunner</code> 实例</p>
 <p>在静态代码块中初始化扩展操作符</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * EL解析引擎</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">ExpressRunner</span> <span class="variable">EXPRESS_RUNNER</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ExpressRunner</span>();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		<span class="comment">// 初始化QLExpress的Runner</span></span><br><span class="line">		EXPRESS_RUNNER.addFunction(ChainConstant.THEN, <span class="keyword">new</span> <span class="title class_">ThenOperator</span>());</span><br><span class="line">		EXPRESS_RUNNER.addFunction(ChainConstant.WHEN, <span class="keyword">new</span> <span class="title class_">WhenOperator</span>());</span><br><span class="line">		EXPRESS_RUNNER.addFunction(ChainConstant.SWITCH, <span class="keyword">new</span> <span class="title class_">SwitchOperator</span>());</span><br><span class="line">		EXPRESS_RUNNER.addFunction(ChainConstant.PRE, <span class="keyword">new</span> <span class="title class_">PreOperator</span>());</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
 <p>扩展操作符的实现就是构建 LiteFlow 最终的节点抽象 <code>Executable</code> 的抽象实现 <code>Condition</code></p>
 <p><code>BaseOperator</code> 为了强化 <code>executeInner</code> 方法，会捕获抛出的 <code>QLException</code> 异常，输出友好的错误提示</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ThenOperator</span> <span class="keyword">extends</span> <span class="title class_">BaseOperator</span>&lt;ThenCondition&gt; &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> ThenCondition <span class="title function_">build</span><span class="params">(Object[] objects)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		OperatorHelper.checkObjectSizeGtZero(objects);</span><br><span class="line"></span><br><span class="line">		<span class="type">ThenCondition</span> <span class="variable">thenCondition</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThenCondition</span>();</span><br><span class="line">		<span class="keyword">for</span> (Object obj : objects) &#123;</span><br><span class="line">			thenCondition.addExecutable(OperatorHelper.convert(obj, Executable.class));</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> thenCondition;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 <p>最终就到了规则对象封装的三个类型</p>
 <ul>
-<li>Executable<ul>
+<li>Executable
+<ul>
 <li>Condition：条件对象，核心属性 <code>executableGroup</code>，持有 <code>Executable</code> Map</li>
 <li>Chain：规则链对象，核心属性 <code>conditionList</code>，持有 <code>Condition</code> 集合</li>
 <li>Node：Node 节点，核心属性 <code>NodeComponent</code>，才是组件执行的核心</li>
@@ -807,12 +822,9 @@
 </ul>
 <p>最终在 <code>FlowExecutor</code> 执行中获取 <code>Chain</code> 为入口，进行执行</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	chain = FlowBus.getChain(chainId);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ObjectUtil.isNull(chain)) &#123;</span><br><span class="line">		<span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;[&#123;&#125;]:couldn&#x27;t find chain with the id[&#123;&#125;]&quot;</span>, slot.getRequestId(),</span><br><span class="line">				chainId);</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ChainNotFoundException</span>(errorMsg);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 执行chain</span></span><br><span class="line">	chain.execute(slotIndex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="并发编排"><a href="#并发编排" class="headerlink" title="并发编排"></a>并发编排</h2><p>LiteFlow 中的流程图式规则表达天然支持灵活地对执行任务进行并发控制，使用关键词 <code>WHEN</code> 进行表达</p>
+<h2 id="并发编排">并发编排</h2>
+<p>LiteFlow 中的流程图式规则表达天然支持灵活地对执行任务进行并发控制，使用关键词 <code>WHEN</code> 进行表达</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;chain1&quot;</span>&gt;</span></span><br><span class="line">    THEN(</span><br><span class="line">        a,</span><br><span class="line">        WHEN(b, c, d),</span><br><span class="line">        e</span><br><span class="line">    );</span><br><span class="line"><span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>表示串行执行节点 a，随后并行执行节点 b、c、d，最后继续串行执行节点 e</p>
 <p>同时拥有一些拓展功能：</p>
 <ul>
@@ -823,12 +835,11 @@
 <hr>
 <p>并发的第一步，整个规则被包装为 <code>WhenCondition</code> 对象</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WhenCondition</span> <span class="keyword">extends</span> <span class="title class_">Condition</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 只在when类型下有效，以区分当when调用链调用失败时是否继续往下执行 默认false不继续执行</span></span><br><span class="line">	<span class="keyword">private</span> <span class="type">boolean</span> <span class="variable">ignoreError</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 只在when类型下有效，为true的话说明在多个并行节点下，任意一个成功，整个when就成功</span></span><br><span class="line">	<span class="keyword">private</span> <span class="type">boolean</span> <span class="variable">any</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// when 单独的线程池名称</span></span><br><span class="line">	<span class="keyword">private</span> String threadExecutorClass;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">executeCondition</span><span class="params">(Integer slotIndex)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		executeAsyncCondition(slotIndex);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
 <p>对象中包括 <code>WHEN</code> 规则相关的属性，以及关键的 <code>executeCondition</code> 实现</p>
 <p>实现中调用了 <code>executeAsyncCondition</code></p>
 <p><code>executeAsyncCondition</code> 代码比较长，概括做了以下几件事：</p>
 <ol>
-<li>拿到 <code>Condition</code> 下的可执行元素的集合 <code>executableGroup</code>，过滤掉前后置组件（<code>PreCondition</code> 和 <code>FinallyCondition</code>）以及 <code>Node</code> 的 <code>isAccess</code> 为 false 的节点（这里是为了处理一个 bug issue：<a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I4XRBA">关于when和then混合使用时(有any和isAccess的情况下)，then的节点先执行的问题 · Issue #I4XRBA · dromara&#x2F;liteFlow - Gitee.com</a>）</li>
+<li>拿到 <code>Condition</code> 下的可执行元素的集合 <code>executableGroup</code>，过滤掉前后置组件（<code>PreCondition</code> 和 <code>FinallyCondition</code>）以及 <code>Node</code> 的 <code>isAccess</code> 为 false 的节点（这里是为了处理一个 bug issue：<a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I4XRBA">关于when和then混合使用时(有any和isAccess的情况下)，then的节点先执行的问题 · Issue #I4XRBA · dromara/liteFlow - Gitee.com</a>）</li>
 <li>使用 <code>ScheduledThreadPoolExecutor</code> 实现 <code>CompletableFuture</code> 异步处理超时，将 <code>Executable</code> 数据包装为 <code>ParallelSupplier</code>，调用 <code>CompletableFuture.supplyAsync</code></li>
 <li>根据 <code>any</code> 参数使用 <code>CompletableFuture.anyOf</code> 或 <code>CompletableFuture.allOf</code>，拿到封装流程后的 <code>resultCompletableFuture</code></li>
 <li>执行 <code>resultCompletableFuture.get</code> 进行阻塞，catch <code>InterruptedException</code></li>
@@ -836,39 +847,30 @@
 <li>过滤出超时的任务，输出超时日志</li>
 <li>根据参数 <code>isIgnoreError</code>，处理 <code>InterruptedException</code>；遍历 <code>CompletableFuture</code> 的返回值，如果异步执行失败，则抛出相应的业务异常</li>
 </ol>
-<h2 id="执行组件"><a href="#执行组件" class="headerlink" title="执行组件"></a>执行组件</h2><p>Drools 中没有组件的概念，但是每个规则表达中 <code>then</code> 部分直接调用 Java 代码或者由 MVEL 或 Java 定义执行逻辑</p>
+<h2 id="执行组件">执行组件</h2>
+<p>Drools 中没有组件的概念，但是每个规则表达中 <code>then</code> 部分直接调用 Java 代码或者由 MVEL 或 Java 定义执行逻辑</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.example.User;</span><br><span class="line"><span class="keyword">import</span> com.example.Product;</span><br><span class="line"><span class="keyword">import</span> com.example.ProductRecommendationService;</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Recommendation Rule&quot;</span></span><br><span class="line">when</span><br><span class="line">  	<span class="comment">// 绑定事实对象</span></span><br><span class="line">    $user : User( $userId : userId, $history : purchaseHistory, $prefs : preferences )</span><br><span class="line">    $product : Product( $productId : productId, $categories : categories, $price : price )</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 内置函数</span></span><br><span class="line">    exists( String( <span class="built_in">this</span> == $categories ) from $prefs ) <span class="comment">// 商品所属的某个类别在用户偏好中存在</span></span><br><span class="line">    not ( String( <span class="built_in">this</span> == $productId ) from $history ) <span class="comment">// 用户未购买过该商品</span></span><br><span class="line">then</span><br><span class="line">    <span class="comment">// 执行逻辑</span></span><br><span class="line">    ProductRecommendationService.recommendProduct($userId, $productId);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <p>LiteFlow 中的组件由 Java 代码编写（也可以脚本组件），可以作为 bean 接入 Spring</p>
 <p><code>FlowParse</code> 及其实现</p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/FlowParser.png" class="" title="FlowParser">
-
-
-
 <p><code>FlowExecutor</code> 的 <code>init</code> 方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查找对应解析器</span></span><br><span class="line">parser = FlowParserProvider.lookup(path);</span><br><span class="line"></span><br><span class="line"><span class="comment">// FlowParserProvider.lookup</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> FlowParser <span class="title function_">lookup</span><span class="params">(String path)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		<span class="comment">// 自定义类必须实现以上实现类，否则报错</span></span><br><span class="line">		<span class="type">String</span> <span class="variable">errorMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;can&#x27;t support the format &#123;&#125;&quot;</span>, path);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 本地文件</span></span><br><span class="line">		<span class="keyword">if</span> (isLocalConfig(path)) &#123;</span><br><span class="line">			<span class="comment">// 遍历枚举 map 找到对应 factory</span></span><br><span class="line">			Predicate&lt;String&gt; dictKey = LOCAL_PARSER_DICT.keySet()</span><br><span class="line">				.stream()</span><br><span class="line">				.filter(key -&gt; key.test(path))</span><br><span class="line">				.findFirst()</span><br><span class="line">				.orElseThrow(() -&gt; <span class="keyword">new</span> <span class="title class_">ErrorSupportPathException</span>(errorMsg));</span><br><span class="line"></span><br><span class="line">			LOG.info(<span class="string">&quot;flow info loaded from local file,path=&#123;&#125;&quot;</span>, path);</span><br><span class="line">			<span class="keyword">return</span> LOCAL_PARSER_DICT.get(dictKey).apply(path);</span><br><span class="line">		&#125;</span><br><span class="line">  </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
 <p><code>NodeType</code> 节点类型</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">NodeTypeEnum</span> &#123;</span><br><span class="line">	COMMON(<span class="string">&quot;common&quot;</span>, <span class="string">&quot;普通&quot;</span>, <span class="literal">false</span>, NodeComponent.class),</span><br><span class="line">	SWITCH(<span class="string">&quot;switch&quot;</span>, <span class="string">&quot;选择&quot;</span>, <span class="literal">false</span>, NodeSwitchComponent.class),</span><br><span class="line">	IF(<span class="string">&quot;if&quot;</span>, <span class="string">&quot;条件&quot;</span>, <span class="literal">false</span>, NodeIfComponent.class),</span><br><span class="line">	FOR(<span class="string">&quot;for&quot;</span>, <span class="string">&quot;循环次数&quot;</span>, <span class="literal">false</span>, NodeForComponent.class),</span><br><span class="line">	WHILE(<span class="string">&quot;while&quot;</span>, <span class="string">&quot;循环条件&quot;</span>, <span class="literal">false</span>, NodeWhileComponent.class),</span><br><span class="line">	BREAK(<span class="string">&quot;break&quot;</span>, <span class="string">&quot;循环跳出&quot;</span>, <span class="literal">false</span>, NodeBreakComponent.class),</span><br><span class="line">	ITERATOR(<span class="string">&quot;iterator&quot;</span>, <span class="string">&quot;循环迭代&quot;</span>, <span class="literal">false</span>, NodeIteratorComponent.class),</span><br><span class="line">	SCRIPT(<span class="string">&quot;script&quot;</span>, <span class="string">&quot;脚本&quot;</span>, <span class="literal">true</span>, ScriptCommonComponent.class),</span><br><span class="line">	SWITCH_SCRIPT(<span class="string">&quot;switch_script&quot;</span>, <span class="string">&quot;选择脚本&quot;</span>, <span class="literal">true</span>, ScriptSwitchComponent.class),</span><br><span class="line">	IF_SCRIPT(<span class="string">&quot;if_script&quot;</span>, <span class="string">&quot;条件脚本&quot;</span>, <span class="literal">true</span>, ScriptIfComponent.class),</span><br><span class="line">	FOR_SCRIPT(<span class="string">&quot;for_script&quot;</span>, <span class="string">&quot;循环次数脚本&quot;</span>, <span class="literal">true</span>, ScriptForComponent.class),</span><br><span class="line">	WHILE_SCRIPT(<span class="string">&quot;while_script&quot;</span>, <span class="string">&quot;循环条件脚本&quot;</span>, <span class="literal">true</span>, ScriptWhileComponent.class),</span><br><span class="line">	BREAK_SCRIPT(<span class="string">&quot;break_script&quot;</span>, <span class="string">&quot;循环跳出脚本&quot;</span>, <span class="literal">true</span>, ScriptBreakComponent.class);</span><br><span class="line">  </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
 <p>整体流程：</p>
 <ol>
 <li>文件解析（XML、JSON）</li>
 <li><code>NodePropBean</code> 包装</li>
-<li>buildNode，FlowBus 添加节点元数据<ul>
+<li>buildNode，FlowBus 添加节点元数据
+<ul>
 <li>如果是声明式组件，Spring 环境下已经是代理对象则不处理，非 Spring 环境执行 <code>LiteFlowProxyUtil.proxy2NodeComponent</code></li>
 <li>配置组件，new Instance</li>
 </ul>
 </li>
 <li>脚本组件，加载 script 脚本</li>
 </ol>
-<h2 id="脚本组件"><a href="#脚本组件" class="headerlink" title="脚本组件"></a>脚本组件</h2><p>在 Drools 中本身的规则表达就是 Drools 定义的类 Java 语法，同时也支持 DMN 的 FEEL 等语法，相当于脚本语言</p>
+<h2 id="脚本组件">脚本组件</h2>
+<p>在 Drools 中本身的规则表达就是 Drools 定义的类 Java 语法，同时也支持 DMN 的 FEEL 等语法，相当于脚本语言</p>
 <p>在 LiteFlow 中支持多种脚本语言来定义组件：</p>
 <ul>
 <li>Groovy</li>
@@ -879,21 +881,13 @@
 <li>Aviator</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">flow</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">nodes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">node</span> <span class="attr">id</span>=<span class="string">&quot;s1&quot;</span> <span class="attr">name</span>=<span class="string">&quot;普通脚本&quot;</span> <span class="attr">type</span>=<span class="string">&quot;script&quot;</span> <span class="attr">language</span>=<span class="string">&quot;groovy&quot;</span>&gt;</span></span><br><span class="line">            &lt;![CDATA[</span><br><span class="line">                def a=3;</span><br><span class="line">                def b=2;</span><br><span class="line">                defaultContext.setData(&quot;s1&quot;,a*b);</span><br><span class="line">            ]]&gt;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">node</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">nodes</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;chain1&quot;</span>&gt;</span></span><br><span class="line">        THEN(a);</span><br><span class="line">    <span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">flow</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
 <p><code>NodeComponent</code> 实现类 <code>loadScript</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ScriptCommonComponent</span> <span class="keyword">extends</span> <span class="title class_">NodeComponent</span> <span class="keyword">implements</span> <span class="title class_">ScriptComponent</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">log</span> <span class="operator">=</span> LoggerFactory.getLogger(<span class="built_in">this</span>.getClass());</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">		<span class="type">ScriptExecuteWrap</span> <span class="variable">wrap</span> <span class="operator">=</span> <span class="built_in">this</span>.buildWrap(<span class="built_in">this</span>);</span><br><span class="line">		ScriptExecutorFactory.loadInstance().getScriptExecutor(<span class="built_in">this</span>.getRefNode().getLanguage()).execute(wrap);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">loadScript</span><span class="params">(String script, String language)</span> &#123;</span><br><span class="line">		log.info(<span class="string">&quot;load script for component[&#123;&#125;]&quot;</span>, getDisplayName());</span><br><span class="line">		ScriptExecutorFactory.loadInstance().getScriptExecutor(language).load(getNodeId(), script);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>ScriptExecutorFactory.loadInstance().getScriptExecutor(language).load(getNodeId(), script)</code> 主要获取了 <code>ScriptExecutor</code> 的实现</p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/ScriptExecutor.png" class="" title="ScriptExecutor">
-
 <p>groovy 的 ScriptEngine 由 groovy-jsr223 依赖提供 <code>org.codehaus.groovy.jsr223GroovyScriptEngineImpl</code></p>
 <p>最终编译为 <code>CompiledScript</code> 实现，存储至 <code>compiledScriptMap</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">JSR223ScriptExecutor</span> <span class="keyword">extends</span> <span class="title class_">ScriptExecutor</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">log</span> <span class="operator">=</span> LoggerFactory.getLogger(<span class="built_in">this</span>.getClass());</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> ScriptEngine scriptEngine;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, CompiledScript&gt; compiledScriptMap = <span class="keyword">new</span> <span class="title class_">CopyOnWriteHashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
 <blockquote>
 <p>思考：</p>
 <ul>
@@ -903,7 +897,8 @@
 <p>XXL-Job 支持的 GLUE 模式</p>
 <p><a target="_blank" rel="noopener" href="https://www.xuxueli.com/xxl-job/#3.3%20GLUE%E6%A8%A1%E5%BC%8F(Java)">XXL-JOB 3.3-GLUE模式(Java)</a></p>
 </blockquote>
-<h2 id="规则热更新"><a href="#规则热更新" class="headerlink" title="规则热更新"></a>规则热更新</h2><p>规则配置的热更新是规则化的重要优势，特别是很多成熟的规则引擎都提供了 GUI 后台</p>
+<h2 id="规则热更新">规则热更新</h2>
+<p>规则配置的热更新是规则化的重要优势，特别是很多成熟的规则引擎都提供了 GUI 后台</p>
 <p>Drools 支持的规则读取方式：</p>
 <ul>
 <li><code>KieClasspathContainer</code> 项目 resource 文件</li>
@@ -924,12 +919,15 @@
 </blockquote>
 <p>LiteFlow 规则更新的方式：</p>
 <ul>
-<li><p>在 Spring 容器中拿到 <code>FlowExecutor</code> 对象调用 <code>flowExecutor.reloadRule()</code></p>
+<li>
+<p>在 Spring 容器中拿到 <code>FlowExecutor</code> 对象调用 <code>flowExecutor.reloadRule()</code></p>
 </li>
-<li><p>指定刷新某一个 Chain 的规则</p>
+<li>
+<p>指定刷新某一个 Chain 的规则</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LiteFlowChainELBuilder.createChain().setChainName(<span class="string">&quot;chain2&quot;</span>).setEL(</span><br><span class="line">  <span class="string">&quot;THEN(a, b, WHEN(c, d))&quot;</span></span><br><span class="line">).build();</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>配置放在中间件，利用中间件的配置监听机制进行更新</p>
+<li>
+<p>配置放在中间件，利用中间件的配置监听机制进行更新</p>
 <ul>
 <li>ZK</li>
 <li>Etcd</li>
@@ -942,62 +940,47 @@
 <p>核心原理就是定义各自数据源的 <code>Parse</code>，在解析方法中执行监听操作、挂载监听相关的回调</p>
 <p>（不过我发现对于远程规则的配置都是全量刷新，相当于每次变更重新加载整个规则文件，不像本地规则文件一样可以配置多个？）</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NacosXmlELParser</span> <span class="keyword">extends</span> <span class="title class_">ClassXmlFlowELParser</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> NacosParserHelper helper;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="title function_">NacosXmlELParser</span><span class="params">()</span> &#123;</span><br><span class="line">			<span class="type">LiteflowConfig</span> <span class="variable">liteflowConfig</span> <span class="operator">=</span> LiteflowConfigGetter.get();</span><br><span class="line">    	<span class="comment">// 获取配置初始化客户端</span></span><br><span class="line">    	...</span><br><span class="line">    	helper = <span class="keyword">new</span> <span class="title class_">NacosParserHelper</span>(nacosParserVO);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">parseCustom</span><span class="params">()</span> &#123;</span><br><span class="line">    	<span class="comment">// 重新 parse</span></span><br><span class="line">			Consumer&lt;String&gt; parseConsumer = t -&gt; &#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					parse(t);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="type">String</span> <span class="variable">content</span> <span class="operator">=</span> helper.getContent();</span><br><span class="line">				helper.checkContent(content);</span><br><span class="line">        <span class="comment">// 监听</span></span><br><span class="line">				helper.listener(parseConsumer);</span><br><span class="line">				<span class="keyword">return</span> content;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NacosException</span>(e.getMessage());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 <p>本地文件监听使用了 Apache  <code>commons.io</code> 的 <code>FileAlterationMonitor</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">observer.addListener(<span class="keyword">new</span> <span class="title class_">FileAlterationListenerAdaptor</span>() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onFileChange</span><span class="params">(File file)</span> &#123;</span><br><span class="line">        	logger.info(<span class="string">&quot;file modify,filePath=&#123;&#125;&quot;</span>, file.getAbsolutePath());</span><br><span class="line">        	FlowExecutorHolder.loadInstance().reloadRule();</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onFileDelete</span><span class="params">(File file)</span> &#123;</span><br><span class="line">        	logger.info(<span class="string">&quot;file delete,filePath=&#123;&#125;&quot;</span>, file.getAbsolutePath());</span><br><span class="line">        	FlowExecutorHolder.loadInstance().reloadRule();</span><br><span class="line">      &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p> <code>reloadRule</code> 操作的本质是重新进行 <code>FlowExecutor</code> 的 <code>init</code> 操作，看起来也是直接刷新所有文件规则，粒度较粗</p>
-<h2 id="决策控制"><a href="#决策控制" class="headerlink" title="决策控制"></a>决策控制</h2><p>Drools 在面对大量规则时更好的规划命中的规则（规则冲突、优先级、循环等），支持规则下一些参数控制匹配规则的行为 Execution control in the Drools engine</p>
+<p><code>reloadRule</code> 操作的本质是重新进行 <code>FlowExecutor</code> 的 <code>init</code> 操作，看起来也是直接刷新所有文件规则，粒度较粗</p>
+<h2 id="决策控制">决策控制</h2>
+<p>Drools 在面对大量规则时更好的规划命中的规则（规则冲突、优先级、循环等），支持规则下一些参数控制匹配规则的行为 Execution control in the Drools engine</p>
 <p>在 Java 应用程序中第一次调用 <code>fireAllRules</code> 后，Drools 引擎会在两个阶段重复循环：</p>
 <ul>
 <li><strong>事项评估</strong>（Agenda evaluation）：在这个阶段，Drools 引擎选择所有可以执行的规则；如果不存在可执行规则，则执行周期结束；如果找到了可执行规则，Drools 引擎会在议程中注册激活，然后进入工作内存行为阶段，执行规则后果操作</li>
 <li><strong>工作内存行为</strong>（Working memory actions）：在这个阶段，Drools 引擎为之前在事项中注册的所有激活规则执行规则后果操作（每个规则的 <code>then</code> 行为部分）；在所有结果操作完成或主 Java 应用程序进程再次调用 <code>fireAllRules</code> 后，Drools 引擎返回到议程评估阶段以重新评估规则</li>
 </ul>
-<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/HybridReasoning/Two_Phase.png"></p>
+<p><img src="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/HybridReasoning/Two_Phase.png" alt=""></p>
 <p>当事项（agenda）上存在多个规则时，执行一个规则可能会导致从议程中删除另一个规则；为了避免这种情况可以定义 Drools 引擎中执行规则的方式和时间</p>
 <p><strong>规则优先级 Salience for rules</strong></p>
 <p>每个规则都有一个确定执行顺序的整数优先级属性；当在激活队列中排序时，具有较高优先级值的规则被赋予更高的执行优先级</p>
 <p>规则的默认优先级为 0，但优先级可以设置为负数或正数</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;RuleA&quot;</span></span><br><span class="line">salience <span class="number">95</span> &lt;-- <span class="built_in">this</span></span><br><span class="line">when</span><br><span class="line">    $fact : MyFact( field1 == <span class="literal">true</span> )</span><br><span class="line">then</span><br><span class="line">    System.out.println(<span class="string">&quot;Rule2 : &quot;</span> + $fact);</span><br><span class="line">    update($fact);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;RuleB&quot;</span></span><br><span class="line">salience <span class="number">100</span></span><br><span class="line">when</span><br><span class="line">   $fact : MyFact( field1 == <span class="literal">false</span> )</span><br><span class="line">then</span><br><span class="line">   System.out.println(<span class="string">&quot;Rule1 : &quot;</span> + $fact);</span><br><span class="line">   $fact.setField1(<span class="literal">true</span>);</span><br><span class="line">   update($fact);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <p>RuleB 规则列在下面，但它的优先级值高于 RuleA 规则，因此首先执行</p>
 <p><strong>规则事项组 Agenda groups for rules</strong></p>
 <p>事项组是由同一事项组规则属性绑定在一起的一组规则</p>
 <p>在任何时候，只有一个组的焦点使该组规则优先于其他事项组中的规则执行；可以通过对议程组的 <code>setFocus</code> 调用来确定焦点</p>
 <p>还可以定义具有 <code>auto-focus</code> 属性的规则，以便下次激活规则时，将焦点自动分配给规则所分配的整个议程组</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Increase balance for credits&quot;</span></span><br><span class="line">  agenda-group <span class="string">&quot;calculation&quot;</span></span><br><span class="line">when</span><br><span class="line">  ap : AccountPeriod()</span><br><span class="line">  acc : Account( $accountNo : accountNo )</span><br><span class="line">  CashFlow( type == CREDIT,</span><br><span class="line">            accountNo == $accountNo,</span><br><span class="line">            date &gt;= ap.start &amp;&amp; &lt;= ap.end,</span><br><span class="line">            $amount : amount )</span><br><span class="line">then</span><br><span class="line">  acc.balance  += $amount;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Print balance for AccountPeriod&quot;</span></span><br><span class="line">  agenda-group <span class="string">&quot;report&quot;</span></span><br><span class="line">when</span><br><span class="line">  ap : AccountPeriod()</span><br><span class="line">  acc : Account()</span><br><span class="line">then</span><br><span class="line">  System.out.println( acc.accountNo +</span><br><span class="line">                      <span class="string">&quot; : &quot;</span> + acc.balance );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <p>例如，<code>report</code> 事项组中的规则必须始终首先执行，<code>calculation</code> 事项组的规则必须总是其次执行；然后可以执行其他议程组中的任何剩余规则</p>
 <p>因此，在执行其他规则之前，<code>report</code> 和 <code>caclulation</code> 组必须按该顺序接收要执行的焦点：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Agenda</span> <span class="variable">agenda</span> <span class="operator">=</span> ksession.getAgenda();</span><br><span class="line">agenda.getAgendaGroup( <span class="string">&quot;report&quot;</span> ).setFocus();</span><br><span class="line">agenda.getAgendaGroup( <span class="string">&quot;calculation&quot;</span> ).setFocus();</span><br><span class="line">ksession.fireAllRules();</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>规则激活组 Activation groups for rules</strong></p>
 <p>激活组是由相同的激活组规则属性绑定在一起的一组规则</p>
 <p>在该组中只能执行一个规则；在满足执行该组中的规则的条件后，将从事项中删除该激活组中的所有其他挂起的规则执行</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Print balance for AccountPeriod1&quot;</span></span><br><span class="line">  activation-group <span class="string">&quot;report&quot;</span></span><br><span class="line">when</span><br><span class="line">  ap : AccountPeriod1()</span><br><span class="line">  acc : Account()</span><br><span class="line">then</span><br><span class="line">  System.out.println( acc.accountNo +</span><br><span class="line">                      <span class="string">&quot; : &quot;</span> + acc.balance );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Print balance for AccountPeriod2&quot;</span></span><br><span class="line">  activation-group <span class="string">&quot;report&quot;</span></span><br><span class="line">when</span><br><span class="line">  ap : AccountPeriod2()</span><br><span class="line">  acc : Account()</span><br><span class="line">then</span><br><span class="line">  System.out.println( acc.accountNo +</span><br><span class="line">                      <span class="string">&quot; : &quot;</span> + acc.balance );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <p>在示例中执行了 <code>report</code> 激活组中的其中一条规则，则第二条规则不会执行</p>
 <p><strong>执行模式和线程安全 Rule execution modes and thread safety in the Drools engine</strong></p>
 <ul>
 <li><strong>被动模式</strong>（Passive mode）：当用户或应用程序显式调用 <code>fireAllRules</code> 时，Drools 引擎会评估规则</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">KieSessionConfiguration</span> <span class="variable">config</span> <span class="operator">=</span> KieServices.Factory.get().newKieSessionConfiguration();</span><br><span class="line">config.setOption( ClockTypeOption.get(<span class="string">&quot;pseudo&quot;</span>) );</span><br><span class="line"><span class="type">KieSession</span> <span class="variable">session</span> <span class="operator">=</span> kbase.newKieSession( conf, <span class="literal">null</span> );</span><br><span class="line"><span class="type">SessionPseudoClock</span> <span class="variable">clock</span> <span class="operator">=</span> session.getSessionClock();</span><br><span class="line"></span><br><span class="line">session.insert( tick1 );</span><br><span class="line">session.fireAllRules();</span><br><span class="line"></span><br><span class="line">clock.advanceTime(<span class="number">1</span>, TimeUnit.SECONDS);</span><br><span class="line">session.insert( tick2 );</span><br><span class="line">session.fireAllRules();</span><br><span class="line"></span><br><span class="line">clock.advanceTime(<span class="number">1</span>, TimeUnit.SECONDS);</span><br><span class="line">session.insert( tick3 );</span><br><span class="line">session.fireAllRules();</span><br><span class="line"></span><br><span class="line">session.dispose();</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li><strong>活动模式</strong>（Active mode）：如果用户或应用程序调用 <code>fireUntilHalt</code>，Drools 引擎以活动模式启动并不断评估规则，直到用户或应用程序显式调用 <code>halt</code></li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">KieSessionConfiguration</span> <span class="variable">config</span> <span class="operator">=</span> KieServices.Factory.get().newKieSessionConfiguration();</span><br><span class="line">config.setOption( ClockTypeOption.get(<span class="string">&quot;realtime&quot;</span>) );</span><br><span class="line"><span class="type">KieSession</span> <span class="variable">session</span> <span class="operator">=</span> kbase.newKieSession( conf, <span class="literal">null</span> );</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Thread</span>( <span class="keyword">new</span> <span class="title class_">Runnable</span>() &#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">      session.fireUntilHalt();</span><br><span class="line">  &#125;</span><br><span class="line">&#125; ).start();</span><br><span class="line"></span><br><span class="line">session.insert( tick1 );</span><br><span class="line"></span><br><span class="line">... Thread.sleep( <span class="number">1000L</span> ); ...</span><br><span class="line"></span><br><span class="line">session.insert( tick2 );</span><br><span class="line"></span><br><span class="line">... Thread.sleep( <span class="number">1000L</span> ); ...</span><br><span class="line"></span><br><span class="line">session.insert( tick3 );</span><br><span class="line"></span><br><span class="line">session.halt();</span><br><span class="line">session.dispose();</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>事实传播模式 Fact propagation modes in the Drools engine</strong></p>
 <p>Drools 引擎支持以下事实传播模式，这些模式决定 Drools 引擎如何通过引擎网络处理插入的事实，为规则执行做准备：</p>
 <ul>
@@ -1007,40 +990,39 @@
 </ul>
 <p>默认情况下，Drools 引擎中的 Phreak 规则算法使用惰性事实传播来改进总体规则评估；但是在少数情况下这种惰性传播行为可能会改变某些规则执行的预期结果，这些规则执行可能需要 Immediate 或 Eager 传播</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">query <span class="title function_">Q</span> <span class="params">(Integer i)</span></span><br><span class="line">    String( <span class="built_in">this</span> == i.toString() )</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Rule&quot;</span></span><br><span class="line">  when</span><br><span class="line">    $i : Integer()</span><br><span class="line">    ?Q( $i; )</span><br><span class="line">  then</span><br><span class="line">    System.out.println( $i );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">KieSession</span> <span class="variable">ksession</span> <span class="operator">=</span> ...</span><br><span class="line">ksession.insert(<span class="number">1</span>);</span><br><span class="line">ksession.insert(<span class="string">&quot;1&quot;</span>);</span><br><span class="line">ksession.fireAllRules();</span><br></pre></td></tr></table></figure>
-
 <p>该规则仍然会被命中，因为默认的 Lazy 传播失去了顺序</p>
 <p>在这种情况下，要更改 Drools 引擎传播模式以实现预期的规则评估，可以将 <code>@propagation(&lt;type&gt;)</code>标记添加到规则中，并将 <code>&lt;type&gt;</code> 设置为 LAZY、IMMEDIATE 或 EAGER</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">query <span class="title function_">Q</span> <span class="params">(Integer i)</span></span><br><span class="line">    String( <span class="built_in">this</span> == i.toString() )</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Rule&quot;</span> <span class="meta">@Propagation(IMMEDIATE)</span></span><br><span class="line">  when</span><br><span class="line">    $i : Integer()</span><br><span class="line">    ?Q( $i; )</span><br><span class="line">  then</span><br><span class="line">    System.out.println( $i );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>事项评估过滤器 Agenda evaluation filters</strong></p>
 <p>Drools 引擎支持过滤器接口中的 <code>AgentaFilter</code> 对象，可以使用该对象在事项评估期间允许或拒绝对指定规则的评估</p>
 <p>可以指定一个议程过滤器作为 <code>fireAllRules</code> 调用的一部分</p>
 <p>以下示例代码只允许评估和执行以字符串 “Test” 结尾的规则；所有其他规则都会从 Drools 引擎事项中过滤掉</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ksession.fireAllRules( <span class="keyword">new</span> <span class="title class_">RuleNameEndsWithAgendaFilter</span>( <span class="string">&quot;Test&quot;</span> ) );</span><br></pre></td></tr></table></figure>
-
 <hr>
 <p>LiteFlow 中对于组件的流程也有其控制机制</p>
 <p>虽然整个组件是通过 EL 表达式编排起来，但是可以重写 <code>Component</code> 相关的方法进一步进行流程控制</p>
-<p><strong>isAccess</strong><br>推荐实现 <code>isAccess</code> 方法，表示是否进入该节点，可以用于业务参数的预先判断</p>
+<p><strong>isAccess</strong><br>
+推荐实现 <code>isAccess</code> 方法，表示是否进入该节点，可以用于业务参数的预先判断</p>
 <p>这里官方文档写的比较简单；上面提过 <code>Executable</code> 其中有 <code>Node</code> 和 <code>Component</code> 的实现</p>
 <ul>
 <li>对于 <code>Node</code> 而言，<code>isAccess</code> 控制该组件是否执行，但是不会影响后续组件的执行</li>
 <li>对于 <code>Condition</code>，因为后续流程需要由 <code>Condition</code> 来进行控制，例如 <code>SwitchCondition</code>、<code>IfCondition</code>，所以对于 <code>Condition</code> 相关的组件 <code>isAccess</code> 为 false 则该路线不会向下执行了</li>
 </ul>
-<p><strong>isEnd</strong><br>如果覆盖后，返回 true，则表示在这个组件执行完之后立马终止整个流程</p>
+<p><strong>isEnd</strong><br>
+如果覆盖后，返回 true，则表示在这个组件执行完之后立马终止整个流程</p>
 <p>对于这种方式，由于是用户主动结束的流程，属于正常结束，所以最终的 <code>isSuccess</code> 为 true</p>
 <p><strong>beforeProcess &amp; afterProcess</strong></p>
 <p>流程的前置和后置处理器，其中前置处理器，在 <code>isAccess</code> 之后执行</p>
 <p>所有组件通用的前后切面可以使用切面组件 <code>ICmpAroundAspect</code>；Spring 环境下也可以使用 Spring Aspect</p>
 <p><strong>onSuccess &amp; onError</strong></p>
 <p>流程的成功失败事件回调</p>
-<h1 id="简单应用"><a href="#简单应用" class="headerlink" title="简单应用"></a>简单应用</h1><h2 id="价格计算"><a href="#价格计算" class="headerlink" title="价格计算"></a>价格计算</h2><p>LiteFlow 有一个 Demo 案例，可以简单了解是如何使用的</p>
+<h1>简单应用</h1>
+<h2 id="价格计算">价格计算</h2>
+<p>LiteFlow 有一个 Demo 案例，可以简单了解是如何使用的</p>
 <p><a target="_blank" rel="noopener" href="https://liteflow.yomahub.com/pages/0a8188/">LiteFlow DEMO 案例 2 价格计算</a></p>
-<h2 id="通知文案"><a href="#通知文案" class="headerlink" title="通知文案"></a>通知文案</h2><p>tutor-student-notify 对于发送逻辑的处理</p>
+<h2 id="通知文案">通知文案</h2>
+<p>tutor-student-notify 对于发送逻辑的处理</p>
 <p>产品曾经提过理想中的产品使用，GUI 配置、文案编辑，不需要研发参与修改；不过现实还是比较复杂的，这里使用 LiteFlow 实现一个 Demo</p>
 <p>（具体的代码就不粘贴在这里了）</p>
 <p>设计的组件：</p>
@@ -1050,16 +1032,19 @@
 <li>userInfoCmp：User 信息获取</li>
 <li>teacherInfoCmp：Teacher 信息获取</li>
 <li>lowGradeJudgeCmp：<code>IF</code> 节点，判断是否是低年级</li>
-<li>templateKeySelectCmp：通用模板 key 选择模板，将 key 写入 Context，需要组件参数<ul>
+<li>templateKeySelectCmp：通用模板 key 选择模板，将 key 写入 Context，需要组件参数
+<ul>
 <li>组件参数：模板 key</li>
 </ul>
 </li>
-<li>customerHotlineCmp：客服电话参数<ul>
+<li>customerHotlineCmp：客服电话参数
+<ul>
 <li>组件参数：客服电话配置</li>
 </ul>
 </li>
 <li>userNameParamCmp：用户昵称参数</li>
-<li>lessonNameParamCmp：班课名称参数<ul>
+<li>lessonNameParamCmp：班课名称参数
+<ul>
 <li>组件参数：占位符 name 和求值表达式</li>
 </ul>
 </li>
@@ -1067,22 +1052,21 @@
 </ul>
 <p>规则 EL</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">flow</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;lessonDeliveredEvent&quot;</span>&gt;</span></span><br><span class="line">        THEN(</span><br><span class="line">            initContextCmp,</span><br><span class="line">            WHEN(</span><br><span class="line">                THEN(lessonInfoCmp,teacherInfoCmp),</span><br><span class="line">                userInfoCmp),</span><br><span class="line">            IF(</span><br><span class="line">                lowGradeJudgeCmp,</span><br><span class="line">                templateKeySelectCmp.data(&#x27;low-grade&#x27;),</span><br><span class="line">                THEN(templateKeySelectCmp.data(&#x27;high-grade&#x27;),customerHotlineCmp.data(&#x27;10086&#x27;))</span><br><span class="line">            ),</span><br><span class="line">            WHEN(userNameParamCmp,lessonNameParamCmp.data(&#x27;&#123;&quot;paramName&quot;:&quot;lessonName&quot;,&quot;qlExpress&quot;:&quot;《 lessonName 》&quot;&#125;&#x27;)),</span><br><span class="line">            sendCmp</span><br><span class="line">        );</span><br><span class="line">    <span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">flow</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="现有业务-退课退款"><a href="#现有业务-退课退款" class="headerlink" title="现有业务 - 退课退款"></a>现有业务 - 退课退款</h2><p>tutor-lesson-order 服务中对于退款流程的处理，感觉很接近流程式规则的思想</p>
+<h2 id="现有业务-退课退款">现有业务 - 退课退款</h2>
+<p>tutor-lesson-order 服务中对于退款流程的处理，感觉很接近流程式规则的思想</p>
 <ul>
 <li>Pipeline、组件化、组件编排</li>
 <li>并发编排</li>
 <li>Context 设计和工作台模式</li>
 </ul>
-<h3 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a>上下文</h3><p><code>RefundContext</code> 是其退款业务上下文的基类</p>
+<h3 id="上下文">上下文</h3>
+<p><code>RefundContext</code> 是其退款业务上下文的基类</p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/RefundContext.png" class="" title="RefundContext">
-
 <p>以实物商品退款流程上下文 <code>PhysicalCommodityRootRefundContext</code> 为例</p>
 <ul>
 <li>PhysicalCommodityRootRefundContext：实物商品</li>
-<li>UnboxedRootRefundContext：非盒子<ul>
+<li>UnboxedRootRefundContext：非盒子
+<ul>
 <li>OrderItemEO</li>
 <li>LessonDigest</li>
 <li>LessonOrderEO</li>
@@ -1092,7 +1076,8 @@
 <li>extraMap</li>
 </ul>
 </li>
-<li>StandardRootRefundContext：基础退款数据<ul>
+<li>StandardRootRefundContext：基础退款数据
+<ul>
 <li>baseParam</li>
 <li>refundConfig</li>
 <li>refundTs</li>
@@ -1103,23 +1088,22 @@
 </ul>
 <p>计算节点产出的新对象为 <code>NestedContext</code> 实现类，依靠 <code>BaseNestedRefundContext</code> 进行连接</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BaseNestedRefundContext</span> <span class="keyword">implements</span> <span class="title class_">NestedContext</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> NestedContext parent;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, NestedContext&gt; children;</span><br><span class="line">  </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="执行链"><a href="#执行链" class="headerlink" title="执行链"></a>执行链</h3><p>执行链的核心类是 <code>RefundPipeline</code></p>
+<h3 id="执行链">执行链</h3>
+<p>执行链的核心类是 <code>RefundPipeline</code></p>
 <p>组链操作由 <code>RefundPipelineService</code> 提供 <code>RefundTask</code> 实现类的 bean，<code>RefundPipelines</code> 作为工具类，提供 <code>RefundTaskGroupConfig</code> 映射真实的 bean 以及最后的组装</p>
  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;RefundTask[]&gt; groupTasks(List&lt;RefundTask&gt; allTasks, RefundTaskGroupConfig groupConfig) &#123;</span><br><span class="line">    <span class="keyword">return</span> groupConfig.keySet().stream().sorted().map(groupId -&gt; &#123;</span><br><span class="line">        Collection&lt;String&gt; taskNames = groupConfig.get(groupId);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> allTasks.stream()</span><br><span class="line">                .filter(task -&gt; taskNames.contains(task.getName()))</span><br><span class="line">                .collect(Collectors.toList())</span><br><span class="line">                .toArray(<span class="keyword">new</span> <span class="title class_">RefundTask</span>[]&#123;&#125;);</span><br><span class="line">    &#125;).collect(Collectors.toList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="计算节点-amp-执行节点"><a href="#计算节点-amp-执行节点" class="headerlink" title="计算节点 &amp; 执行节点"></a>计算节点 &amp; 执行节点</h3><p>unboxed 班课退款流程</p>
+<h3 id="计算节点-执行节点">计算节点 &amp; 执行节点</h3>
+<p>unboxed 班课退款流程</p>
 <ul>
-<li><strong>加载节点 &amp; 计算节点</strong> Pipeline<ul>
-<li>【0】base info loader<ul>
+<li><strong>加载节点 &amp; 计算节点</strong> Pipeline
+<ul>
+<li>【0】base info loader
+<ul>
 <li>unboxed_base_ctx_loader</li>
 </ul>
 </li>
-<li>【1】biz loader<ul>
+<li>【1】biz loader
+<ul>
 <li>gift_order_loader</li>
 <li>textbook_refund_loader</li>
 <li>dual_coupon_loader</li>
@@ -1127,30 +1111,36 @@
 <li></li>
 </ul>
 </li>
-<li>【100】biz calculator<ul>
+<li>【100】biz calculator
+<ul>
 <li>gift_order</li>
 <li>dual_coupon</li>
 <li>lesson_textbook</li>
 <li>marketing_activity_refund_calc</li>
 </ul>
 </li>
-<li>【101】<ul>
+<li>【101】
+<ul>
 <li>lesson_agenda</li>
 </ul>
 </li>
-<li>【1000】merge calculator<ul>
+<li>【1000】merge calculator
+<ul>
 <li>merge_refund</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>执行节点</strong> Pipeline<ul>
-<li>【0】<ul>
+<li><strong>执行节点</strong> Pipeline
+<ul>
+<li>【0】
+<ul>
 <li>refund_lesson_order</li>
 </ul>
 </li>
 <li>【1】</li>
-<li>【2】<ul>
+<li>【2】
+<ul>
 <li>gift_order_post</li>
 <li>lesson_order_delivery</li>
 <li>record_refund</li>
@@ -1167,7 +1157,8 @@
 <p><em>1. 组件间解耦，但还是需要注意组件之间的流程编排</em></p>
 <p><em>2.如何对组件的编排进行校验</em></p>
 </blockquote>
-<h3 id="任务-x2F-并发编排"><a href="#任务-x2F-并发编排" class="headerlink" title="任务 &#x2F; 并发编排"></a>任务 &#x2F; 并发编排</h3><p><code>RefundTaskGroupConfig</code> 用来描述任务配置 <code>private final Map&lt;Integer, Collection&lt;String&gt;&gt; configValue;</code></p>
+<h3 id="任务-并发编排">任务 / 并发编排</h3>
+<p><code>RefundTaskGroupConfig</code> 用来描述任务配置 <code>private final Map&lt;Integer, Collection&lt;String&gt;&gt; configValue;</code></p>
 <p>其属性 <code>configValue</code> 的 key 用来描述并发分组即顺序，value 为 <code>RefundTask</code> bean name 的集合</p>
 <p><code>RefundTaskGroup</code> 用来封装并发编排的任务</p>
 <p>RefundTaskGroup</p>
@@ -1178,19 +1169,14 @@
 <p>为什么这个地方 group 需要持有 pipeline 节点？因为 task 被 group 持有，context 被 pipeline 持有，而 task 的运行需要 context</p>
 <p>整个 pipeline 模式下对象之间的关系</p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/%E8%AE%A2%E5%8D%95%E9%80%80%E6%AC%BE%E7%B1%BB%E7%BB%93%E6%9E%84.png" class="" title="订单退款类结构">
-
-
-
-<h3 id="LiteFlow-DSL"><a href="#LiteFlow-DSL" class="headerlink" title="LiteFlow DSL"></a>LiteFlow DSL</h3><p>上述业务对节点的编排相当于 LiteFlow 中的 <code>WHEN</code> 和 <code>THEN</code></p>
+<h3 id="LiteFlow-DSL">LiteFlow DSL</h3>
+<p>上述业务对节点的编排相当于 LiteFlow 中的 <code>WHEN</code> 和 <code>THEN</code></p>
 <p>如果表示为流程图</p>
 <img src="/%E5%BC%80%E5%8F%91/LiteFlow/%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/refund%20%E6%B5%81%E7%A8%8B%E5%9B%BE.drawio.png" class="" title="refund 流程图.drawio">
-
 <p>如果使用 LiteFLow 的 EL 表示</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">flow</span> <span class="keyword">PUBLIC</span>  <span class="string">&quot;liteflow&quot;</span> <span class="string">&quot;liteflow.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">flow</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;physical_commodity_calculation_task_group_config&quot;</span>&gt;</span></span><br><span class="line">        THEN(</span><br><span class="line">            unboxed_base_ctx_loader,</span><br><span class="line">            WHEN(</span><br><span class="line">                gift_order_loader,</span><br><span class="line">                textbook_refund_loader,</span><br><span class="line">                dual_coupon_loader,</span><br><span class="line">                marketing_activity_refund_loader,</span><br><span class="line">                lesson_extra_loader</span><br><span class="line">            ),</span><br><span class="line">            WHEN(</span><br><span class="line">                gift_order,</span><br><span class="line">                dual_coupon,</span><br><span class="line">                lesson_textbook,</span><br><span class="line">                marketing_activity_refund_calc</span><br><span class="line">            ),</span><br><span class="line">            lesson_agenda,</span><br><span class="line">            merge_refund</span><br><span class="line">        );</span><br><span class="line">    <span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;standard_refunding_task_group_config&quot;</span>&gt;</span></span><br><span class="line">        THEN(</span><br><span class="line">            refund_lesson_order,</span><br><span class="line">            WHEN(</span><br><span class="line">                gift_order_post,</span><br><span class="line">                lesson_order_delivery,</span><br><span class="line">                record_refund,</span><br><span class="line">                dual_coupon_post,</span><br><span class="line">                marketing_activity_refund_post</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">    <span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">chain</span> <span class="attr">name</span>=<span class="string">&quot;physical_commodity_refund&quot;</span>&gt;</span></span><br><span class="line">        THEN(physical_commodity_calculation_task_group_config, standard_refunding_task_group_config);</span><br><span class="line">    <span class="tag">&lt;/<span class="name">chain</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">flow</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="AI-结合思考"><a href="#AI-结合思考" class="headerlink" title="AI 结合思考"></a>AI 结合思考</h1><p> 自从今年 AI 成为热题后，各界都在考虑如何使用 AI 提供新产品、提高生产力</p>
+<h1>AI 结合思考</h1>
+<p>自从今年 AI 成为热题后，各界都在考虑如何使用 AI 提供新产品、提高生产力</p>
 <p>AI 技术可以帮助程序员更快地完成一些繁琐、重复性的任务，如代码审查、测试、调试等；此外，AI 还可以通过自动化一些流程和工作流程来简化开发流程，从而提高生产效率</p>
 <p>而规则引擎的规则编排、甚至是脚本语法相比逻辑代码由 AI 辅助我认为更适合，甚至实现上可能更简单：</p>
 <ul>
@@ -1198,13 +1184,13 @@
 <li>规则往往被限定在一个较小的业务范围内，AI 所需的上下文较少，结果更加准确</li>
 <li>AI 是否可以避免规则冲突、流程定义错误的人工错误</li>
 </ul>
-<h2 id="Drools-DRL-amp-CEP"><a href="#Drools-DRL-amp-CEP" class="headerlink" title="Drools DRL &amp; CEP"></a>Drools DRL &amp; CEP</h2><p><strong>问：</strong></p>
+<h2 id="Drools-DRL-CEP">Drools DRL &amp; CEP</h2>
+<p><strong>问：</strong></p>
 <p>我将会给一段自然语言描述，将其转换为 Drools 的 DRL 规则</p>
 <p>每当 BuyOrder 事件发生时，等待匹配的 AckOrder 事件 10s 的时间，如果匹配成功，则发送短信给用户</p>
 <p><strong>答：</strong></p>
 <p>下面是将自然语言描述转换为 Drools DRL 规则的示例代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Match AckOrder and Send SMS&quot;</span></span><br><span class="line">when</span><br><span class="line">    <span class="comment">// 当 BuyOrder 事件发生时，等待 10s 匹配 AckOrder 事件</span></span><br><span class="line">    $buyOrder: BuyOrder()</span><br><span class="line">    not <span class="title function_">AckOrder</span><span class="params">(<span class="built_in">this</span> after[0s, 10s] $buyOrder)</span></span><br><span class="line">then</span><br><span class="line">    <span class="comment">// 匹配成功，发送短信给用户</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">message</span> <span class="operator">=</span> <span class="string">&quot;Your order has been acknowledged. Thank you for your purchase!&quot;</span>;</span><br><span class="line">    sendSMS($buyOrder.getPhoneNumber(), message);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
 <p>在这个规则中，我们首先导入了 Java 中的 TimeUnit 类，用于指定等待 10 秒的时间</p>
 <p>然后我们定义了一个名为 “Match AckOrder and Send SMS” 的规则，其中：</p>
 <ul>
@@ -1212,18 +1198,17 @@
 <li>如果在 10 秒内成功匹配到 AckOrder 事件，则将会执行 then 语句</li>
 <li>在 then 语句中，我们使用 $buyOrder 对象的 getPhoneNumber() 方法获取用户的电话号码，并将消息发送给用户</li>
 </ul>
-<h2 id="阅读-DRL-规则"><a href="#阅读-DRL-规则" class="headerlink" title="阅读 DRL 规则"></a>阅读 DRL 规则</h2><p><strong>问：</strong></p>
+<h2 id="阅读-DRL-规则">阅读 DRL 规则</h2>
+<p><strong>问：</strong></p>
 <p>我将会给你一段 Drools DRL 规则，请用中文描述这段规则的含义</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Underage&quot;</span></span><br><span class="line">  salience <span class="number">15</span></span><br><span class="line">  agenda-group <span class="string">&quot;applicationGroup&quot;</span></span><br><span class="line">  when</span><br><span class="line">    $application : LoanApplication()</span><br><span class="line">    Applicant( age &lt; <span class="number">21</span> )</span><br><span class="line">  then</span><br><span class="line">    $application.setApproved( <span class="literal">false</span> );</span><br><span class="line">    $application.setExplanation( <span class="string">&quot;Underage&quot;</span> );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>答：</strong></p>
 <p>这段 Drools DRL 规则的含义是：</p>
 <p>当规则引擎匹配到一个名为 LoanApplication 的对象，并且其中的 Applicant 对象的 age 属性小于 21 岁时，就会触发这个规则</p>
 <p>该规则的优先级为 15，它属于 agenda-group “applicationGroup” 组</p>
 <p>触发规则后，规则引擎会将  <code>$application</code> 对象的 <code>approved</code> 属性设置为 false，表示不批准该贷款申请；同时，它会将 <code>$application</code> 对象的 <code>explanation</code> 属性设置为 <code>Underage</code>，表示不批准该贷款申请的原因是申请人未达到法定年龄</p>
-<h2 id="自然语言辅助生成-DSL-规则"><a href="#自然语言辅助生成-DSL-规则" class="headerlink" title="自然语言辅助生成 DSL 规则"></a>自然语言辅助生成 DSL 规则</h2><p><strong>问：</strong></p>
+<h2 id="自然语言辅助生成-DSL-规则">自然语言辅助生成 DSL 规则</h2>
+<p><strong>问：</strong></p>
 <p>我将会使用语言描述规则，帮我生成 Drools DSL 文件</p>
 <ul>
 <li>当用户购买商品为促销商品，并且用户为普通会员，则打印日志 “当前用户为普通会员”，行为是商品价格打 9 折</li>
@@ -1232,15 +1217,10 @@
 <p><strong>答：</strong></p>
 <p>根据你的要求，将上述场景转换为带有表达式转换的形式，可以得到如下的 Drools DSL 文件：</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[when]</span> There is <span class="selector-tag">a</span> purchase = <span class="variable">$p</span>:<span class="built_in">Purchase</span>()</span><br><span class="line"><span class="selector-attr">[when]</span> - purchase is promotional = <span class="variable">$p</span><span class="selector-class">.promotionalItem</span> == true</span><br><span class="line"><span class="selector-attr">[when]</span> - user is <span class="selector-tag">a</span> standard member = <span class="variable">$p</span><span class="selector-class">.user</span><span class="selector-class">.membershipLevel</span> == <span class="string">&quot;Standard&quot;</span></span><br><span class="line"><span class="selector-attr">[then]</span> print = System<span class="selector-class">.out</span><span class="selector-class">.println</span>(<span class="string">&quot;The current user is a&quot;</span> + <span class="variable">$p</span><span class="selector-class">.user</span><span class="selector-class">.membershipLevel</span> + <span class="string">&quot; member&quot;</span>)</span><br><span class="line"><span class="selector-attr">[then]</span> The product price is discounted by &#123;discount:\d*&#125;% = <span class="variable">$p</span><span class="selector-class">.productPrice</span> = <span class="variable">$p</span><span class="selector-class">.productPrice</span> * (<span class="number">100</span> - &#123;discount&#125;) / <span class="number">100</span></span><br><span class="line"></span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line"><span class="selector-attr">[when]</span> There is <span class="selector-tag">a</span> purchase = <span class="variable">$p</span>:<span class="built_in">Purchase</span>()</span><br><span class="line"><span class="selector-attr">[when]</span> - purchase is promotional = <span class="variable">$p</span><span class="selector-class">.promotionalItem</span> == true</span><br><span class="line"><span class="selector-attr">[when]</span> - user is <span class="selector-tag">a</span> gold member = <span class="variable">$p</span><span class="selector-class">.user</span><span class="selector-class">.membershipLevel</span> == <span class="string">&quot;Gold&quot;</span></span><br><span class="line"><span class="selector-attr">[then]</span> print = System<span class="selector-class">.out</span><span class="selector-class">.println</span>(<span class="string">&quot;The current user is a &quot;</span> + <span class="variable">$p</span><span class="selector-class">.user</span><span class="selector-class">.membershipLevel</span> + <span class="string">&quot; member&quot;</span>)</span><br><span class="line"><span class="selector-attr">[then]</span> The product price is discounted by &#123;discount:\d*&#125;% = <span class="variable">$p</span><span class="selector-class">.productPrice</span> = <span class="variable">$p</span><span class="selector-class">.productPrice</span> * (<span class="number">100</span> - &#123;discount&#125;) / <span class="number">100</span></span><br></pre></td></tr></table></figure>
-
-
-
 <p>DSLR</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&#x27;discount_standard_user&#x27;</span></span><br><span class="line"></span><br><span class="line">when</span><br><span class="line">    There is a purchase</span><br><span class="line">    - purchase is promotional</span><br><span class="line">  	- user is a standard member</span><br><span class="line">then</span><br><span class="line">    print</span><br><span class="line">  	The product price is discounted by <span class="number">10</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="阅读-LiteFlow-流程图式-EL"><a href="#阅读-LiteFlow-流程图式-EL" class="headerlink" title="阅读 LiteFlow 流程图式 EL"></a>阅读 LiteFlow 流程图式 EL</h2><p><strong>问：</strong></p>
+<h2 id="阅读-LiteFlow-流程图式-EL">阅读 LiteFlow 流程图式 EL</h2>
+<p><strong>问：</strong></p>
 <p>我设计如下语法：</p>
 <ul>
 <li><code>THEN</code> 表示串行；如 <code>TEHN(A,B,C)</code> 表示执行 A 后执行 B，最后执行 C</li>
@@ -1251,9 +1231,6 @@
 <p>上述所有的关键词支持嵌套</p>
 <p>现在我将会给你一段由上述语法组成的表达式，帮我用自然语言描述所进行的操作</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">THEN(</span><br><span class="line">     unboxed_base_ctx_loader,</span><br><span class="line">     WHEN(</span><br><span class="line">         gift_order_loader,</span><br><span class="line">         textbook_refund_loader,</span><br><span class="line">         dual_coupon_loader,</span><br><span class="line">         marketing_activity_refund_loader,</span><br><span class="line">         lesson_extra_loader</span><br><span class="line">     ),</span><br><span class="line">     WHEN(</span><br><span class="line">         gift_order,</span><br><span class="line">         dual_coupon,</span><br><span class="line">         lesson_textbook,</span><br><span class="line">         marketing_activity_refund_calc</span><br><span class="line">     ),</span><br><span class="line">     lesson_agenda,</span><br><span class="line">     merge_refund</span><br><span class="line"> );</span><br></pre></td></tr></table></figure>
-
-
-
 <p><strong>答：</strong></p>
 <p>这个表达式描述了一个程序的执行流程，按照以下步骤执行：</p>
 <ol>
@@ -1263,16 +1240,21 @@
 <li>最后执行 <code>merge_refund</code> 组件</li>
 </ol>
 <p>需要注意的是，第一个并行序列中的所有组件都需要在第一个步骤中执行完毕后才能开始执行，而第二个并行序列中的所有组件都需要在第一个并行序列中的组件全部执行完毕后才能开始执行；另外，执行 <code>marketing_activity_refund_calc</code> 组件的前提是执行 <code>dual_coupon</code> 和 <code>gift_order</code> 组件，而执行 <code>merge_refund</code> 组件的前提是执行所有其他组件</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><p>博客</p>
+<h1>参考</h1>
 <ul>
-<li><p><a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/RulesEngine.html">RulesEngine (martinfowler.com)</a></p>
+<li>
+<p>博客</p>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://martinfowler.com/bliki/RulesEngine.html">RulesEngine (martinfowler.com)</a></p>
 </li>
-<li><p><a target="_blank" rel="noopener" href="https://refactoring.guru/design-patterns/catalog">The Catalog of Design Patterns (refactoring.guru)</a></p>
+<li>
+<p><a target="_blank" rel="noopener" href="https://refactoring.guru/design-patterns/catalog">The Catalog of Design Patterns (refactoring.guru)</a></p>
 </li>
 </ul>
 </li>
-<li><p>官方文档</p>
+<li>
+<p>官方文档</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.drools.org/learn/documentation.html">Drools - Documentation</a></li>
 <li><a target="_blank" rel="noopener" href="https://liteflow.yomahub.com/">LiteFlow (yomahub.com)</a></li>
@@ -1280,7 +1262,8 @@
 <li><a target="_blank" rel="noopener" href="https://www.yuque.com/boyan-avfmj/aviatorscript/guhmrc">AviatorScript 文档 | 介绍 (yuque.com)</a></li>
 </ul>
 </li>
-<li><p>技术文章</p>
+<li>
+<p>技术文章</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/06/09/maze-framework.html">从0到1：构建强大且易用的规则引擎 - 美团技术团队 (meituan.com)</a></li>
 <li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903593326182414">大数据：美团酒旅实时数据规则引擎应用实践 - 掘金 (juejin.cn)</a></li>
@@ -1291,13 +1274,15 @@
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/650ecc341417">Drools：规则加载 &amp; 动态更新方案</a></li>
 </ul>
 </li>
-<li><p>开源软件</p>
+<li>
+<p>开源软件</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine#use-cases">hyperjumptech&#x2F;grule-rule-engine: Rule engine implementation in Golang (github.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/momosecurity/aswan">momosecurity&#x2F;aswan: 陌陌风控系统静态规则引擎，零基础简易便捷的配置多种复杂规则，实时高效管控用户异常行为。 (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hyperjumptech/grule-rule-engine#use-cases">hyperjumptech/grule-rule-engine: Rule engine implementation in Golang (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/momosecurity/aswan">momosecurity/aswan: 陌陌风控系统静态规则引擎，零基础简易便捷的配置多种复杂规则，实时高效管控用户异常行为。 (github.com)</a></li>
 </ul>
 </li>
-<li><p>其他</p>
+<li>
+<p>其他</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.drools.org/learn/DroolsMangaRuleDrivenDevelpment_EN.pdf">DroolsMangaRuleDrivenDevelpment_EN.pdf</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn-dmn-in-15-minutes.com/learn/introduction">Learn DMN in 15 minutes | Introduction (learn-dmn-in-15-minutes.com)</a></li>
@@ -1389,7 +1374,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E"><span class="nav-number">1.1.</span> <span class="nav-text">什么是规则引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B"><span class="nav-number">1.3.</span> <span class="nav-text">使用案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%BA%90%E7%94%9F%E6%80%81"><span class="nav-number">1.4.</span> <span class="nav-text">开源生态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Drools"><span class="nav-number">1.4.1.</span> <span class="nav-text">Drools</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LiteFlow"><span class="nav-number">1.4.2.</span> <span class="nav-text">LiteFlow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ice"><span class="nav-number">1.4.3.</span> <span class="nav-text">Ice</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Aviator"><span class="nav-number">1.4.4.</span> <span class="nav-text">Aviator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Grule"><span class="nav-number">1.4.5.</span> <span class="nav-text">Grule</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%83%85%E5%86%B5"><span class="nav-number">1.5.</span> <span class="nav-text">应用情况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E7%BC%96%E6%8E%92%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">规则编排思想</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#when-%E2%80%A6-then"><span class="nav-number">2.1.</span> <span class="nav-text">when … then</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E8%A1%A8-%E6%A0%91"><span class="nav-number">2.2.</span> <span class="nav-text">决策表 \ 树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E5%AD%90%E8%A1%A8%E6%A0%BC%E5%86%B3%E7%AD%96%E8%A1%A8"><span class="nav-number">2.2.1.</span> <span class="nav-text">电子表格决策表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%BC%8F%E5%86%B3%E7%AD%96%E8%A1%A8"><span class="nav-number">2.2.2.</span> <span class="nav-text">引导式决策表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%BC%8F%E5%86%B3%E7%AD%96%E5%9B%BE"><span class="nav-number">2.2.3.</span> <span class="nav-text">引导式决策图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%BC%8F%E5%86%B3%E7%AD%96%E6%A0%91"><span class="nav-number">2.2.4.</span> <span class="nav-text">引导式决策树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E6%8E%A7%E5%88%B6"><span class="nav-number">2.4.</span> <span class="nav-text">关系控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%A6%82%E5%BF%B5"><span class="nav-number">3.</span> <span class="nav-text">一些概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DSL"><span class="nav-number">3.1.</span> <span class="nav-text">DSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DMN"><span class="nav-number">3.2.</span> <span class="nav-text">DMN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CEP"><span class="nav-number">3.3.</span> <span class="nav-text">CEP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.4.</span> <span class="nav-text">行为型模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%96%E7%95%A5"><span class="nav-number">3.4.1.</span> <span class="nav-text">策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A3%E4%BB%BB%E9%93%BE"><span class="nav-number">3.4.2.</span> <span class="nav-text">责任链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-number">3.4.3.</span> <span class="nav-text">流水线</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E8%83%BD%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">核心能力</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E7%BC%96%E6%8E%92"><span class="nav-number">4.1.</span> <span class="nav-text">规则编排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E6%8E%92"><span class="nav-number">4.2.</span> <span class="nav-text">并发编排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E7%BB%84%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">执行组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC%E7%BB%84%E4%BB%B6"><span class="nav-number">4.4.</span> <span class="nav-text">脚本组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E7%83%AD%E6%9B%B4%E6%96%B0"><span class="nav-number">4.5.</span> <span class="nav-text">规则热更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E6%8E%A7%E5%88%B6"><span class="nav-number">4.6.</span> <span class="nav-text">决策控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%BA%94%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">简单应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%B7%E6%A0%BC%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.</span> <span class="nav-text">价格计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%9F%A5%E6%96%87%E6%A1%88"><span class="nav-number">5.2.</span> <span class="nav-text">通知文案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E4%B8%9A%E5%8A%A1-%E9%80%80%E8%AF%BE%E9%80%80%E6%AC%BE"><span class="nav-number">5.3.</span> <span class="nav-text">现有业务 - 退课退款</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">5.3.1.</span> <span class="nav-text">上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E9%93%BE"><span class="nav-number">5.3.2.</span> <span class="nav-text">执行链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E8%8A%82%E7%82%B9-amp-%E6%89%A7%E8%A1%8C%E8%8A%82%E7%82%B9"><span class="nav-number">5.3.3.</span> <span class="nav-text">计算节点 &amp; 执行节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1-x2F-%E5%B9%B6%E5%8F%91%E7%BC%96%E6%8E%92"><span class="nav-number">5.3.4.</span> <span class="nav-text">任务 &#x2F; 并发编排</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LiteFlow-DSL"><span class="nav-number">5.3.5.</span> <span class="nav-text">LiteFlow DSL</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AI-%E7%BB%93%E5%90%88%E6%80%9D%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">AI 结合思考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Drools-DRL-amp-CEP"><span class="nav-number">6.1.</span> <span class="nav-text">Drools DRL &amp; CEP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB-DRL-%E8%A7%84%E5%88%99"><span class="nav-number">6.2.</span> <span class="nav-text">阅读 DRL 规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E8%BE%85%E5%8A%A9%E7%94%9F%E6%88%90-DSL-%E8%A7%84%E5%88%99"><span class="nav-number">6.3.</span> <span class="nav-text">自然语言辅助生成 DSL 规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB-LiteFlow-%E6%B5%81%E7%A8%8B%E5%9B%BE%E5%BC%8F-EL"><span class="nav-number">6.4.</span> <span class="nav-text">阅读 LiteFlow 流程图式 EL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%84%E5%88%99%E5%BC%95%E6%93%8E"><span class="nav-number">1.1.</span> <span class="nav-text">什么是规则引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B"><span class="nav-number">1.3.</span> <span class="nav-text">使用案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%BA%90%E7%94%9F%E6%80%81"><span class="nav-number">1.4.</span> <span class="nav-text">开源生态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Drools"><span class="nav-number">1.4.1.</span> <span class="nav-text">Drools</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LiteFlow"><span class="nav-number">1.4.2.</span> <span class="nav-text">LiteFlow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ice"><span class="nav-number">1.4.3.</span> <span class="nav-text">Ice</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Aviator"><span class="nav-number">1.4.4.</span> <span class="nav-text">Aviator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Grule"><span class="nav-number">1.4.5.</span> <span class="nav-text">Grule</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%83%85%E5%86%B5"><span class="nav-number">1.5.</span> <span class="nav-text">应用情况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">规则编排思想</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#when-%E2%80%A6-then"><span class="nav-number">2.1.</span> <span class="nav-text">when … then</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E8%A1%A8-%E6%A0%91"><span class="nav-number">2.2.</span> <span class="nav-text">决策表 \ 树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E5%AD%90%E8%A1%A8%E6%A0%BC%E5%86%B3%E7%AD%96%E8%A1%A8"><span class="nav-number">2.2.1.</span> <span class="nav-text">电子表格决策表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%BC%8F%E5%86%B3%E7%AD%96%E8%A1%A8"><span class="nav-number">2.2.2.</span> <span class="nav-text">引导式决策表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%BC%8F%E5%86%B3%E7%AD%96%E5%9B%BE"><span class="nav-number">2.2.3.</span> <span class="nav-text">引导式决策图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%BC%8F%E5%86%B3%E7%AD%96%E6%A0%91"><span class="nav-number">2.2.4.</span> <span class="nav-text">引导式决策树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E6%8E%A7%E5%88%B6"><span class="nav-number">2.4.</span> <span class="nav-text">关系控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">一些概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DSL"><span class="nav-number">3.1.</span> <span class="nav-text">DSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DMN"><span class="nav-number">3.2.</span> <span class="nav-text">DMN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CEP"><span class="nav-number">3.3.</span> <span class="nav-text">CEP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.4.</span> <span class="nav-text">行为型模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%96%E7%95%A5"><span class="nav-number">3.4.1.</span> <span class="nav-text">策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A3%E4%BB%BB%E9%93%BE"><span class="nav-number">3.4.2.</span> <span class="nav-text">责任链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-number">3.4.3.</span> <span class="nav-text">流水线</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">核心能力</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E7%BC%96%E6%8E%92"><span class="nav-number">4.1.</span> <span class="nav-text">规则编排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E6%8E%92"><span class="nav-number">4.2.</span> <span class="nav-text">并发编排</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E7%BB%84%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">执行组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC%E7%BB%84%E4%BB%B6"><span class="nav-number">4.4.</span> <span class="nav-text">脚本组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E7%83%AD%E6%9B%B4%E6%96%B0"><span class="nav-number">4.5.</span> <span class="nav-text">规则热更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E6%8E%A7%E5%88%B6"><span class="nav-number">4.6.</span> <span class="nav-text">决策控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">简单应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%B7%E6%A0%BC%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.</span> <span class="nav-text">价格计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%9F%A5%E6%96%87%E6%A1%88"><span class="nav-number">5.2.</span> <span class="nav-text">通知文案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E4%B8%9A%E5%8A%A1-%E9%80%80%E8%AF%BE%E9%80%80%E6%AC%BE"><span class="nav-number">5.3.</span> <span class="nav-text">现有业务 - 退课退款</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-number">5.3.1.</span> <span class="nav-text">上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E9%93%BE"><span class="nav-number">5.3.2.</span> <span class="nav-text">执行链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E8%8A%82%E7%82%B9-%E6%89%A7%E8%A1%8C%E8%8A%82%E7%82%B9"><span class="nav-number">5.3.3.</span> <span class="nav-text">计算节点 &amp; 执行节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1-%E5%B9%B6%E5%8F%91%E7%BC%96%E6%8E%92"><span class="nav-number">5.3.4.</span> <span class="nav-text">任务 &#x2F; 并发编排</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LiteFlow-DSL"><span class="nav-number">5.3.5.</span> <span class="nav-text">LiteFlow DSL</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">AI 结合思考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Drools-DRL-CEP"><span class="nav-number">6.1.</span> <span class="nav-text">Drools DRL &amp; CEP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB-DRL-%E8%A7%84%E5%88%99"><span class="nav-number">6.2.</span> <span class="nav-text">阅读 DRL 规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E8%BE%85%E5%8A%A9%E7%94%9F%E6%88%90-DSL-%E8%A7%84%E5%88%99"><span class="nav-number">6.3.</span> <span class="nav-text">自然语言辅助生成 DSL 规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB-LiteFlow-%E6%B5%81%E7%A8%8B%E5%9B%BE%E5%BC%8F-EL"><span class="nav-number">6.4.</span> <span class="nav-text">阅读 LiteFlow 流程图式 EL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1403,7 +1388,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
