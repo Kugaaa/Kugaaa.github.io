@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="背景 一直都没更新操作系统的版本，心血来潮更新了 MacOS 的 14（Sonoma） macOS Sonoma - Apple (中国大陆) 然后发现单测竟然跑不通了，但是 push 上去的代码 CI 依然可以通过，所以当时基本就确定是版本升级带来的兼容性问题了 看了下日志，是嵌入的 Redis 运行不起来">
+  <meta name="description" content="背景一直都没更新操作系统的版本，心血来潮更新了 MacOS 的 14（Sonoma） macOS Sonoma - Apple (中国大陆) 然后发现单测竟然跑不通了，但是 push 上去的代码 CI 依然可以通过，所以当时基本就确定是版本升级带来的兼容性问题了 看了下日志，是嵌入的 Redis 运行不起来">
 <meta property="og:type" content="article">
 <meta property="og:title" content="升级 MacOS 14 导致 embedded-redis 不兼容">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%8D%87%E7%BA%A7%20MacOS%2014%20%E5%AF%BC%E8%87%B4%20embedded-redis%20%E4%B8%8D%E5%85%BC%E5%AE%B9.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="背景 一直都没更新操作系统的版本，心血来潮更新了 MacOS 的 14（Sonoma） macOS Sonoma - Apple (中国大陆) 然后发现单测竟然跑不通了，但是 push 上去的代码 CI 依然可以通过，所以当时基本就确定是版本升级带来的兼容性问题了 看了下日志，是嵌入的 Redis 运行不起来">
+<meta property="og:description" content="背景一直都没更新操作系统的版本，心血来潮更新了 MacOS 的 14（Sonoma） macOS Sonoma - Apple (中国大陆) 然后发现单测竟然跑不通了，但是 push 上去的代码 CI 依然可以通过，所以当时基本就确定是版本升级带来的兼容性问题了 看了下日志，是嵌入的 Redis 运行不起来">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%8D%87%E7%BA%A7%20MacOS%2014%20%E5%AF%BC%E8%87%B4%20embedded-redis%20%E4%B8%8D%E5%85%BC%E5%AE%B9/%E6%88%AA%E5%9B%BE.png">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%8D%87%E7%BA%A7%20MacOS%2014%20%E5%AF%BC%E8%87%B4%20embedded-redis%20%E4%B8%8D%E5%85%BC%E5%AE%B9/%E5%8F%88%E4%B8%8D%E6%98%AF%E4%B8%8D%E8%83%BD%E7%94%A8.jpg">
@@ -248,41 +248,46 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1>背景</h1>
-<p>一直都没更新操作系统的版本，心血来潮更新了 MacOS 的 14（Sonoma）</p>
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>一直都没更新操作系统的版本，心血来潮更新了 MacOS 的 14（Sonoma）</p>
 <p><a target="_blank" rel="noopener" href="https://www.apple.com.cn/macos/sonoma/?ivk_sa=1024320u">macOS Sonoma - Apple (中国大陆)</a></p>
 <p>然后发现单测竟然跑不通了，但是 push 上去的代码 CI 依然可以通过，所以当时基本就确定是版本升级带来的兼容性问题了</p>
 <p>看了下日志，是嵌入的 Redis 运行不起来</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: Can<span class="string">&#x27;t start redis server. Check logs for details. Redis process log: </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:70)</span></span><br><span class="line"><span class="string">	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:42)</span></span><br><span class="line"><span class="string">	at redis.embedded.RedisServer.start(RedisServer.java:9)</span></span><br></pre></td></tr></table></figure>
+
 <p>这里嵌入的 Redis 是用来 mock 单测内的 Redis 客户端的</p>
-<p>使用的开源 <a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis">kstyrc/embedded-redis: Redis embedded server for Java integration testing (github.com)</a></p>
-<h1>排查</h1>
-<h2 id="检查端口占用">检查端口占用</h2>
-<p>当然第一时间检查端口占用，这种代码内嵌的服务经常会出现关闭失败的情况，导致主线程已经结束了实际服务还在运行，导致端口占用；当然从异常栈信息来看并不是端口占用导致的</p>
+<p>使用的开源 <a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis">kstyrc&#x2F;embedded-redis: Redis embedded server for Java integration testing (github.com)</a></p>
+<h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><h2 id="检查端口占用"><a href="#检查端口占用" class="headerlink" title="检查端口占用"></a>检查端口占用</h2><p>当然第一时间检查端口占用，这种代码内嵌的服务经常会出现关闭失败的情况，导致主线程已经结束了实际服务还在运行，导致端口占用；当然从异常栈信息来看并不是端口占用导致的</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof -i :&lt;端口号&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="debug">debug</h2>
-<p>异常信息上表示 <code>Check logs for details</code></p>
+
+
+
+<h2 id="debug"><a href="#debug" class="headerlink" title="debug"></a>debug</h2><p>异常信息上表示 <code>Check logs for details</code></p>
 <p>事实上也没有日志可以查看，只能 debug 进行查看了</p>
 <p>具体位置在 <code>org.apache.commons.io.IOUtils.AbstractRedisInstance.start()</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">start</span><span class="params">()</span> <span class="keyword">throws</span> EmbeddedRedisException &#123;</span><br><span class="line">    <span class="keyword">if</span> (active) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">EmbeddedRedisException</span>(<span class="string">&quot;This redis server instance is already running...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        redisProcess = createRedisProcessBuilder().start();</span><br><span class="line">        logErrors();</span><br><span class="line">      	<span class="comment">// 这里在等待服务端返回的数据</span></span><br><span class="line">        awaitRedisServerReady();</span><br><span class="line">        active = <span class="literal">true</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">EmbeddedRedisException</span>(<span class="string">&quot;Failed to start Redis instance&quot;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">awaitRedisServerReady</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="type">BufferedReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(redisProcess.getInputStream()));</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        String outputLine;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            outputLine = reader.readLine();</span><br><span class="line">          	<span class="comment">// 这里为 null 所以抛出了异常</span></span><br><span class="line">            <span class="keyword">if</span> (outputLine == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="comment">//Something goes wrong. Stream is ended before server was activated.</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Can&#x27;t start redis server. Check logs for details.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">while</span> (!outputLine.matches(redisReadyPattern()));</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        IOUtils.closeQuietly(reader);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>但是 debug 也没发现哪里有日志</p>
 <p>事实上还找到了一个 issue 来询问这个问题</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis/issues/51">“Can’t start redis server. Check logs for details” - which logs??? · Issue #51 · kstyrc/embedded-redis (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis/issues/51">“Can’t start redis server. Check logs for details” - which logs???? · Issue #51 · kstyrc&#x2F;embedded-redis (github.com)</a></p>
 <p>看下方的评论很多人都是因为 Windows 的不兼容导致</p>
-<h2 id="对应的-issue">对应的 issue</h2>
-<p>只能继续找 issue，看看有没有解决方案，还真找到了一样的问题</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis/issues/135">Unable to run on macOS Sonoma · Issue #135 · kstyrc/embedded-redis (github.com)</a></p>
+<h2 id="对应的-issue"><a href="#对应的-issue" class="headerlink" title="对应的 issue"></a>对应的 issue</h2><p>只能继续找 issue，看看有没有解决方案，还真找到了一样的问题</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis/issues/135">Unable to run on macOS Sonoma · Issue #135 · kstyrc&#x2F;embedded-redis (github.com)</a></p>
 <p>有老哥 fork 后解决了不兼容问题</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/codemonstur/embedded-redis">codemonstur/embedded-redis: Redis embedded server (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/codemonstur/embedded-redis">codemonstur&#x2F;embedded-redis: Redis embedded server (github.com)</a></p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%8D%87%E7%BA%A7%20MacOS%2014%20%E5%AF%BC%E8%87%B4%20embedded-redis%20%E4%B8%8D%E5%85%BC%E5%AE%B9/%E6%88%AA%E5%9B%BE.png" class="" title="issue 截图">
-<h1>解决</h1>
-<p>因为是本地单测环境问题，所以引用开源的风险也不大</p>
+
+
+
+<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>因为是本地单测环境问题，所以引用开源的风险也不大</p>
 <p>其次因为之前的这个依赖在 parent 包内管理，很难快速进行版本升级</p>
 <p>所以决定 fork 代码后修改坐标，在本地打一个相同坐标的包进行覆盖</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.kstyrc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>embedded-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1>总结</h1>
-<p>真 · 跑起来就不要再动了</p>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>真 · 跑起来就不要再动了</p>
 <p>不要轻易更新版本 : (</p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/%E5%8D%87%E7%BA%A7%20MacOS%2014%20%E5%AF%BC%E8%87%B4%20embedded-redis%20%E4%B8%8D%E5%85%BC%E5%AE%B9/%E5%8F%88%E4%B8%8D%E6%98%AF%E4%B8%8D%E8%83%BD%E7%94%A8.jpg" class="" title="又不是不能用">
     </div>
@@ -364,7 +369,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">排查</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8"><span class="nav-number">2.1.</span> <span class="nav-text">检查端口占用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#debug"><span class="nav-number">2.2.</span> <span class="nav-text">debug</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E5%BA%94%E7%9A%84-issue"><span class="nav-number">2.3.</span> <span class="nav-text">对应的 issue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%92%E6%9F%A5"><span class="nav-number">2.</span> <span class="nav-text">排查</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8"><span class="nav-number">2.1.</span> <span class="nav-text">检查端口占用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#debug"><span class="nav-number">2.2.</span> <span class="nav-text">debug</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E5%BA%94%E7%9A%84-issue"><span class="nav-number">2.3.</span> <span class="nav-text">对应的 issue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3"><span class="nav-number">3.</span> <span class="nav-text">解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
