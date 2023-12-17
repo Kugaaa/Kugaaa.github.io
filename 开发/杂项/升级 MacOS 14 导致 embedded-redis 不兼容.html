@@ -254,7 +254,7 @@
 <p>看了下日志，是嵌入的 Redis 运行不起来</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java.lang.RuntimeException: Can<span class="string">&#x27;t start redis server. Check logs for details. Redis process log: </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	at redis.embedded.AbstractRedisInstance.awaitRedisServerReady(AbstractRedisInstance.java:70)</span></span><br><span class="line"><span class="string">	at redis.embedded.AbstractRedisInstance.start(AbstractRedisInstance.java:42)</span></span><br><span class="line"><span class="string">	at redis.embedded.RedisServer.start(RedisServer.java:9)</span></span><br></pre></td></tr></table></figure>
 
-<p>这里嵌入的 Redis 是用来 mock 单测内的 Redis 客户端的</p>
+<p>这里嵌入的 Redis 是用来 mock 单测内的 Redis 服务端的</p>
 <p>使用的开源 <a target="_blank" rel="noopener" href="https://github.com/kstyrc/embedded-redis">kstyrc&#x2F;embedded-redis: Redis embedded server for Java integration testing (github.com)</a></p>
 <h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><h2 id="检查端口占用"><a href="#检查端口占用" class="headerlink" title="检查端口占用"></a>检查端口占用</h2><p>当然第一时间检查端口占用，这种代码内嵌的服务经常会出现关闭失败的情况，导致主线程已经结束了实际服务还在运行，导致端口占用；当然从异常栈信息来看并不是端口占用导致的</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof -i :&lt;端口号&gt;</span><br></pre></td></tr></table></figure>
@@ -310,7 +310,10 @@
     <a href="/%E5%BC%80%E5%8F%91/Java/Java%20%E4%BB%8E%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9C%8B%E5%B8%B8%E9%87%8F%E6%B1%A0.html" rel="prev" title="Java 从弱引用看常量池">
       <i class="fa fa-chevron-left"></i> Java 从弱引用看常量池
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/LangChain/LLM%20%E4%BF%A1%E6%81%AF%E6%8F%90%E5%8F%96%E7%BB%93%E6%9E%84%E5%8C%96%E8%BE%93%E5%87%BA.html" rel="next" title="LLM 信息提取结构化输出">
+      LLM 信息提取结构化输出 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -383,7 +386,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
