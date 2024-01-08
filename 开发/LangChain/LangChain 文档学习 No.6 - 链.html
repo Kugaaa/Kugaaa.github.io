@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="什么是链LangChain 中通过 Chain 来链接各个组件和功能，模型之间彼此链接，或模型与其他组件链接 将多个组件相互链接，组合成一个链的想法简单但强大，简化了复杂应用程序的实现，使之更加模块化，能够创建出单一的、连贯的应用程序，从而使调试、维护和改进应用程序变得容易；这也是 LangChain 名称的由来 需要注意，在现版本中 LangChain 已经在主推 LangChain Expre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 文档学习 No.6 - 链">
+<meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.6%20-%20%E9%93%BE.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="什么是链LangChain 中通过 Chain 来链接各个组件和功能，模型之间彼此链接，或模型与其他组件链接 将多个组件相互链接，组合成一个链的想法简单但强大，简化了复杂应用程序的实现，使之更加模块化，能够创建出单一的、连贯的应用程序，从而使调试、维护和改进应用程序变得容易；这也是 LangChain 名称的由来 需要注意，在现版本中 LangChain 已经在主推 LangChain Expre">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-01-06T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="LangChain">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.6%20-%20%E9%93%BE.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LangChain 文档学习 No.6 - 链 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.6%20-%20%E9%93%BE.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangChain 文档学习 No.6 - 链
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-07T00:00:00+08:00">2024-01-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="什么是链"><a href="#什么是链" class="headerlink" title="什么是链"></a>什么是链</h1><p>LangChain 中通过 Chain 来链接各个组件和功能，模型之间彼此链接，或模型与其他组件链接</p>
+<p>将多个组件相互链接，组合成一个链的想法简单但强大，简化了复杂应用程序的实现，使之更加模块化，能够创建出单一的、连贯的应用程序，从而使调试、维护和改进应用程序变得容易；这也是 LangChain 名称的由来</p>
+<p>需要注意，在现版本中 LangChain 已经在主推 LangChain Expression Language（LCEL），逐渐废弃旧版本中手动创建 Chain 的方式以及旧的 Chain 实现，不过这里也参考早期 Chain 的使用方式，LCEL 留在后面进行学习</p>
+<p>链的使用主要是以下两个步骤：</p>
+<ol>
+<li>通过设计好的接口，实现一个具体的链的功能；例如 LLM 链（LLMChain）能够接受用户输入，使用 PromptTemplate 对其进行格式化，然后将格式化的响应传递给 LLM；这就相当于把整个Model I&#x2F;O的流程封装到链里面</li>
+<li>实现了链的具体功能之后，我们可以通过将多个链组合在一起，或者将链与其他组件组合来构建更复杂的链</li>
+</ol>
+<p>链可以理解为对一组基础功能的封装，具有一个完整功能的组件，这么看来<strong>链其实可以被视为 LangChain 中的一种基本功能单元</strong></p>
+<h1 id="LLMChain"><a href="#LLMChain" class="headerlink" title="LLMChain"></a>LLMChain</h1><p>LLMChain 围绕着语言模型推理功能又添加了一些功能，整合了PromptTemplate、语言模型（LLM 或聊天模型）和 Output Parser，相当于把 Model I&#x2F;O 放在一个链中整体操作，它使用提示模板格式化输入，将格式化的字符串传递给 LLM，并返回 LLM 输出</p>
+<p>举一个示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ----第一步 创建提示</span></span><br><span class="line"><span class="keyword">from</span> langchain <span class="keyword">import</span> PromptTemplate</span><br><span class="line"><span class="comment"># 原始字符串模板</span></span><br><span class="line">template = <span class="string">&quot;&#123;name&#125;的外号是?&quot;</span></span><br><span class="line"><span class="comment"># 创建 Prompt 模板</span></span><br><span class="line">prompt_temp = PromptTemplate.from_template(template)</span><br><span class="line"><span class="comment"># 根据模板创建提示</span></span><br><span class="line">prompt = prompt_temp.<span class="built_in">format</span>(name=<span class="string">&#x27;霍金&#x27;</span>)</span><br><span class="line"><span class="comment"># 打印提示的内容</span></span><br><span class="line"><span class="built_in">print</span>(prompt)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ----第二步 创建并调用模型</span></span><br><span class="line"><span class="keyword">import</span> Azure</span><br><span class="line"><span class="comment"># 创建模型实例</span></span><br><span class="line">model = Azure.chat_model</span><br><span class="line"><span class="comment"># 传入提示，调用模型，返回结果</span></span><br><span class="line">result = model.predict(prompt)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">霍金的外号是?</span><br><span class="line">霍金的外号是“黑洞先生”。</span><br></pre></td></tr></table></figure>
+
+<p>此时 Model I&#x2F;O 的实现分为两个部分，提示模板的构建和模型的调用独立处理，如果再加上输出解析器则依然需要独立调用</p>
+<p>如果使用 LLMChain 则可以将这几部分结合在一起，使过程更加简洁</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入所需的库</span></span><br><span class="line"><span class="keyword">from</span> langchain <span class="keyword">import</span> PromptTemplate, OpenAI, LLMChain</span><br><span class="line"><span class="comment"># 原始字符串模板</span></span><br><span class="line">template = <span class="string">&quot;&#123;name&#125;的外号是?&quot;</span></span><br><span class="line"><span class="comment"># 创建模型实例</span></span><br><span class="line">llm = OpenAI(temperature=<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 创建 LLMChain</span></span><br><span class="line">llm_chain = LLMChain(</span><br><span class="line">    llm=Azure.chat_model,</span><br><span class="line">    prompt=PromptTemplate.from_template(template))</span><br><span class="line"><span class="comment"># 调用 LLMChain，返回结果</span></span><br><span class="line">result = llm_chain(<span class="string">&quot;马斯克&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;马斯克&#x27;</span>, <span class="string">&#x27;text&#x27;</span>: <span class="string">&#x27;马斯克的外号是“火箭人”或“铁人”。&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>Chain 的调用方式</strong></p>
+<p>在上面的例子中，直接使用 <code>__call__</code> 方法对 Chain 进行调用，例如 <code>llm_chain(&quot;马斯克&quot;)</code></p>
+<p>Chain 具有多种调用方式：</p>
+<ul>
+<li><strong>call</strong>：提示模板中包含多个变量时，可以使用字典一次性输入</li>
+<li><strong>run</strong>：等价于 <code>__call__</code></li>
+<li><strong>predict</strong>：模板变量根据关键字参数赋值而不是字典</li>
+<li><strong>apply</strong>：针对输入列表运行链，一次处理多个输入</li>
+<li><strong>generate</strong>：类似于 <code>apply</code>，只不过返回一个 <code>LLMResult</code> 对象而不是字符串<br><code>LLMResult</code> 通常包含模型生成文本过程中的一些相关信息，例如令牌数量、模型名称等</li>
+</ul>
+<h1 id="SequentialChain"><a href="#SequentialChain" class="headerlink" title="SequentialChain"></a>SequentialChain</h1><p>掌握了 LLMChain 的基本用法，就可以使用 SequentialChain 将几个 LLMChain 串起来，形成一个顺序链</p>
+<p><strong>第一个 LLMChain - 推荐电影</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">llm = Azure.chat_model</span><br><span class="line">template = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一个电影爱好者，请根据用户希望看到的剧情和标签，推荐一部电影。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">剧情: &#123;plot&#125;</span></span><br><span class="line"><span class="string">标签: &#123;tag&#125;</span></span><br><span class="line"><span class="string">电影爱好者: 这是我推荐的电影:&quot;&quot;&quot;</span></span><br><span class="line">prompt_template = PromptTemplate(input_variables=[<span class="string">&quot;plot&quot;</span>, <span class="string">&quot;tag&quot;</span>], template=template)</span><br><span class="line">introduction_chain = LLMChain(llm=llm, prompt=prompt_template, output_key=<span class="string">&quot;movie_info&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二个 LLMChain - 评论电影</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">llm = Azure.chat_model</span><br><span class="line">template = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一位电影评论家，给你一个电影信息，你需要为这部电影写一篇100字左右的评论。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">电影信息:</span></span><br><span class="line"><span class="string">&#123;movie_info&#125;</span></span><br><span class="line"><span class="string">电影评论人对上述电影的评论:&quot;&quot;&quot;</span></span><br><span class="line">prompt_template = PromptTemplate(input_variables=[<span class="string">&quot;movie_info&quot;</span>], template=template)</span><br><span class="line">review_chain = LLMChain(llm=llm, prompt=prompt_template, output_key=<span class="string">&quot;movie_review&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>第三个 LLMChain - 根据上面的产出写出一篇自媒体的文案</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">template = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一个评论电影的自媒体文案撰稿人。给定一部电影的介绍和评论，你需要为这部电影写一篇社交媒体的帖子，200字左右。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">电影介绍:</span></span><br><span class="line"><span class="string">&#123;movie_info&#125;</span></span><br><span class="line"><span class="string">电影评论人对上述花的评论:</span></span><br><span class="line"><span class="string">&#123;movie_review&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">社交媒体帖子:</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">prompt_template = PromptTemplate(input_variables=[<span class="string">&quot;movie_info&quot;</span>, <span class="string">&quot;movie_review&quot;</span>], template=template)</span><br><span class="line">social_post_chain = LLMChain(llm=llm, prompt=prompt_template, output_key=<span class="string">&quot;social_post_text&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用顺序链链接起来</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按顺序运行这三个链</span></span><br><span class="line">overall_chain = SequentialChain(</span><br><span class="line">    chains=[introduction_chain, review_chain, social_post_chain],</span><br><span class="line">    input_variables=[<span class="string">&quot;plot&quot;</span>, <span class="string">&quot;tag&quot;</span>],</span><br><span class="line">    output_variables=[<span class="string">&quot;movie_info&quot;</span>, <span class="string">&quot;movie_review&quot;</span>, <span class="string">&quot;social_post_text&quot;</span>],</span><br><span class="line">    verbose=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行链，并打印结果</span></span><br><span class="line">result = overall_chain(&#123;<span class="string">&quot;plot&quot;</span>: <span class="string">&quot;激烈的太空战斗&quot;</span>, <span class="string">&quot;tag&quot;</span>: <span class="string">&quot;中国、科幻&quot;</span>&#125;)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; Entering new SequentialChain chain...</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line">&#123;<span class="string">&#x27;plot&#x27;</span>: <span class="string">&#x27;激烈的太空战斗&#x27;</span>, <span class="string">&#x27;tag&#x27;</span>: <span class="string">&#x27;中国、科幻&#x27;</span>, <span class="string">&#x27;movie_info&#x27;</span>: <span class="string">&#x27;《流浪地球》\n\n《流浪地球》是一部中国科幻电影，它将带您进入一个激烈的太空战斗的世界。故事发生在未来，太阳即将灭亡，人类必须寻找新的家园。为了拯救地球，人类发起了一项大胆的计划，将地球变成了一个巨大的太空船，向外太空迁徙。然而，在这个危险的旅程中，他们面临着各种挑战和太空战斗。电影中充满了紧张刺激的场景和惊人的视觉效果，同时也展现了人类的勇气和团结精神。\n\n《流浪地球》是一部非常成功的中国科幻电影，它获得了广泛的赞誉和票房成功。它不仅仅是一部充满动作和太空战斗的电影，还探讨了人类对于未来和生存的思考。如果您喜欢激烈的太空战斗和科幻题材，这部电影将会是您的不错选择。&#x27;</span>, <span class="string">&#x27;movie_review&#x27;</span>: <span class="string">&#x27;《流浪地球》是一部令人惊叹的中国科幻电影。它以壮观的视觉效果和扣人心弦的剧情吸引着观众。故事背景设定在太阳即将灭亡的未来，人类为了生存不得不将地球变成太空船，展开了一场惊险的迁徙之旅。电影中的太空战斗场景令人震撼，同时也展现了人类的勇气和团结精神。这部电影在票房上取得了巨大成功，同时也获得了广泛的赞誉。如果你喜欢科幻和动作片，那么《流浪地球》绝对是你不容错过的选择。&#x27;</span>, <span class="string">&#x27;social_post_text&#x27;</span>: <span class="string">&#x27;大家好！今天我要给大家推荐一部非常精彩的电影，《流浪地球》！这是一部中国科幻电影，带领我们进入一个激烈的太空战斗的世界。\n\n故事发生在未来，太阳即将灭亡，人类为了生存必须寻找新的家园。他们发起了一项大胆的计划，将地球变成了一个巨大的太空船，向外太空迁徙。然而，在这个危险的旅程中，他们面临着各种挑战和太空战斗。\n\n这部电影充满了紧张刺激的场景和惊人的视觉效果，同时也展现了人类的勇气和团结精神。它不仅仅是一部充满动作和太空战斗的电影，还探讨了人类对于未来和生存的思考。\n\n《流浪地球》是一部非常成功的中国科幻电影，它获得了广泛的赞誉和票房成功。如果你喜欢激烈的太空战斗和科幻题材，这部电影将会是你的不错选择。\n\n快来看看这部令人惊叹的中国科幻电影，《流浪地球》，一定会让你大呼过瘾！#流浪地球 #科幻电影&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用不同的 variables 再试一次</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result = overall_chain(&#123;<span class="string">&quot;plot&quot;</span>: <span class="string">&quot;剑与魔法的世界&quot;</span>, <span class="string">&quot;tag&quot;</span>: <span class="string">&quot;奇幻、冒险&quot;</span>&#125;)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; Entering new SequentialChain chain...</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line">&#123;<span class="string">&#x27;plot&#x27;</span>: <span class="string">&#x27;剑与魔法的世界&#x27;</span>, <span class="string">&#x27;tag&#x27;</span>: <span class="string">&#x27;奇幻、冒险&#x27;</span>, <span class="string">&#x27;movie_info&#x27;</span>: <span class="string">&#x27;《魔戒三部曲：指环王》。这是一部奇幻冒险电影系列，剧情发生在一个充满剑与魔法的世界中。故事讲述了一个拯救中土世界的冒险旅程，包括勇敢的英雄、邪恶的魔法师和各种神秘的生物。这部电影系列融合了精彩的剧情、惊人的特效和精美的场景，一定会让您沉浸在这个奇幻的世界中。&#x27;</span>, <span class="string">&#x27;movie_review&#x27;</span>: <span class="string">&#x27;《魔戒三部曲：指环王》是一部令人沉浸的奇幻冒险电影系列。剧情发生在一个充满剑与魔法的世界中，其中包括了勇敢的英雄、邪恶的魔法师和各种神秘的生物。这部电影系列不仅拥有精彩的剧情，还有惊人的特效和精美的场景。观众们可以完全沉浸在这个奇幻的世界中，感受到其中的魔力。无论是对于魔戒系列的粉丝还是对于奇幻冒险电影的爱好者来说，这部电影都是一次不容错过的视觉盛宴。&#x27;</span>, <span class="string">&#x27;social_post_text&#x27;</span>: <span class="string">&#x27;大家好！今天给大家推荐一部令人沉浸的奇幻冒险电影系列——《魔戒三部曲：指环王》！这部电影发生在一个充满剑与魔法的世界中，故事中有勇敢的英雄、邪恶的魔法师和各种神秘的生物。这部电影系列不仅有精彩的剧情，更有惊人的特效和精美的场景。你一定会完全沉浸在这个奇幻的世界中，感受到其中的魔力。无论你是魔戒系列的粉丝还是奇幻冒险电影的爱好者，这部电影都是一次不容错过的视觉盛宴。快来和我一起探索这个充满剑与魔法的世界吧！#魔戒指环王# #奇幻冒险电影#&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述示例通过了三个 LLMChain 和一个 SequentialChain 的结合，由推荐电影到最终写出电影文案的过程</p>
+<h1 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h1><p>这里使用极客时间的例子，制作一个简单的鲜花运营智能客服</p>
+<p>假设这个鲜花运营智能客服通常会接到两大类问题：</p>
+<ol>
+<li><strong>鲜花养护</strong>（保持花的健康、如何浇水、施肥等）</li>
+<li><strong>鲜花装饰</strong>（如何搭配花、如何装饰场地等）</li>
+</ol>
+<p>这就引入了新的需求， <strong>如果接到的是第一类问题，需要给出 A 指示；如果接到第二类的问题，需要给出 B 指示</strong>。</p>
+<p>在实现的过程，可以根据这两个场景来构建两个不同的目标链；遇到不同类型的问题，LangChain 会通过 RouterChain 来自动引导大语言模型选择不同的模板</p>
+<h2 id="模板准备"><a href="#模板准备" class="headerlink" title="模板准备"></a>模板准备</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建两个场景的模板</span></span><br><span class="line">flower_care_template = <span class="string">&quot;&quot;&quot;你是一个经验丰富的园丁，擅长解答关于养花育花的问题。</span></span><br><span class="line"><span class="string">            下面是需要你来回答的问题:</span></span><br><span class="line"><span class="string">            &#123;input&#125;&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">flower_deco_template = <span class="string">&quot;&quot;&quot;你是一位网红插花大师，擅长解答关于鲜花装饰的问题。</span></span><br><span class="line"><span class="string">            下面是需要你来回答的问题:</span></span><br><span class="line"><span class="string">            &#123;input&#125;&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建提示信息</span></span><br><span class="line">prompt_infos = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;key&quot;</span>: <span class="string">&quot;flower_care&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;适合回答关于鲜花护理的问题&quot;</span>,</span><br><span class="line">        <span class="string">&quot;template&quot;</span>: flower_care_template,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;key&quot;</span>: <span class="string">&quot;flower_decoration&quot;</span>,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: <span class="string">&quot;适合回答关于鲜花装饰的问题&quot;</span>,</span><br><span class="line">        <span class="string">&quot;template&quot;</span>: flower_deco_template,</span><br><span class="line">    &#125;]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建提示目标链链</span></span><br><span class="line"><span class="keyword">from</span> langchain.chains.llm <span class="keyword">import</span> LLMChain</span><br><span class="line"><span class="keyword">from</span> langchain.prompts <span class="keyword">import</span> PromptTemplate</span><br><span class="line"></span><br><span class="line">chain_map = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> info <span class="keyword">in</span> prompt_infos:</span><br><span class="line">    prompt = PromptTemplate(template=info[<span class="string">&#x27;template&#x27;</span>], input_variables=[<span class="string">&quot;input&quot;</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;目标提示:\n&quot;</span>, prompt)</span><br><span class="line">    chain = LLMChain(llm=Azure.chat_model, prompt=prompt, verbose=<span class="literal">True</span>)</span><br><span class="line">    chain_map[info[<span class="string">&quot;key&quot;</span>]] = chain</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="LLMRouterChain"><a href="#LLMRouterChain" class="headerlink" title="LLMRouterChain"></a>LLMRouterChain</h2><p>RouterChain 路由链，能动态选择用于给定输入的下一个链，我们会根据用户的问题内容，首先使用路由器链确定问题更适合哪个处理模板，然后将问题发送到该处理模板进行回答。如果问题不适合任何已定义的处理模板，会被选择使用默认链</p>
+<p>创建一个路由链</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建路由链</span></span><br><span class="line"><span class="keyword">from</span> langchain.chains.router.llm_router <span class="keyword">import</span> LLMRouterChain, RouterOutputParser</span><br><span class="line"><span class="keyword">from</span> langchain.chains.router.multi_prompt_prompt <span class="keyword">import</span> MULTI_PROMPT_ROUTER_TEMPLATE <span class="keyword">as</span> RounterTemplate</span><br><span class="line"></span><br><span class="line">destinations = [<span class="string">f&quot;<span class="subst">&#123;p[<span class="string">&#x27;key&#x27;</span>]&#125;</span>: <span class="subst">&#123;p[<span class="string">&#x27;description&#x27;</span>]&#125;</span>&quot;</span> <span class="keyword">for</span> p <span class="keyword">in</span> prompt_infos]</span><br><span class="line">router_template = RounterTemplate.<span class="built_in">format</span>(destinations=<span class="string">&quot;\n&quot;</span>.join(destinations))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;路由模板:\n&quot;</span>, router_template)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;------------------------------------&quot;</span>)</span><br><span class="line">router_prompt = PromptTemplate(</span><br><span class="line">    template=router_template,</span><br><span class="line">    input_variables=[<span class="string">&quot;input&quot;</span>],</span><br><span class="line">    output_parser=RouterOutputParser(), )</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;路由提示:\n&quot;</span>, router_prompt)</span><br><span class="line">router_chain = LLMRouterChain.from_llm(llm=Azure.chat_model,</span><br><span class="line">                                       prompt=router_prompt,</span><br><span class="line">                                       verbose=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">路由模板:</span><br><span class="line"> Given a raw <span class="built_in">text</span> input <span class="keyword">to</span> a language model select <span class="keyword">the</span> model prompt best suited <span class="keyword">for</span> <span class="keyword">the</span> input. You will be <span class="keyword">given</span> <span class="keyword">the</span> names <span class="keyword">of</span> <span class="keyword">the</span> available prompts <span class="keyword">and</span> a description <span class="keyword">of</span> what <span class="keyword">the</span> prompt <span class="keyword">is</span> best suited <span class="keyword">for</span>. You may also revise <span class="keyword">the</span> original input <span class="keyword">if</span> you think <span class="keyword">that</span> revising <span class="keyword">it</span> will ultimately lead <span class="keyword">to</span> a better response <span class="keyword">from</span> <span class="keyword">the</span> language model.</span><br><span class="line"></span><br><span class="line">&lt;&lt; FORMATTING &gt;&gt;</span><br><span class="line">Return a markdown code snippet <span class="keyword">with</span> a JSON object formatted <span class="keyword">to</span> look like:</span><br><span class="line">```json</span><br><span class="line">&#123;&#123;</span><br><span class="line">    <span class="string">&quot;destination&quot;</span>: <span class="built_in">string</span> \ <span class="built_in">name</span> <span class="keyword">of</span> <span class="keyword">the</span> prompt <span class="keyword">to</span> use <span class="keyword">or</span> <span class="string">&quot;DEFAULT&quot;</span></span><br><span class="line">    <span class="string">&quot;next_inputs&quot;</span>: <span class="built_in">string</span> \ a potentially modified <span class="built_in">version</span> <span class="keyword">of</span> <span class="keyword">the</span> original input</span><br><span class="line">&#125;&#125;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">REMEMBER: <span class="string">&quot;destination&quot;</span> MUST be one <span class="keyword">of</span> <span class="keyword">the</span> candidate prompt names specified <span class="keyword">below</span> OR <span class="keyword">it</span> can be <span class="string">&quot;DEFAULT&quot;</span> <span class="keyword">if</span> <span class="keyword">the</span> input <span class="keyword">is</span> <span class="keyword">not</span> well suited <span class="keyword">for</span> any <span class="keyword">of</span> <span class="keyword">the</span> candidate prompts.</span><br><span class="line">REMEMBER: <span class="string">&quot;next_inputs&quot;</span> can just be <span class="keyword">the</span> original input <span class="keyword">if</span> you don&#x27;t think any modifications are needed.</span><br><span class="line"></span><br><span class="line">&lt;&lt; CANDIDATE PROMPTS &gt;&gt;</span><br><span class="line">flower_care: 适合回答关于鲜花护理的问题</span><br><span class="line">flower_decoration: 适合回答关于鲜花装饰的问题</span><br><span class="line"></span><br><span class="line">&lt;&lt; INPUT &gt;&gt;</span><br><span class="line">&#123;input&#125;</span><br><span class="line"></span><br><span class="line">&lt;&lt; OUTPUT (must include ```json <span class="keyword">at</span> <span class="keyword">the</span> start <span class="keyword">of</span> <span class="keyword">the</span> response) &gt;&gt;</span><br><span class="line">&lt;&lt; OUTPUT (must <span class="keyword">end</span> <span class="keyword">with</span> ```) &gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">------------------------------------</span></span><br><span class="line">路由提示:</span><br><span class="line"> input_variables=[&#x27;input&#x27;] output_parser=RouterOutputParser() template=&#x27;Given a raw <span class="built_in">text</span> input <span class="keyword">to</span> a language model select <span class="keyword">the</span> model prompt best suited <span class="keyword">for</span> <span class="keyword">the</span> input. You will be <span class="keyword">given</span> <span class="keyword">the</span> names <span class="keyword">of</span> <span class="keyword">the</span> available prompts <span class="keyword">and</span> a description <span class="keyword">of</span> what <span class="keyword">the</span> prompt <span class="keyword">is</span> best suited <span class="keyword">for</span>. You may also revise <span class="keyword">the</span> original input <span class="keyword">if</span> you think <span class="keyword">that</span> revising <span class="keyword">it</span> will ultimately lead <span class="keyword">to</span> a better response <span class="keyword">from</span> <span class="keyword">the</span> language model.\n\n&lt;&lt; FORMATTING &gt;&gt;\nReturn a markdown code snippet <span class="keyword">with</span> a JSON object formatted <span class="keyword">to</span> look like:\n```json\n&#123;&#123;\n    <span class="string">&quot;destination&quot;</span>: <span class="built_in">string</span> \\ <span class="built_in">name</span> <span class="keyword">of</span> <span class="keyword">the</span> prompt <span class="keyword">to</span> use <span class="keyword">or</span> <span class="string">&quot;DEFAULT&quot;</span>\n    <span class="string">&quot;next_inputs&quot;</span>: <span class="built_in">string</span> \\ a potentially modified <span class="built_in">version</span> <span class="keyword">of</span> <span class="keyword">the</span> original input\n&#125;&#125;\n```\n\nREMEMBER: <span class="string">&quot;destination&quot;</span> MUST be one <span class="keyword">of</span> <span class="keyword">the</span> candidate prompt names specified <span class="keyword">below</span> OR <span class="keyword">it</span> can be <span class="string">&quot;DEFAULT&quot;</span> <span class="keyword">if</span> <span class="keyword">the</span> input <span class="keyword">is</span> <span class="keyword">not</span> well suited <span class="keyword">for</span> any <span class="keyword">of</span> <span class="keyword">the</span> candidate prompts.\nREMEMBER: <span class="string">&quot;next_inputs&quot;</span> can just be <span class="keyword">the</span> original input <span class="keyword">if</span> you don\&#x27;t think any modifications are needed.\n\n&lt;&lt; CANDIDATE PROMPTS &gt;&gt;\nflower_care: 适合回答关于鲜花护理的问题\nflower_decoration: 适合回答关于鲜花装饰的问题\n\n&lt;&lt; INPUT &gt;&gt;\n&#123;input&#125;\n\n&lt;&lt; OUTPUT (must include ```json <span class="keyword">at</span> <span class="keyword">the</span> start <span class="keyword">of</span> <span class="keyword">the</span> response) &gt;&gt;\n&lt;&lt; OUTPUT (must <span class="keyword">end</span> <span class="keyword">with</span> ```) &gt;&gt;\n&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>通过上面的示例可以看到路由链是如何进行路由的，如何引导 LLM 进行路由判断，以及后续的路由提示：</p>
+<ul>
+<li><strong>路由模板</strong><ul>
+<li><strong>引言</strong>：简单的引导语句，提醒模型它将获得各种模型提示的名称和描述，以及可以更改原始输入以获得更好的响应</li>
+<li><strong>格式说明</strong>（&lt;&lt; FORMATTING &gt;&gt;）：指导模型如何格式化其输出，使其以特定的方式返回结果（Markdown 代码片段，其中包含一个特定格式的 JSON 对象）<br>下面的代码块显示了期望的 JSON 结构，其中 <code>destination</code> 是模型选择的提示名称（或 <code>DEFAULT</code>），而 <code>next\_inputs</code> 是可能被修订的原始输入</li>
+<li><strong>额外的说明和要求</strong>：<ul>
+<li>提醒模型 <code>destination</code> 字段的值必须是下面列出的提示之一或是 <code>DEFAULT</code></li>
+<li>再次强调，除非模型认为有必要，否则原始输入不需要修改</li>
+</ul>
+</li>
+<li><strong>候选提示</strong>(&lt;&lt; CANDIDATE PROMPTS &gt;&gt;)：列出了两个示例模型提示及其描述<ul>
+<li><strong>flower_care</strong>：适合回答关于鲜花护理的问题”，适合处理与花卉护理相关的问题。</li>
+<li><strong>flower_decoration</strong>：适合回答关于鲜花装饰的问题”，适合处理与花卉装饰相关的问题。</li>
+</ul>
+</li>
+<li><strong>输入输出</strong>：为模型提供了一个格式化的框架，其中它将接收一个名为 <code>&#123;input&#125;</code> 的输入，并在此后的部分输出结果</li>
+</ul>
+</li>
+<li><strong>路由提示</strong>：根据路由模板，生成了具体传递给 LLM 的路由提示信息<ul>
+<li>其中 <code>input_variables</code> 指定模板接收的输入变量名，这里只有 <code>input</code></li>
+<li><code>output_parser</code> 是一个用于解析模型输出的对象，它有一个默认的目的地和一个指向下一输入的键</li>
+<li><code>template</code> 是实际的路由模板，用于给模型提供指示；这就是刚才详细解释的模板内容</li>
+<li><code>template_format</code> 指定模板的格式，这里是 <code>f-string</code></li>
+<li><code>validate_template</code> 是一个布尔值，如果为 True，则会在使用模板前验证其有效性</li>
+</ul>
+</li>
+</ul>
+<p>概括路由链的逻辑，允许将用户的原始输入送入路由器，然后路由器会决定将该输入发送到哪个具体的模型提示，或者是否需要对输入进行修订以获得最佳的响应</p>
+<h2 id="默认链"><a href="#默认链" class="headerlink" title="默认链"></a>默认链</h2><p>准备一个默认链，如果路由链没有找到适合的链就以默认链进行处理</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建默认链</span></span><br><span class="line">default_chain = ConversationChain(llm=Azure.chat_model,</span><br><span class="line">                                  output_key=<span class="string">&quot;text&quot;</span>,</span><br><span class="line">                                  verbose=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="MultiPromptChain"><a href="#MultiPromptChain" class="headerlink" title="MultiPromptChain"></a>MultiPromptChain</h2><p>最后我们使用 MultiPromptChain 把前几个链整合在一起实现路由功能</p>
+<p>MultiPromptChain 是一个多路选择链，它使用一个路由链在多个提示之间进行选择</p>
+<p>关键属性：</p>
+<ul>
+<li><strong>router_chain</strong>（类型 <code>RouterChain</code>）：这是用于决定目标链和其输入的链；当给定某个输入时，由 router_chain 决定哪一个 destination_chain 应该被选中，以及具体输入是什么</li>
+<li><strong>destination_chains</strong>（类型 <code>Mapping[str, LLMChain]</code>）：这是一个映射，将名称映射到可以将输入路由到的候选链。例如，你可能有多种处理文本输入的方法（或链），每种方法针对特定类型的问题；destination_chains 可以是这样一个字典： <code>&#123;&#39;weather&#39;: weather_chain, &#39;news&#39;: news_chain&#125;</code>；weather_chain 可能专门处理与天气相关的问题，而 news_chain 处理与新闻相关的问题</li>
+<li><strong>default_chain</strong>（类型 <code>LLMChain</code>）：当 router_chain 无法将输入映射到 destination_chains 中的任何一个链时，LLMChain 将使用此默认链；这是一个备选方案，确保即使路由器不能决定正确的链也总有一个链可以处理输入</li>
+</ul>
+<p>工作流程如下：</p>
+<ol>
+<li>输入首先传递 router_chain</li>
+<li>router_chain 根据某些标准或逻辑决定应该使用哪一个 destination_chain</li>
+<li>输入随后被路由到选定的 destination_chain，该链进行处理并返回结果</li>
+<li>如果 router_chain 不能决定正确的 destination_chain，则输入会被传递给 default_chain</li>
+</ol>
+<p>如此 MultiPromptChain 就提供了一个在多个处理链之间动态路由输入的机制，以得到最相关或最优的输出</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">multi_prompt_chain = MultiPromptChain(</span><br><span class="line">    router_chain=router_chain,</span><br><span class="line">    destination_chains=chain_map,</span><br><span class="line">    default_chain=default_chain,</span><br><span class="line">    verbose=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h2><p>准备好了整个链条上的所有组件，概括一下：</p>
+<ul>
+<li>模板和目标 LLMChain：不同路径的提示和基础链</li>
+<li>LLMRouterChain：进行路由选择的链</li>
+<li>默认链 ConversationChain（LLMChain 的实现，处理简单对话）：如果没有对应路由，则使用默认链</li>
+<li>MultiPromptChain：组合起上述三种类型的组件，成为调用的入口</li>
+</ul>
+<p>那么针对创建出的 MultiPromptChain 进行调用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(multi_prompt_chain.run(<span class="string">&quot;如何为向日葵浇水？&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>verboss=True</code> 可以观察到过程日志</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; Entering new MultiPromptChain chain...</span><br><span class="line"></span><br><span class="line">&gt; Entering new LLMRouterChain chain...</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line">flower_care: &#123;<span class="string">&#x27;input&#x27;</span>: <span class="string">&#x27;如何为向日葵浇水？&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">&gt; Entering new LLMChain chain...</span><br><span class="line">Prompt after formatting:</span><br><span class="line">你是一个经验丰富的园丁，擅长解答关于养花育花的问题。</span><br><span class="line">            下面是需要你来回答的问题:</span><br><span class="line">            如何为向日葵浇水？</span><br><span class="line">      </span><br><span class="line">&gt; Finished chain.</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="comment"># 下面是回答，太长了就不放了</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到路由链输出了 <code>flower_care: &#123;&#39;input&#39;: &#39;如何为向日葵浇水？&#39;&#125;</code>，多路选择链根据路由返回使用了养花育花的模板</p>
+<p>使用默认链测试一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(multi_prompt_chain.run(<span class="string">&quot;可乐鸡翅的做法&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&gt; Entering new MultiPromptChain chain...</span><br><span class="line"></span><br><span class="line">&gt; Entering new LLMRouterChain chain...</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line"><span class="literal">None</span>: &#123;<span class="string">&#x27;input&#x27;</span>: <span class="string">&#x27;可乐鸡翅的做法&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">&gt; Entering new ConversationChain chain...</span><br><span class="line">Prompt after formatting:</span><br><span class="line">The following <span class="keyword">is</span> a friendly conversation between a human <span class="keyword">and</span> an AI. The AI <span class="keyword">is</span> talkative <span class="keyword">and</span> provides lots of specific details <span class="keyword">from</span> its context. If the AI does <span class="keyword">not</span> know the answer to a question, it truthfully says it does <span class="keyword">not</span> know.</span><br><span class="line"></span><br><span class="line">Current conversation:</span><br><span class="line"></span><br><span class="line">Human: 可乐鸡翅的做法</span><br><span class="line">AI:</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line"></span><br><span class="line">&gt; Finished chain.</span><br><span class="line"><span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到路由链输出了 <code>None: &#123;&#39;input&#39;: &#39;可乐鸡翅的做法&#39;&#125;</code>，并且在后续处理的选择中使用了默认提供的 ConversationChain</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://time.geekbang.org/column/intro/100617601?utm_campaign=geektime_search&utm_content=geektime_search&utm_medium=geektime_search&utm_source=geektime_search&utm_term=geektime_search">LangChain 实战课_LangChain_AI_大模型_语言模型_ChatGPT_prompt_接口_提示工程_模型_开发-极客时间 (geekbang.org)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+              <a href="/tags/AI/" rel="tag"># AI</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" rel="prev" title="简单了解向量数据库">
+      <i class="fa fa-chevron-left"></i> 简单了解向量数据库
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%93%BE"><span class="nav-number">1.</span> <span class="nav-text">什么是链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LLMChain"><span class="nav-number">2.</span> <span class="nav-text">LLMChain</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SequentialChain"><span class="nav-number">3.</span> <span class="nav-text">SequentialChain</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6"><span class="nav-number">4.</span> <span class="nav-text">进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E5%87%86%E5%A4%87"><span class="nav-number">4.1.</span> <span class="nav-text">模板准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LLMRouterChain"><span class="nav-number">4.2.</span> <span class="nav-text">LLMRouterChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E9%93%BE"><span class="nav-number">4.3.</span> <span class="nav-text">默认链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MultiPromptChain"><span class="nav-number">4.4.</span> <span class="nav-text">MultiPromptChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C"><span class="nav-number">4.5.</span> <span class="nav-text">执行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kuga.fun" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
