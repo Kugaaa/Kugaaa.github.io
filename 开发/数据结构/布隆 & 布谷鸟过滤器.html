@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="背景 特征 or 全部 在实际需求中，往往存在类似需求：  黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据 推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送 缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透  最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中">
+  <meta name="description" content="背景特征 or 全部 在实际需求中，往往存在类似需求：  黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据 推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送 缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透  最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中">
 <meta property="og:type" content="article">
 <meta property="og:title" content="布隆 &amp; 布谷鸟过滤器">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="背景 特征 or 全部 在实际需求中，往往存在类似需求：  黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据 推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送 缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透  最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中">
+<meta property="og:description" content="背景特征 or 全部 在实际需求中，往往存在类似需求：  黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据 推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送 缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透  最容易想到的，就是通过一个集合例如 Map、List 等结构将数据存储起来，判断是否存在于集合中">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-12-10T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-12-10T16:00:00.000Z">
@@ -245,8 +245,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1>背景</h1>
-<p><strong>特征 or 全部</strong></p>
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p><strong>特征 or 全部</strong></p>
 <p>在实际需求中，往往存在类似需求：</p>
 <ul>
 <li>黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据</li>
@@ -262,8 +261,7 @@
 <li>删除操作难以实现</li>
 </ul>
 <p>需要在技术和业务两方面进行取舍</p>
-<h1>布隆</h1>
-<p>布隆过滤器（bloom filter）由一串很长的二进制向量组成（位图 bitmap），可以将其看成一个二进制数组</p>
+<h1 id="布隆"><a href="#布隆" class="headerlink" title="布隆"></a>布隆</h1><p>布隆过滤器（bloom filter）由一串很长的二进制向量组成（位图 bitmap），可以将其看成一个二进制数组</p>
 <p>当一个元素进入时，不是存储该元素本身，而是通过多个哈希算法，计算出该元素的多个下标，随后在位图中将对应的下标打上标记（bit 位置为 1），当需要判断是否存在某个元素时，也是进行哈希后，判断其需要的下标是否全为 1</p>
 <p>可以看出，布隆过滤器带有一定的误判率，如果很多元素的下标正好复合了某一个元素的位置，那么该元素就会被误判存在：</p>
 <ul>
@@ -278,6 +276,7 @@
 <li>哈希算法的数量和质量</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://hur.st/bloomfilter/?n=400000000&amp;p=0.01&amp;m=&amp;k=">Bloom filter calculator (hur.st)</a> 可以进行布隆过滤器参数的预估</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -309,17 +308,16 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><strong>无法删除</strong></p>
 <p>布隆过滤器是无法删除元素的，因为一旦存储特征后，删除会导致连带其他元素的标记一起删除</p>
 <p>为了能让布隆过滤器支持删除操作，衍生出了变体结构，计数布隆过滤器（counting bloom filter）</p>
 <p><strong>实际应用</strong></p>
 <p><a target="_blank" rel="noopener" href="https://toutiao.io/posts/mtrvsx/preview">Now 直播发现页短视频瀑布流优化 - 开发者头条 (toutiao.io)</a></p>
-<h1>计数布隆</h1>
-<p>使用一个 counter 数组来替代之前的位图，在进行标记时可以记录一共标记了多少次，显而易见空间占用会扩大不少</p>
+<h1 id="计数布隆"><a href="#计数布隆" class="headerlink" title="计数布隆"></a>计数布隆</h1><p>使用一个 counter 数组来替代之前的位图，在进行标记时可以记录一共标记了多少次，显而易见空间占用会扩大不少</p>
 <p>在进行判断时 <code>counter &gt; 0</code> 即表示了之前的 <code>index == 1</code> 操作</p>
 <p>计数器也无法避免误删，只是能大幅度降低误删概率</p>
-<h1>布谷鸟</h1>
-<p>布谷鸟过滤器是布隆过滤器的升级，有如下优势：</p>
+<h1 id="布谷鸟"><a href="#布谷鸟" class="headerlink" title="布谷鸟"></a>布谷鸟</h1><p>布谷鸟过滤器是布隆过滤器的升级，有如下优势：</p>
 <ul>
 <li>支持动态的新增和删除元素</li>
 <li>提供了比传统布隆过滤器更高的查找性能，即使在接近满空间的情况下（访问内存次数低）</li>
@@ -338,7 +336,7 @@
 <li>根据 H2 计算其在 T2 的位置下标</li>
 <li>如果该位置没有标记则进行标记，如果标记了则说明所有位置都已经被占用，随机踢出 T1 或者 T2 上该下标的元素，将自己放入下标</li>
 <li>被踢出的元素重复上述流程查找自己的位置</li>
-<li>经过 <code>MaxLoop </code> 阈值后还存在元素没有合适的位置，则元素添加失败，说明需要进行扩容了</li>
+<li>经过 <code>MaxLoop</code> 阈值后还存在元素没有合适的位置，则元素添加失败，说明需要进行扩容了</li>
 </ol>
 <p>图示模拟流程：<a target="_blank" rel="noopener" href="http://www.lkozma.net/cuckoo_hashing_visualization/">http://www.lkozma.net/cuckoo_hashing_visualization/</a></p>
 <p><strong>过滤器的 hash</strong></p>
@@ -351,12 +349,12 @@
 <p>而布谷鸟过滤器对于下标的计算为：</p>
 <ul>
 <li><code>h1(x) = hash(x)</code></li>
-<li><code>h2(x) = h1(x) ⊕ hash(x's fingerprint)</code></li>
+<li><code>h2(x) = h1(x) ⊕ hash(x&#39;s fingerprint)</code></li>
 </ul>
 <p>我们可以看到，计算 h2（位置 2）时，对 x 的 fingerprint 进行了一个 hash 计算，公式中的异或操作获得了一个重要的特性：位置 h2 可以通过位置 h1 和 h1 中存储的 fingerprint 计算出来，即当元素被踢出时，根据当前位置和元素的指纹，就可以得到元素的下一个位置</p>
 <p><strong>异或与对偶</strong></p>
-<p>由 h2 的计算公式 <code>h2(x) = h1(x) ⊕ hash(x's fingerprint)</code>，两个位置具有对偶性</p>
-<p>只要保证 <code>hash(x's fingerprint) !=0</code>，那么就可以确保 <code>h2 != h1</code>，也就可以确保，不会出现自己踢自己的死循环问题</p>
+<p>由 h2 的计算公式 <code>h2(x) = h1(x) ⊕ hash(x&#39;s fingerprint)</code>，两个位置具有对偶性</p>
+<p>只要保证 <code>hash(x&#39;s fingerprint) !=0</code>，那么就可以确保 <code>h2 != h1</code>，也就可以确保，不会出现自己踢自己的死循环问题</p>
 <p>为什么需要对指纹进行哈希运算呢？因为如果指纹的长度是 8 bit，那么异或操作只会改变当前位置  h1(x)  的低 8 位，高位不会改变，就算低 8 位完全不一样，最后计算出来的位置最远也只有 256 位，为了散列更充分，所以对指纹先进行一次哈希操作</p>
 <p><strong>指纹</strong></p>
 <p>指纹其实就是元数据的特征值，进行哈希后取的固定 n 个 bit 位</p>
@@ -367,8 +365,7 @@
 <p><strong>删除的限制</strong></p>
 <p>如果需要布谷鸟过滤器支持删除，它必须知道一个数据插入过多少次（否则也会误删）</p>
 <p>并且不能让同一个数据插入 <code>kb+1</code> 次；个人认为如果插入超过了 <code>kb+1</code> 次，就会导致插入一定失败</p>
-<h1>总结</h1>
-<p>布谷鸟的优缺点：</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>布谷鸟的优缺点：</p>
 <p><strong>优点：</strong></p>
 <ul>
 <li>访问内存次数低</li>
@@ -382,8 +379,7 @@
 <li>查询误判率</li>
 <li>删除操作限制多，会影响插入性能和误删除</li>
 </ul>
-<h1>参考</h1>
-<p><a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf">https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf">https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/348865590">布隆，牛逼！布谷鸟，牛逼！ - 知乎 (zhihu.com)</a></p>
 <p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903861749055502">布隆过滤器过时了，未来属于布谷鸟过滤器？ - 掘金 (juejin.cn)</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/462815302">布隆过滤器与布谷鸟过滤器 - 知乎 (zhihu.com)</a></p>
@@ -409,8 +405,8 @@
       <i class="fa fa-chevron-left"></i> 管道模式 - Pipeline
     </a></div>
       <div class="post-nav-item">
-    <a href="/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html" rel="next" title="桥接模式 - Bridge">
-      桥接模式 - Bridge <i class="fa fa-chevron-right"></i>
+    <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92.html" rel="next" title="精酿啤酒入门">
+      精酿啤酒入门 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -470,7 +466,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">布隆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">计数布隆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">布谷鸟</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%83%E9%9A%86"><span class="nav-number">2.</span> <span class="nav-text">布隆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E5%B8%83%E9%9A%86"><span class="nav-number">3.</span> <span class="nav-text">计数布隆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%83%E8%B0%B7%E9%B8%9F"><span class="nav-number">4.</span> <span class="nav-text">布谷鸟</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
