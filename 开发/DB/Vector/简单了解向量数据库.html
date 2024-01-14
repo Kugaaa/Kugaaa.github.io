@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="向量嵌入向量在研究什么是向量嵌入之前，先来了解向量 向量是一种具有大小和方向的数学结构；例如我们可以将向量视为空间中的一个点，方向是从 (0,0,0) 到向量空间（vector space）中该点的箭头">
+  <meta name="description" content="向量嵌入 向量 在研究什么是向量嵌入之前，先来了解向量 向量是一种具有大小和方向的数学结构；例如我们可以将向量视为空间中的一个点，方向是从 (0,0,0) 到向量空间（vector space）中该点的箭头">
 <meta property="og:type" content="article">
 <meta property="og:title" content="简单了解向量数据库">
 <meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="向量嵌入向量在研究什么是向量嵌入之前，先来了解向量 向量是一种具有大小和方向的数学结构；例如我们可以将向量视为空间中的一个点，方向是从 (0,0,0) 到向量空间（vector space）中该点的箭头">
+<meta property="og:description" content="向量嵌入 向量 在研究什么是向量嵌入之前，先来了解向量 向量是一种具有大小和方向的数学结构；例如我们可以将向量视为空间中的一个点，方向是从 (0,0,0) 到向量空间（vector space）中该点的箭头">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F.png">
 <meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F%E4%BD%8D%E7%BD%AE.png">
@@ -264,34 +264,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="向量嵌入"><a href="#向量嵌入" class="headerlink" title="向量嵌入"></a>向量嵌入</h1><h2 id="向量"><a href="#向量" class="headerlink" title="向量"></a>向量</h2><p>在研究什么是向量嵌入之前，先来了解向量</p>
+        <h1>向量嵌入</h1>
+<h2 id="向量">向量</h2>
+<p>在研究什么是向量嵌入之前，先来了解向量</p>
 <p>向量是一种具有大小和方向的数学结构；例如我们可以将向量视为空间中的一个点，方向是从 <code>(0,0,0)</code> 到向量空间（vector space）中该点的箭头</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F.png" class="" title="向量">
-
 <p>作为开发者，将向量视为包含数值的数组可能更容易理解</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vector = [0,-2,...4]</span><br></pre></td></tr></table></figure>
-
 <p>当我们观察一个空间中的一组向量时，我们可以说有些向量彼此距离更近，而另一些向量相距更远；一些向量聚集在一起，而另一些向量可能在空间中稀疏分布</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F%E4%BD%8D%E7%BD%AE.png" class="" title="向量位置">
-
 <p>向量是机器学习算法的理想数据结构——现代 CPU 和 GPU 经过优化，可以运行处理这些向量所需要的数学计算；但我们的数据却很少用向量表示，这就是<strong>向量嵌入</strong>发挥作用的地方，向量嵌入这种技术允许我们将几乎任何类型的<strong>数据将其表示为向量</strong></p>
 <p>在将数据表示为向量的过程中，我们希望确保能够在不丢失数据的原始含义的情况下进行转换；例如如果我们想比较两个句子——我们不想只比较它们所包含的单词，而是想比较它们的语义是否相同；为了保持数据的意义，我们需要了解如何在向量之间的关系有意义的情况下来对数据生成向量</p>
-<h2 id="向量嵌入-1"><a href="#向量嵌入-1" class="headerlink" title="向量嵌入"></a>向量嵌入</h2><p>要做到数据转换为带有意义的向量数据，就需要引入嵌入模型（embedding model）的概念</p>
+<h2 id="向量嵌入">向量嵌入</h2>
+<p>要做到数据转换为带有意义的向量数据，就需要引入嵌入模型（embedding model）的概念</p>
 <p>许多现代嵌入模型是通过将大量标记数据传递给神经网络来实现的，神经网络也是一种用于解决各种复杂问题的工具，简单来说神经网络是由函数连接的节点层组成的，通过训练这些神经网络来执行各种任务；最终它可以预测给定输入的输出标签应该是什么——即使它以前没有看到过特定的输入</p>
 <p>嵌入模型基本上是去除最后一层的神经网络，我们得到的不是输入的特定标记值，而是向量嵌入</p>
 <p>嵌入模型的一个很好的例子是流行的 word2vec，它经常用于各种基于文本的任务；来看看 TensorFlow 的投影工具生成的可视化视图</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F%E5%8F%AF%E8%A7%86%E5%8C%96.png" class="" title="向量可视化">
-
 <p>虽然这种可视化只表示嵌入的三维空间，但依然可以帮助我们理解嵌入模型是如何工作的</p>
 <p>可视化中突出显示了多个数据点，每个数据点代表一个单词的向量嵌入，看起来彼此接近的单词在语义上也更相似，而相距更远的单词则有不同的语义</p>
 <p>一旦经过训练，嵌入模型就可以将我们的原始数据转换为向量嵌入，即意味着它知道新数据点应该放在向量空间中的什么位置</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5.png" class="" title="向量嵌入">
-
 <blockquote>
 <p>Its relationship with other vectors in the vector space depends on how the embedding model “understands” the domain it was trained on.</p>
 </blockquote>
 <p><strong>某个向量与向量空间中其他向量的关系取决于嵌入模型如何“理解”它所训练的域（domain）</strong></p>
-<h2 id="用来做什么"><a href="#用来做什么" class="headerlink" title="用来做什么"></a>用来做什么</h2><p>向量嵌入是一种非常通用的工具，可以应用于许多领域</p>
+<h2 id="用来做什么">用来做什么</h2>
+<p>向量嵌入是一种非常通用的工具，可以应用于许多领域</p>
 <p>一般来说，应用程序将使用向量嵌入作为其查询，并生成与之相似的其他向量嵌入及其相应值，每个领域的应用程序之间的差异就是这种相似性的意义，例如：</p>
 <ul>
 <li><strong>语义化搜索</strong>：传统搜索引擎通过关键字的重叠来进行搜索，通过利用向量嵌入，语义搜索可以超越关键字进行匹配查找，并可基于查询的语义进行传递</li>
@@ -301,21 +300,22 @@
 <li><strong>推荐系统</strong>：可以从与产品、文章等不同实体相关的结构化数据中创建嵌入；当业务同时存在图像或文本描述时，可以将其与非结构化嵌入方法相结合</li>
 <li><strong>异常检测</strong>：可以使用识别异常发生的标记传感器信息的大数据集来创建用于异常检测的嵌入</li>
 </ul>
-<h1 id="什么是向量数据库"><a href="#什么是向量数据库" class="headerlink" title="什么是向量数据库"></a>什么是向量数据库</h1><blockquote>
+<h1>什么是向量数据库</h1>
+<blockquote>
 <p>向量数据库（vector database）是一种索引和存储向量嵌入（vector embeddings）的数据库，用于快速检索和相似性搜索（similarity search），可以进行 CRUD 操作、元数据过滤和弹性伸缩等功能</p>
 </blockquote>
 <p>我们正处于人工智能革命之中，它颠覆了它所涉及的任何行业，有望实现伟大的创新，但也带来了新的挑战</p>
 <p>对于涉及大型语言模型、生成人工智能和语义搜索的应用程序来说，高效的数据处理变得比以往任何时候都更加重要，所有这些新的应用程序都依赖于向量嵌入，这是一种向量数据表示，其中携带语义信息，这对人工智能获得理解和维护执行复杂任务时可以利用的长期记忆至关重要</p>
 <p>有了向量数据库，我们可以让 AI 实现更高级的功能，例如语义信息检索（semantic information retrieval）、长期记忆（long-term memory）等；下图使我们更好地了解了矢量数据库在这类应用程序中的作用：</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.png" class="" title="向量数据库">
-
 <p>上图进行了如下步骤：</p>
 <ol>
 <li>使用嵌入模型（embedding model）对需要索引的内容创建向量嵌入（vector embeddings）</li>
 <li>向量嵌入被插入向量数据库</li>
 <li>当应用程序发出查询时，我们使用相同的嵌入模型为查询创建向量嵌入，并使用这些嵌入来查询数据库中的类似向量嵌入</li>
 </ol>
-<h1 id="向量索引和向量数据库的区别"><a href="#向量索引和向量数据库的区别" class="headerlink" title="向量索引和向量数据库的区别"></a>向量索引和向量数据库的区别</h1><p>像 FAISS（Facebook AI Similarity Search）这样的独立向量索引（vector index）可以显著优化向量嵌入的搜索和检索</p>
+<h1>向量索引和向量数据库的区别</h1>
+<p>像 FAISS（Facebook AI Similarity Search）这样的独立向量索引（vector index）可以显著优化向量嵌入的搜索和检索</p>
 <p>但它们缺乏数据库中常见功能，向量数据库是专门为管理向量嵌入而产生的，与使用独立向量索引相比具有如下优势：</p>
 <ul>
 <li><strong>数据管理</strong>（Data management）：向量数据库为数据存储提供了方便使用的功能，例如插入、删除、更新操作等；管理和维护向量数据比使用像 FAISS 这样的独立矢量索引更容易，后者需要额外的工作才能与存储解决方案集成</li>
@@ -327,96 +327,101 @@
 <li><strong>数据安全和权限控制</strong>（Data security and access control）</li>
 </ul>
 <p>总之，向量数据库通过解决独立向量索引的局限性（如缺乏可扩展性、繁琐的集成过程、运维繁琐等问题），为向量嵌入提供了更优秀的解决方案，确保了更有效和更精简的数据管理体验</p>
-<h1 id="向量数据库如何工作"><a href="#向量数据库如何工作" class="headerlink" title="向量数据库如何工作"></a>向量数据库如何工作</h1><p>我们都知道传统数据库是如何工作的，他们在行和列中存储字符串、数字和其他类型的标量数据；与之对应的，向量数据库对向量进行操作，因此优化和查询的方式截然不同</p>
+<h1>向量数据库如何工作</h1>
+<p>我们都知道传统数据库是如何工作的，他们在行和列中存储字符串、数字和其他类型的标量数据；与之对应的，向量数据库对向量进行操作，因此优化和查询的方式截然不同</p>
 <p>在传统数据库中，我们通常在数据库中查询值通常与查询完全匹配的行；而在向量数据库中，我们应用相似性度量来找到与我们的查询最相似的向量</p>
 <p>向量数据库使用不同算法的组合，这些算法都参与近似最近邻（ANN）搜索，这些算法通过散列、量化或基于图的搜索来优化搜索</p>
 <p>这些算法被组装到一个管道中，该管道提供对查询向量的邻居的快速准确检索，由于矢量数据库提供了近似结果，我们考虑的主要权衡是准确性和速度，一般而言结果越准确，查询速度就越慢，所以一个好的系统应该兼顾两者</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" class="" title="向量数据库工作流程">
-
 <p>上图为向量数据库的通用管道：</p>
 <ol>
 <li><strong>索引</strong>（Indexing）：数据库使用 PQ、LSH、HNSW 等算法来对数据进行索引；此步骤将向量映射到数据结构，从而实现更快的搜索</li>
 <li><strong>查询</strong>（Querying）：向量数据库比较查询向量和被索引的向量，找到最接近的临近数据（根据索引的相似度）</li>
 <li><strong>后置流程</strong>（Post Processing）：有时向量数据库从数据集中检索最终的临近数据，并对其进行后置处理后返回最终结果；例如包括使用不同的相似性度量对临近数据进行重新排序</li>
 </ol>
-<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>所有算法的共同目标是通过创建一个可以快速遍历的数据结构来实现快速查询，它们通常会将原始向量的表示转换为压缩形式来优化查询过程</p>
+<h2 id="算法">算法</h2>
+<p>所有算法的共同目标是通过创建一个可以快速遍历的数据结构来实现快速查询，它们通常会将原始向量的表示转换为压缩形式来优化查询过程</p>
 <p>下面将探讨几种算法及其处理向量嵌入的特殊方式</p>
-<h3 id="随机投影（Random-Projection）"><a href="#随机投影（Random-Projection）" class="headerlink" title="随机投影（Random Projection）"></a>随机投影（Random Projection）</h3><p>随机投影的基本思想是使用随机投影矩阵将高维向量投影到低维空间</p>
+<h3 id="随机投影（Random-Projection）">随机投影（Random Projection）</h3>
+<p>随机投影的基本思想是使用随机投影矩阵将高维向量投影到低维空间</p>
 <p>我们创建一个随机数矩阵，矩阵的大小将是我们想要的目标低维值；然后我们计算输入向量和矩阵的点积，使得投影矩阵的维数比原始向量少，但仍保持其相似性</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E9%9A%8F%E6%9C%BA%E6%8A%95%E5%BD%B1.png" class="" title="随机投影">
-
 <p>查询时使用相同的投影矩阵将查询向量投影到低维空间上，然后将投影的查询向量与数据库中的投影向量进行比较，以找到临近数据；由于数据的维数降低，搜索过程明显快于搜索整个高维空间</p>
 <p>随机投影是一种近似方法，投影质量取决于投影矩阵的性质；一般来说投影矩阵越随机，投影的质量就越好；但是生成真正随机的投影矩阵特别是对于大型数据集而言，需要高昂的成本</p>
 <p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/locality-sensitive-hashing-random-projection/">Learn more about random projection</a></p>
-<h3 id="乘积量化（Product-Quantization）"><a href="#乘积量化（Product-Quantization）" class="headerlink" title="乘积量化（Product Quantization）"></a>乘积量化（Product Quantization）</h3><p>PQ 是用于高维向量（例如向量嵌入）的有损压缩（lossy compression）技术</p>
+<h3 id="乘积量化（Product-Quantization）">乘积量化（Product Quantization）</h3>
+<p>PQ 是用于高维向量（例如向量嵌入）的有损压缩（lossy compression）技术</p>
 <p>首先获取原始向量，将其分解为更小的块（chunk），通过为每个块创建一个具有代表性的“编码”（code）来简化每个块的表示，然后将所有块重新组合在一起，从而不会丢失对相似性操作重要的信息</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E4%B9%98%E7%A7%AF%E9%87%8F%E5%8C%96.png" class="" title="乘积量化">
-
 <p>PQ 的过程可以分为四个步骤：拆分、训练、编码和查询：</p>
 <ol>
-<li><strong>拆分</strong>（Splitting）：向量被分割成若子向量；例如将一个 d 维向量划分为 m 个子向量，每个子向量的维度为 d&#x2F;m；这些子向量将构成 PQ 算法的基本单元</li>
+<li><strong>拆分</strong>（Splitting）：向量被分割成若子向量；例如将一个 d 维向量划分为 m 个子向量，每个子向量的维度为 d/m；这些子向量将构成 PQ 算法的基本单元</li>
 <li><strong>训练</strong>（Training）：为每个子向量构建一个码本（codebook）；简单地说算法生成一个隐含的码本，这些编码可以分配给向量；在实践中码本通过对向量的每个分段执行 k 均值聚类（k-means clustering）而创建的聚类的中心点组成；每个子向量将被映射到最接近的码本向量，从而得到一个离散的码本索引</li>
 <li><strong>编码</strong>（Encoding）：算法为每个子向量分配一个特定的编码，。在实践中训练完成后在码本中找到与每个向量段最接近的值；可以使用多个 PQ 编码，这意味着可以从码本中选择多个值来表示每个子向量</li>
 <li><strong>查询</strong>（Querying）：当我们进行查询时，该算法将向量分解为子向量，并使用相同的码本对其进行量化，然后使用索引编码来查找与查询向量最近的向量</li>
 </ol>
 <p>码本中的代表向量的数量是表示的准确性和搜索码本的计算成本之间的权衡；码本中的代表性向量越多，子空间中向量的表示就越准确，但搜索码本的计算成本就越高；相反码本中的代表向量越少，表示就越不准确，但计算成本就越低</p>
 <p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/product-quantization/">Learn more about PQ</a></p>
-<h3 id="局部敏感哈希（Locality-sensitive-hashing）"><a href="#局部敏感哈希（Locality-sensitive-hashing）" class="headerlink" title="局部敏感哈希（Locality-sensitive hashing）"></a>局部敏感哈希（Locality-sensitive hashing）</h3><p>LSH 是一种近似搜索上下文中进行索引的技术，它优化了速度同时仍能提供近似的、非全面（non-exhaustive）的结果</p>
+<h3 id="局部敏感哈希（Locality-sensitive-hashing）">局部敏感哈希（Locality-sensitive hashing）</h3>
+<p>LSH 是一种近似搜索上下文中进行索引的技术，它优化了速度同时仍能提供近似的、非全面（non-exhaustive）的结果</p>
 <p>LSH 使用一组哈希函数将类似的向量映射到桶中，如下所示</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%B1%80%E9%83%A8%E6%95%8F%E6%84%9F%E5%93%88%E5%B8%8C.png" class="" title="局部敏感哈希">
-
 <p>查找近似数据的过程，使用相同的哈希函数先找到对应的向量桶，查询向量被散列到一个特定的表，然后与同一表中的其他向量进行比较，以找到最接近的数据</p>
 <p>这种方法比搜索整个数据集更快，因为每个哈希表中的向量比整个空间中的向量要少得多</p>
 <p>需要注意 LSH 是一种近似方法，近似的质量取决于哈希函数的质量，一般来说使用的哈希函数越多，近似质量就越好；不过使用大量哈希函数可能计算成本高昂，并且对于大型数据集可能不合适</p>
 <p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/locality-sensitive-hashing/">Learn more about LSH</a></p>
-<h3 id="Hierarchical-Navigable-Small-World（HNSW）"><a href="#Hierarchical-Navigable-Small-World（HNSW）" class="headerlink" title="Hierarchical Navigable Small World（HNSW）"></a>Hierarchical Navigable Small World（HNSW）</h3><p>HNSW 创建一个分层的树状结构，其中树的每个节点表示一组向量，节点之间的边表示向量之间的相似性</p>
+<h3 id="Hierarchical-Navigable-Small-World（HNSW）">Hierarchical Navigable Small World（HNSW）</h3>
+<p>HNSW 创建一个分层的树状结构，其中树的每个节点表示一组向量，节点之间的边表示向量之间的相似性</p>
 <p>该算法首先创建一组节点，每个节点都有少量向量，这个过程也可以随机完成，也可以通过使用 k-means 等算法对向量进行聚类来实现，其中每个聚类都成为一个节点</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/HNSW.png" class="" title="HNSW">
-
 <p>然后，该算法检查每个节点的向量，并在该节点与向量与其最相似的节点之间绘制边</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/HNSW2.png" class="" title="HNSW2">
-
 <p>当我们查询 HNSW 索引时，从图中按层检索，找到与查询向量最接近的节点</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><table>
+<p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/hnsw/">Learn more about HNSW</a></p>
+<h3 id="总结">总结</h3>
+<table>
 <thead>
 <tr>
-<th align="left">算法</th>
-<th align="left">特点</th>
-<th align="left">优点</th>
-<th align="left">缺点</th>
-<th align="left">适合场景</th>
+<th style="text-align:left">算法</th>
+<th style="text-align:left">特点</th>
+<th style="text-align:left">优点</th>
+<th style="text-align:left">缺点</th>
+<th style="text-align:left">适合场景</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="left">Random Projection</td>
-<td align="left">使用随机投影将高维数据映射到低维空间</td>
-<td align="left">- 计算复杂度低<br>- 需要的存储空间小</td>
-<td align="left">- 映射后的低维空间可能无法保持数据的全部结构<br>- 不适用于所有数据集</td>
-<td align="left">大规模高维度数据降维和相似性查询，如文本和图像分析</td>
+<tbody>
+<tr>
+<td style="text-align:left">Random Projection</td>
+<td style="text-align:left">使用随机投影将高维数据映射到低维空间</td>
+<td style="text-align:left">- 计算复杂度低<br>- 需要的存储空间小</td>
+<td style="text-align:left">- 映射后的低维空间可能无法保持数据的全部结构<br>- 不适用于所有数据集</td>
+<td style="text-align:left">大规模高维度数据降维和相似性查询，如文本和图像分析</td>
 </tr>
 <tr>
-<td align="left">Product Quantization</td>
-<td align="left">将高维向量划分为多个子空间，并对每个子空间进行量化</td>
-<td align="left">- 适用于高维向量的压缩和索引<br>- 降低内存和计算成本</td>
-<td align="left">- 量化误差导致近似结果<br>- 难以处理非欧几里德空间数据</td>
-<td align="left">大数据集的快速近邻搜索，例如图像检索、语音识别、文本搜索</td>
+<td style="text-align:left">Product Quantization</td>
+<td style="text-align:left">将高维向量划分为多个子空间，并对每个子空间进行量化</td>
+<td style="text-align:left">- 适用于高维向量的压缩和索引<br>- 降低内存和计算成本</td>
+<td style="text-align:left">- 量化误差导致近似结果<br>- 难以处理非欧几里德空间数据</td>
+<td style="text-align:left">大数据集的快速近邻搜索，例如图像检索、语音识别、文本搜索</td>
 </tr>
 <tr>
-<td align="left">Locality-sensitive hashing</td>
-<td align="left">使用哈希函数将相似的向量映射到相同的桶，以便进行快速近似最近邻搜索</td>
-<td align="left">- 高效的近似最近邻搜索<br>- 易于扩展</td>
-<td align="left">- 哈希冲突导致误差增加<br>- 需要调整参数以达到性能要求</td>
-<td align="left">推荐系统、相似度搜索、图像和视频检索</td>
+<td style="text-align:left">Locality-sensitive hashing</td>
+<td style="text-align:left">使用哈希函数将相似的向量映射到相同的桶，以便进行快速近似最近邻搜索</td>
+<td style="text-align:left">- 高效的近似最近邻搜索<br>- 易于扩展</td>
+<td style="text-align:left">- 哈希冲突导致误差增加<br>- 需要调整参数以达到性能要求</td>
+<td style="text-align:left">推荐系统、相似度搜索、图像和视频检索</td>
 </tr>
 <tr>
-<td align="left">HNSW</td>
-<td align="left">基于图结构的索引方法，通过层级导航进行快速近似最近邻搜索</td>
-<td align="left">- 高效的近似最近邻搜索<br>- 易于扩展</td>
-<td align="left">- 搜索结果是近似的而不是精确的近似数据</td>
-<td align="left">大规模数据集的近似搜索、推荐系统、相似度搜索等</td>
+<td style="text-align:left">HNSW</td>
+<td style="text-align:left">基于图结构的索引方法，通过层级导航进行快速近似最近邻搜索</td>
+<td style="text-align:left">- 高效的近似最近邻搜索<br>- 易于扩展</td>
+<td style="text-align:left">- 搜索结果是近似的而不是精确的近似数据</td>
+<td style="text-align:left">大规模数据集的近似搜索、推荐系统、相似度搜索等</td>
 </tr>
-</tbody></table>
-<h2 id="相似性度量"><a href="#相似性度量" class="headerlink" title="相似性度量"></a>相似性度量</h2><p>在索引算法的基础上，还需要了解相似性度量（Similarity Measures），相似性度量是向量数据库对比、识别给定查询最近似数据结果的基础</p>
+</tbody>
+</table>
+<h2 id="相似性度量">相似性度量</h2>
+<p>在索引算法的基础上，还需要了解相似性度量（Similarity Measures），相似性度量是向量数据库对比、识别给定查询最近似数据结果的基础</p>
 <p>下面是几种相似性度量的类型：</p>
 <ul>
 <li><strong>余弦相似性</strong>（Cosine similarity）：测量向量空间中两个向量之间的角度的余弦，范围为 [-1,1]；其中 1 表示完全相同的向量，0 表示正交向量，-1 表示完全相反的向量</li>
@@ -427,52 +432,54 @@
 <table>
 <thead>
 <tr>
-<th align="left">似性度量</th>
-<th align="left">特点</th>
-<th align="left">优点</th>
-<th align="left">缺点</th>
-<th align="left">适合的数据场景（业务类型）</th>
+<th style="text-align:left">相似性度量</th>
+<th style="text-align:left">特点</th>
+<th style="text-align:left">优点</th>
+<th style="text-align:left">缺点</th>
+<th style="text-align:left">适合的数据场景（业务类型）</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="left">欧氏距离</td>
-<td align="left">基于向量的欧几里德距离，衡量向量之间的几何距离</td>
-<td align="left">- 直观简单的度量方法<br>- 适用于连续数值向量</td>
-<td align="left">- 对异常值敏感<br>- 不适用于稀疏向量</td>
-<td align="left">数据聚类、数据挖掘、图像和音频处理</td>
+<tbody>
+<tr>
+<td style="text-align:left">欧氏距离</td>
+<td style="text-align:left">基于向量的欧几里德距离，衡量向量之间的几何距离</td>
+<td style="text-align:left">- 直观简单的度量方法<br>- 适用于连续数值向量</td>
+<td style="text-align:left">- 对异常值敏感<br>- 不适用于稀疏向量</td>
+<td style="text-align:left">数据聚类、数据挖掘、图像和音频处理</td>
 </tr>
 <tr>
-<td align="left">曼哈顿距离</td>
-<td align="left">衡量向量之间的城市街区距离，即两点间坐标差的绝对值之和</td>
-<td align="left">- 直观简单的度量方法<br>- 不受异常值的影响</td>
-<td align="left">- 不适用于高维稀疏数据<br>- 忽略了维度之间的相关性</td>
-<td align="left">路径规划、物流优化、图像和音频处理</td>
+<td style="text-align:left">曼哈顿距离</td>
+<td style="text-align:left">衡量向量之间的城市街区距离，即两点间坐标差的绝对值之和</td>
+<td style="text-align:left">- 直观简单的度量方法<br>- 不受异常值的影响</td>
+<td style="text-align:left">- 不适用于高维稀疏数据<br>- 忽略了维度之间的相关性</td>
+<td style="text-align:left">路径规划、物流优化、图像和音频处理</td>
 </tr>
 <tr>
-<td align="left">余弦相似度</td>
-<td align="left">基于向量之间的夹角，衡量向量之间的方向相似程度</td>
-<td align="left">- 不受向量长度的影响<br>- 适用于稀疏向量和文本数据</td>
-<td align="left">- 不适用于包含绝对值信息的向量<br>- 忽略了向量的尺度</td>
-<td align="left">文本分类、信息检索、推荐系统</td>
+<td style="text-align:left">余弦相似度</td>
+<td style="text-align:left">基于向量之间的夹角，衡量向量之间的方向相似程度</td>
+<td style="text-align:left">- 不受向量长度的影响<br>- 适用于稀疏向量和文本数据</td>
+<td style="text-align:left">- 不适用于包含绝对值信息的向量<br>- 忽略了向量的尺度</td>
+<td style="text-align:left">文本分类、信息检索、推荐系统</td>
 </tr>
 <tr>
-<td align="left">点积</td>
-<td align="left">两个向量之间的元素乘积之和，衡量向量之间的相似程度</td>
-<td align="left">- 直接度量向量之间的相关性和投影关系<br>- 适用于高维稠密向量</td>
-<td align="left">- 对向量的长度敏感<br>- 不适用于稀疏向量</td>
-<td align="left">文本分类、推荐系统、聚类分析</td>
+<td style="text-align:left">点积</td>
+<td style="text-align:left">两个向量之间的元素乘积之和，衡量向量之间的相似程度</td>
+<td style="text-align:left">- 直接度量向量之间的相关性和投影关系<br>- 适用于高维稠密向量</td>
+<td style="text-align:left">- 对向量的长度敏感<br>- 不适用于稀疏向量</td>
+<td style="text-align:left">文本分类、推荐系统、聚类分析</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/vector-similarity/">Learn more about similarity measures</a></p>
-<h2 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h2><p>存储在数据库中的每个向量也包括对应的元数据，除了查询相似向量的能力外，向量数据库还可以基于元数据查询来过滤结果，所以向量数据库通常维护两个索引：向量索引和元数据索引</p>
+<h2 id="过滤">过滤</h2>
+<p>存储在数据库中的每个向量也包括对应的元数据，除了查询相似向量的能力外，向量数据库还可以基于元数据查询来过滤结果，所以向量数据库通常维护两个索引：向量索引和元数据索引</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/Filter.png" class="" title="Filter">
-
 <p>过滤过程可以在向量搜索之前或之后执行，但每种方法都有其自身的问题，可能会影响查询性能</p>
 <p>为了优化过滤过程，向量数据库使用各种技术，例如利用元数据的高级索引方法或使用并行处理来加快过滤任务，权衡搜索性能与过滤精度对于向量数据库中提供高效、精准的查询结果至关重要</p>
 <p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/vector-search-filtering/">Learn more about vector search filtering</a>.</p>
-<h2 id="数据库支持"><a href="#数据库支持" class="headerlink" title="数据库支持"></a>数据库支持</h2><p>与向量索引不同，向量数据库配备了一系列功能使其更适合在大规模生产环境中使用</p>
+<h2 id="数据库支持">数据库支持</h2>
+<p>与向量索引不同，向量数据库配备了一系列功能使其更适合在大规模生产环境中使用</p>
 <img src="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%94%AF%E6%8C%81.png" class="" title="数据库支持">
-
 <p>例如</p>
 <ul>
 <li>性能和容错</li>
@@ -481,7 +488,8 @@
 <li>备份</li>
 <li>API 和 SDK</li>
 </ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/vector-embeddings-for-developers/">Vector Embeddings for Developers: The Basics | Pinecone</a></p>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/vector-embeddings-for-developers/">Vector Embeddings for Developers: The Basics | Pinecone</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.pinecone.io/learn/vector-database/#What-is-a-Vector-Database">What is a Vector Database &amp; How Does it Work? Use Cases + Examples | Pinecone</a></p>
 
     </div>
@@ -567,7 +575,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">向量嵌入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F"><span class="nav-number">1.1.</span> <span class="nav-text">向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5-1"><span class="nav-number">1.2.</span> <span class="nav-text">向量嵌入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%9D%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">1.3.</span> <span class="nav-text">用来做什么</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">什么是向量数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E7%B4%A2%E5%BC%95%E5%92%8C%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">向量索引和向量数据库的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">向量数据库如何工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%8A%95%E5%BD%B1%EF%BC%88Random-Projection%EF%BC%89"><span class="nav-number">4.1.1.</span> <span class="nav-text">随机投影（Random Projection）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%98%E7%A7%AF%E9%87%8F%E5%8C%96%EF%BC%88Product-Quantization%EF%BC%89"><span class="nav-number">4.1.2.</span> <span class="nav-text">乘积量化（Product Quantization）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%95%8F%E6%84%9F%E5%93%88%E5%B8%8C%EF%BC%88Locality-sensitive-hashing%EF%BC%89"><span class="nav-number">4.1.3.</span> <span class="nav-text">局部敏感哈希（Locality-sensitive hashing）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hierarchical-Navigable-Small-World%EF%BC%88HNSW%EF%BC%89"><span class="nav-number">4.1.4.</span> <span class="nav-text">Hierarchical Navigable Small World（HNSW）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.1.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E6%80%A7%E5%BA%A6%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">相似性度量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4"><span class="nav-number">4.3.</span> <span class="nav-text">过滤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%94%AF%E6%8C%81"><span class="nav-number">4.4.</span> <span class="nav-text">数据库支持</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">向量嵌入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F"><span class="nav-number">1.1.</span> <span class="nav-text">向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">向量嵌入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%9D%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">1.3.</span> <span class="nav-text">用来做什么</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">什么是向量数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">向量索引和向量数据库的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">向量数据库如何工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%8A%95%E5%BD%B1%EF%BC%88Random-Projection%EF%BC%89"><span class="nav-number">4.1.1.</span> <span class="nav-text">随机投影（Random Projection）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%98%E7%A7%AF%E9%87%8F%E5%8C%96%EF%BC%88Product-Quantization%EF%BC%89"><span class="nav-number">4.1.2.</span> <span class="nav-text">乘积量化（Product Quantization）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%95%8F%E6%84%9F%E5%93%88%E5%B8%8C%EF%BC%88Locality-sensitive-hashing%EF%BC%89"><span class="nav-number">4.1.3.</span> <span class="nav-text">局部敏感哈希（Locality-sensitive hashing）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hierarchical-Navigable-Small-World%EF%BC%88HNSW%EF%BC%89"><span class="nav-number">4.1.4.</span> <span class="nav-text">Hierarchical Navigable Small World（HNSW）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.1.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E6%80%A7%E5%BA%A6%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">相似性度量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4"><span class="nav-number">4.3.</span> <span class="nav-text">过滤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%94%AF%E6%8C%81"><span class="nav-number">4.4.</span> <span class="nav-text">数据库支持</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -581,7 +589,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -765,6 +773,8 @@ window.addEventListener('pjax:success', () => {
 
 
     <div id="pjax">
+  
+
   
 
   
