@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="工具是代理可以用来与世界交互的接口，它们包括：  工具的名称 工具的描述 工具输入 JSON 参数 调用的函数 是否应将工具的结果直接返回给用户  这些信息至关重要，使用这些信息可以用来建立行动系统，LLM 就可以使用名称、描述和 JSON 模式入参作为提示，这样它就知道如何指定要执行的操作，然后要调用的函数就相当于执行该操作 工具的输入越简单，LLM 就越容易使用它。许多代理只使用具有单个字符串">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 文档学习 No.8 - 工具">
+<meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.8%20-%20%E5%B7%A5%E5%85%B7.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="工具是代理可以用来与世界交互的接口，它们包括：  工具的名称 工具的描述 工具输入 JSON 参数 调用的函数 是否应将工具的结果直接返回给用户  这些信息至关重要，使用这些信息可以用来建立行动系统，LLM 就可以使用名称、描述和 JSON 模式入参作为提示，这样它就知道如何指定要执行的操作，然后要调用的函数就相当于执行该操作 工具的输入越简单，LLM 就越容易使用它。许多代理只使用具有单个字符串">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-01-20T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="LangChain">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.8%20-%20%E5%B7%A5%E5%85%B7.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LangChain 文档学习 No.8 - 工具 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.8%20-%20%E5%B7%A5%E5%85%B7.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangChain 文档学习 No.8 - 工具
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-21T00:00:00+08:00">2024-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>工具是代理可以用来与世界交互的接口，它们包括：</p>
+<ul>
+<li>工具的名称</li>
+<li>工具的描述</li>
+<li>工具输入 JSON 参数</li>
+<li>调用的函数</li>
+<li>是否应将工具的结果直接返回给用户</li>
+</ul>
+<p>这些信息至关重要，使用这些信息可以用来建立行动系统，LLM 就可以使用名称、描述和 JSON 模式入参作为提示，这样它就知道如何指定要执行的操作，然后要调用的函数就相当于执行该操作</p>
+<p>工具的输入越简单，LLM 就越容易使用它。许多代理只使用具有单个字符串输入的工具</p>
+<p>需要注意的是名称、描述和 JSON 模式入参（如果使用）都将在提示中被使用。因此这些内容必须清楚并准确地描述应该如何使用该工具；这一点非常重要，如果 LLM 出现了不了解如何使用该工具的情况，则可能需要更改默认名称、描述或 JSON 模式入参</p>
+<h1 id="内置工具"><a href="#内置工具" class="headerlink" title="内置工具"></a>内置工具</h1><p>LangChain 中内置了很多工具，这里使用 Wikipedia 举例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">api_wrapper = WikipediaAPIWrapper(top_k_results=<span class="number">1</span>, doc_content_chars_max=<span class="number">100</span>)</span><br><span class="line">tool = WikipediaQueryRun(api_wrapper=api_wrapper)</span><br></pre></td></tr></table></figure>
+<p>输出一下基本属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(tool.name)</span><br><span class="line"><span class="comment"># &gt;&gt; Wikipedia</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tool.description)</span><br><span class="line"><span class="comment"># &gt;&gt; A wrapper around Wikipedia. Useful for when you need to answer general questions about people, places, companies, facts, historical events, or other subjects. Input should be a search query.</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tool.args)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;query&#x27;: &#123;&#x27;title&#x27;: &#x27;Query&#x27;, &#x27;type&#x27;: &#x27;string&#x27;&#125;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(tool.return_direct)</span><br><span class="line"><span class="comment"># &gt;&gt; False</span></span><br></pre></td></tr></table></figure>
+<p>执行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(tool.run(<span class="string">&quot;China&quot;</span>))</span><br><span class="line"><span class="comment"># &gt;&gt; Page: China</span></span><br><span class="line"><span class="comment"># &gt;&gt; Summary: China (Chinese: 中国; pinyin: Zhōngguó), officially the People&#x27;s Republic of China</span></span><br></pre></td></tr></table></figure>
+<hr>
+<p>LangChain 提供了多种工具，可以在这里查看集成</p>
+<p><a target="_blank" rel="noopener" href="https://python.langchain.com/docs/integrations/tools/">Tools | 🦜️🔗 Langchain</a></p>
+<h1 id="自定义工具"><a href="#自定义工具" class="headerlink" title="自定义工具"></a>自定义工具</h1><p>在构建代理时，需要向它提供一个可以使用的工具列表</p>
+<p>除了调用的实际函数外，该工具还包括几个属性：</p>
+<ul>
+<li>name（str）必填，并且在提供给代理的一组工具中必须是唯一的</li>
+<li>description（str）选填但是推荐设置，因为它被代理用来确定工具的使用</li>
+<li>args_schema（Pydantic BaseModel）选填但是推荐设置，可以用于提供更多信息（例如少量示例）或验证预期参数</li>
+</ul>
+<p>有多种方法可以定义工具，官方文档中实现了两个类型的工具：</p>
+<ul>
+<li>一个虚构的搜索函数，它总是返回字符串 <code>LangChain</code></li>
+<li>一个将两个数字相乘的乘法器函数</li>
+</ul>
+<p>两个工具的区别是第一个函数只需要一个输入，而第二个函数需要多个输入；许多 Agent 只处理需要单个输入的函数，因此了解如何处理这些函数很重要</p>
+<h2 id="tool-装饰器"><a href="#tool-装饰器" class="headerlink" title="@tool 装饰器"></a>@tool 装饰器</h2><p><code>@tool</code> 装饰器是定义自定义工具的最简单方法</p>
+<p>默认情况下，装饰器使用函数名称作为工具名称，但可以通过传递字符串作为第一个参数来覆盖此名称；此外装饰器将使用函数的 doc string 作为工具的描述，因此必须提供一个 doc string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@tool</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search</span>(<span class="params">query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Look up things online.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;LangChain&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(search.name)</span><br><span class="line"><span class="comment"># &gt;&gt; search</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(search.description)</span><br><span class="line"><span class="comment"># &gt;&gt; search(query: str) -&gt; str - Look up things online.</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(search.args)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;query&#x27;: &#123;&#x27;title&#x27;: &#x27;Query&#x27;, &#x27;type&#x27;: &#x27;string&#x27;&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+<p>还可以通过将工具名称和 JSON 参数传递给工具装饰器来自定义</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@tool(<span class="params"><span class="string">&quot;search-tool&quot;</span>, args_schema=SearchInput, return_direct=<span class="literal">True</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search</span>(<span class="params">query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Look up things online.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;LangChain&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(search.name)</span><br><span class="line"><span class="comment"># &gt;&gt; search-tool</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(search.description)</span><br><span class="line"><span class="comment"># &gt;&gt; search-tool(query: str) -&gt; str - Look up things online.</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(search.args)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;query&#x27;: &#123;&#x27;title&#x27;: &#x27;Query&#x27;, &#x27;description&#x27;: &#x27;should be a search query&#x27;, &#x27;type&#x27;: &#x27;string&#x27;&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+<p><code>@Tool</code> 装饰方法的参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">tool</span>(<span class="params"></span></span><br><span class="line"><span class="params">    *args: <span class="type">Union</span>[<span class="built_in">str</span>, <span class="type">Callable</span>, Runnable],</span></span><br><span class="line"><span class="params">    return_direct: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span><br><span class="line"><span class="params">    args_schema: <span class="type">Optional</span>[<span class="type">Type</span>[BaseModel]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    infer_schema: <span class="built_in">bool</span> = <span class="literal">True</span>,</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="type">Callable</span>:</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<p>关于 Python 的装饰语法，可以看下方补充内容</p>
+<h2 id="BaseTool-子类"><a href="#BaseTool-子类" class="headerlink" title="BaseTool 子类"></a>BaseTool 子类</h2><p>使用 BaseTool 子类来显式定义自定义工具</p>
+<p>提供了对工具定义的最大控制，但需要做更多的工作</p>
+<p><strong>定义入参结构</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CalculatorInput</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    a: <span class="built_in">int</span> = Field(description=<span class="string">&quot;first number&quot;</span>)</span><br><span class="line">    b: <span class="built_in">int</span> = Field(description=<span class="string">&quot;second number&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>实现</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CustomCalculatorTool</span>(<span class="title class_ inherited__">BaseTool</span>):</span><br><span class="line">    name = <span class="string">&quot;Calculator&quot;</span></span><br><span class="line">    description = <span class="string">&quot;useful for when you need to answer questions about math&quot;</span></span><br><span class="line">    args_schema: <span class="type">Type</span>[BaseModel] = CalculatorInput</span><br><span class="line">    return_direct: <span class="built_in">bool</span> = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 需要实现同步执行 _run</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_run</span>(<span class="params"></span></span><br><span class="line"><span class="params">            self, a: <span class="built_in">int</span>, b: <span class="built_in">int</span>, run_manager: <span class="type">Optional</span>[CallbackManagerForToolRun] = <span class="literal">None</span></span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Use the tool.&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(a * b)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 需要实现异步执行 _arun</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">_arun</span>(<span class="params"></span></span><br><span class="line"><span class="params">            self,</span></span><br><span class="line"><span class="params">            a: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">            b: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">            run_manager: <span class="type">Optional</span>[AsyncCallbackManagerForToolRun] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Use the tool asynchronously.&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError(<span class="string">&quot;Calculator does not support async&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">multiply = CustomCalculatorTool()</span><br><span class="line"><span class="built_in">print</span>(multiply.name)</span><br><span class="line"><span class="comment"># &gt;&gt; Calculator</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.description)</span><br><span class="line"><span class="comment"># &gt;&gt; useful for when you need to answer questions about math</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.args)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;a&#x27;: &#123;&#x27;title&#x27;: &#x27;A&#x27;, &#x27;description&#x27;: &#x27;first number&#x27;, &#x27;type&#x27;: &#x27;integer&#x27;&#125;, &#x27;b&#x27;: &#123;&#x27;title&#x27;: &#x27;B&#x27;, &#x27;description&#x27;: &#x27;second number&#x27;, &#x27;type&#x27;: &#x27;integer&#x27;&#125;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.return_direct)</span><br><span class="line"><span class="comment"># &gt;&gt; True</span></span><br></pre></td></tr></table></figure>
+<p><strong>执行</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(multiply.run(tool_input=&#123;<span class="string">&#x27;a&#x27;</span>: <span class="number">3</span>, <span class="string">&#x27;b&#x27;</span>: <span class="number">4</span>&#125;))</span><br><span class="line"><span class="comment"># &gt;&gt; 12</span></span><br></pre></td></tr></table></figure>
+<h2 id="StructuredTool-数据类"><a href="#StructuredTool-数据类" class="headerlink" title="StructuredTool 数据类"></a>StructuredTool 数据类</h2><p>也可以使用 <code>StructuredTool</code> 数据类</p>
+<p>这种方法是前两种方法的混合，比继承 <code>BaseTool</code> 类更方便，但比装饰器方式提供了更多的功能</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">multiply</span>(<span class="params">a: <span class="built_in">int</span>, b: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Multiply two numbers.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> a * b</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">multiply = StructuredTool.from_function(</span><br><span class="line">    func=multiply,</span><br><span class="line">    name=<span class="string">&quot;Calculator&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;multiply numbers&quot;</span>,</span><br><span class="line">    <span class="comment"># coroutine= ... &lt;- you can specify an async method if desired as well</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(multiply.name)</span><br><span class="line"><span class="comment"># &gt;&gt; Calculator</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.description)</span><br><span class="line"><span class="comment"># &gt;&gt; Calculator(a: int, b: int) -&gt; int - multiply numbers</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.args)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;a&#x27;: &#123;&#x27;title&#x27;: &#x27;A&#x27;, &#x27;type&#x27;: &#x27;integer&#x27;&#125;, &#x27;b&#x27;: &#123;&#x27;title&#x27;: &#x27;B&#x27;, &#x27;type&#x27;: &#x27;integer&#x27;&#125;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.return_direct)</span><br><span class="line"><span class="comment"># &gt;&gt; False</span></span><br></pre></td></tr></table></figure>
+<p>同时也可以定义结构入参</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义入参结构</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CalculatorInput</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    a: <span class="built_in">int</span> = Field(description=<span class="string">&quot;first number&quot;</span>)</span><br><span class="line">    b: <span class="built_in">int</span> = Field(description=<span class="string">&quot;second number&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">multiply</span>(<span class="params">a: <span class="built_in">int</span>, b: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Multiply two numbers.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> a * b</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">multiply = StructuredTool.from_function(</span><br><span class="line">    func=multiply,</span><br><span class="line">    name=<span class="string">&quot;Calculator&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;multiply numbers&quot;</span>,</span><br><span class="line">    args_schema=CalculatorInput,</span><br><span class="line">    return_direct=<span class="literal">True</span>,</span><br><span class="line">    <span class="comment"># coroutine= ... &lt;- you can specify an async method if desired as well</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(multiply.name)</span><br><span class="line"><span class="comment"># &gt;&gt; Calculator</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.description)</span><br><span class="line"><span class="comment"># &gt;&gt; Calculator(a: int, b: int) -&gt; int - multiply numbers</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.args)</span><br><span class="line"><span class="comment"># &gt;&gt; &#123;&#x27;a&#x27;: &#123;&#x27;title&#x27;: &#x27;A&#x27;, &#x27;description&#x27;: &#x27;first number&#x27;, &#x27;type&#x27;: &#x27;integer&#x27;&#125;, &#x27;b&#x27;: &#123;&#x27;title&#x27;: &#x27;B&#x27;, &#x27;description&#x27;: &#x27;second number&#x27;, &#x27;type&#x27;: &#x27;integer&#x27;&#125;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(multiply.return_direct)</span><br><span class="line"><span class="comment"># &gt;&gt; True</span></span><br></pre></td></tr></table></figure>
+<h2 id="处理工具错误"><a href="#处理工具错误" class="headerlink" title="处理工具错误"></a>处理工具错误</h2><p>当工具遇到错误且未捕获异常时，代理将终止执行</p>
+<p>如果希望代理继续执行可以 raise <code>ToolException</code> 并相应地设置 <code>handle_tool_error</code></p>
+<ul>
+<li>当抛出 <code>ToolException</code> 时，代理不会停止工作，而是会根据工具的 <code>handle_tool_error</code> 变量处理异常，处理结果会作为观察返回给代理，并以红色日志进行打印</li>
+<li>可以将 <code>handle_tool_error</code> 设置为 True，将其设置为统一字符串值，或将其设置成函数；如果它被设置为一个函数，那么该函数应该以 <code>ToolException</code> 作为参数并返回字符串值</li>
+<li>仅 raise <code>ToolException</code> 是无效的，需要首先设置该工具的 <code>handle_tool_error</code>，因为其默认值为 False</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">search_tool_error</span>(<span class="params">s: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="keyword">raise</span> ToolException(<span class="string">&quot;工具出现错误&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">search = StructuredTool.from_function(</span><br><span class="line">    func=search_tool_error,</span><br><span class="line">    name=<span class="string">&quot;Search_tool_error&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;A bad tool&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">search.run(<span class="string">&quot;test&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">  	<span class="keyword">raise</span> ToolException(<span class="string">&quot;工具出现错误&quot;</span>)</span><br><span class="line">langchain_core.tools.ToolException: 工具出现错误</span><br></pre></td></tr></table></figure>
+<p>设置 <code>handle_tool_error</code> 为 True</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">search = StructuredTool.from_function(</span><br><span class="line">    func=search_tool_error,</span><br><span class="line">    name=<span class="string">&quot;Search_tool_error&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;A bad tool&quot;</span>,</span><br><span class="line">    handle_tool_error=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(search.run(<span class="string">&quot;test&quot;</span>))</span><br><span class="line"><span class="comment"># &gt;&gt; 工具出现错误</span></span><br></pre></td></tr></table></figure>
+<p>还可以定义一种自定义方式来处理工具错误</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">_handle_error</span>(<span class="params">error: ToolException</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">return</span> error.args[<span class="number">0</span>] + <span class="string">&quot; 所以我不知道&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">search = StructuredTool.from_function(</span><br><span class="line">    func=search_tool_error,</span><br><span class="line">    name=<span class="string">&quot;Search_tool_error&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;A bad tool&quot;</span>,</span><br><span class="line">    handle_tool_error=_handle_error</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(search.run(<span class="string">&quot;test&quot;</span>))</span><br><span class="line"><span class="comment"># &gt;&gt; 工具出现错误 所以我不知道</span></span><br></pre></td></tr></table></figure>
+<h1 id="工具箱"><a href="#工具箱" class="headerlink" title="工具箱"></a>工具箱</h1><p>工具箱是设计用于特定任务的工具集合，具有便捷的加载方法</p>
+<p>完整列表参考集成文档 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/integrations/toolkits/">https://python.langchain.com/docs/integrations/toolkits/</a></p>
+<p>所有工具箱都公开了一个 <code>get_tools</code> 方法，该方法返回一个工具列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Initialize a toolkit</span></span><br><span class="line">toolkit = ExampleTookit(...)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get list of tools</span></span><br><span class="line">tools = toolkit.get_tools()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Create agent</span></span><br><span class="line">agent = create_agent_method(llm, tools, prompt)</span><br></pre></td></tr></table></figure>
+<p>例如 SQL Database 工具箱</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">toolkit = SQLDatabaseToolkit(db=db, llm=llm)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印下信息</span></span><br><span class="line">tools = toolkit.get_tools()</span><br><span class="line"><span class="keyword">for</span> tool <span class="keyword">in</span> tools:</span><br><span class="line">    <span class="built_in">print</span>(tool.name)</span><br><span class="line">    <span class="built_in">print</span>(tool.description)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;--------------&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sql_db_query</span><br><span class="line"><span class="keyword">Input</span> <span class="keyword">to</span> this tool <span class="keyword">is</span> a detailed <span class="keyword">and</span> correct <span class="keyword">SQL</span> query, output <span class="keyword">is</span> a result <span class="keyword">from</span> the <span class="keyword">database</span>. <span class="keyword">If</span> the query <span class="keyword">is</span> <span class="keyword">not</span> correct, an error message will be returned. <span class="keyword">If</span> an error <span class="keyword">is</span> returned, rewrite the query, <span class="keyword">check</span> the query, <span class="keyword">and</span> try again. <span class="keyword">If</span> you encounter an issue <span class="keyword">with</span> <span class="type">Unknown</span> <span class="keyword">column</span> <span class="string">&#x27;xxxx&#x27;</span> <span class="keyword">in</span> <span class="string">&#x27;field list&#x27;</span>, use sql_db_schema <span class="keyword">to</span> query the correct <span class="keyword">table</span> fields.</span><br><span class="line"><span class="comment">--------------</span></span><br><span class="line">sql_db_schema</span><br><span class="line"><span class="keyword">Input</span> <span class="keyword">to</span> this tool <span class="keyword">is</span> a comma-separated list <span class="keyword">of</span> <span class="keyword">tables</span>, output <span class="keyword">is</span> the <span class="keyword">schema</span> <span class="keyword">and</span> sample <span class="keyword">rows</span> <span class="keyword">for</span> those <span class="keyword">tables</span>. Be sure that the <span class="keyword">tables</span> actually exist <span class="keyword">by</span> calling sql_db_list_tables first! Example <span class="keyword">Input</span>: table1, table2, table3</span><br><span class="line"><span class="comment">--------------</span></span><br><span class="line">sql_db_list_tables</span><br><span class="line"><span class="keyword">Input</span> <span class="keyword">is</span> an empty string, output <span class="keyword">is</span> a comma separated list <span class="keyword">of</span> <span class="keyword">tables</span> <span class="keyword">in</span> the <span class="keyword">database</span>.</span><br><span class="line"><span class="comment">--------------</span></span><br><span class="line">sql_db_query_checker</span><br><span class="line">Use this tool <span class="keyword">to</span> <span class="type">double</span> <span class="keyword">check</span> <span class="keyword">if</span> your query <span class="keyword">is</span> correct <span class="keyword">before</span> executing it. <span class="keyword">Always</span> use this tool <span class="keyword">before</span> executing a query <span class="keyword">with</span> sql_db_query!</span><br><span class="line"><span class="comment">--------------</span></span><br></pre></td></tr></table></figure>
+<h1 id="OpenAI-Functions"><a href="#OpenAI-Functions" class="headerlink" title="OpenAI Functions"></a>OpenAI Functions</h1><p>LangChain 工具也可以作为 OpenAI Fuctions</p>
+<p>使用 <code>format_tool_to_openai_function</code> 将工具转换为 Functions</p>
+<p>因为我没有对应的 API，这里就直接使用官方文档的内容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># LLM</span></span><br><span class="line">model = ChatOpenAI(model=<span class="string">&quot;gpt-3.5-turbo-0613&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义 tool，转换 functions</span></span><br><span class="line">tools = [MoveFileTool()]</span><br><span class="line">functions = [format_tool_to_openai_function(t) <span class="keyword">for</span> t <span class="keyword">in</span> tools]</span><br><span class="line"></span><br><span class="line">message = model.predict_messages(</span><br><span class="line">    [HumanMessage(content=<span class="string">&quot;move file foo to bar&quot;</span>)], functions=functions</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">message</span><br><span class="line"></span><br><span class="line"><span class="constructor">AIMessage(<span class="params">content</span>=&#x27;&#x27;, <span class="params">additional_kwargs</span>=&#123;&#x27;<span class="params">function_call</span>&#x27;: &#123;&#x27;<span class="params">name</span>&#x27;: &#x27;<span class="params">move_file</span>&#x27;, &#x27;<span class="params">arguments</span>&#x27;: &#x27;&#123;\<span class="params">n</span>  <span class="string">&quot;source_path&quot;</span>: <span class="string">&quot;foo&quot;</span>,\<span class="params">n</span>  <span class="string">&quot;destination_path&quot;</span>: <span class="string">&quot;bar&quot;</span>\<span class="params">n</span>&#125;&#x27;&#125;&#125;, <span class="params">example</span>=False)</span></span><br></pre></td></tr></table></figure>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="装饰器语法"><a href="#装饰器语法" class="headerlink" title="装饰器语法"></a>装饰器语法</h2><p>当你在一个函数上方使用装饰器时，它实际上相当于将该函数作为参数传递给对应实现，并将其返回的函数替换原来的函数定义</p>
+<p>定义一个结构</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Student</span>:</span><br><span class="line">    name: <span class="built_in">str</span></span><br><span class="line">    age: <span class="built_in">int</span></span><br><span class="line">    grade: <span class="built_in">int</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__repr__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;name:&quot;</span> + self.name + <span class="string">&quot;\nage:&quot;</span> + <span class="built_in">str</span>(self.age) + <span class="string">&quot;\ngrade:&quot;</span> + <span class="built_in">str</span>(self.grade)</span><br></pre></td></tr></table></figure>
+<p>实现装饰器方法</p>
+<p>创建一个学生对象的细节：</p>
+<ul>
+<li>name 方法名</li>
+<li>age 方法调用返回值</li>
+<li>grade 装饰语法的入参</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">my_decorator_student</span>(<span class="params">grade: <span class="built_in">int</span></span>) -&gt; <span class="type">Callable</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decorator_func</span>(<span class="params">func</span>):</span><br><span class="line">        age = func()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">build_student</span>(<span class="params">name: <span class="built_in">str</span>, age: <span class="built_in">int</span>, grade: <span class="built_in">int</span></span>):</span><br><span class="line">            s = Student()</span><br><span class="line">            s.name = name</span><br><span class="line">            s.age = age</span><br><span class="line">            s.grade = grade</span><br><span class="line">            <span class="keyword">return</span> s</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> build_student(func.__name__, age, grade)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> decorator_func</span><br></pre></td></tr></table></figure>
+<p>使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@my_decorator_student(<span class="params">grade=<span class="number">5</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">zhang_san</span>():</span><br><span class="line">    <span class="keyword">return</span> <span class="number">20</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(zhang_san)</span><br></pre></td></tr></table></figure>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">name:</span>zhang_san</span><br><span class="line"><span class="symbol">age:</span><span class="number">20</span></span><br><span class="line"><span class="symbol">grade:</span><span class="number">5</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/agents/tools/">Tools | 🦜️🔗 Langchain</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/DB/Vector/%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E7%9B%B8%E4%BC%BC%E6%80%A7%E5%BA%A6%E9%87%8F.html" rel="prev" title="简单了解相似性度量">
+      <i class="fa fa-chevron-left"></i> 简单了解相似性度量
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html" rel="next" title="Python 进阶语法">
+      Python 进阶语法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7"><span class="nav-number">1.</span> <span class="nav-text">内置工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7"><span class="nav-number">2.</span> <span class="nav-text">自定义工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tool-%E8%A3%85%E9%A5%B0%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">@tool 装饰器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BaseTool-%E5%AD%90%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">BaseTool 子类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StructuredTool-%E6%95%B0%E6%8D%AE%E7%B1%BB"><span class="nav-number">2.3.</span> <span class="nav-text">StructuredTool 数据类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%B7%A5%E5%85%B7%E9%94%99%E8%AF%AF"><span class="nav-number">2.4.</span> <span class="nav-text">处理工具错误</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E7%AE%B1"><span class="nav-number">3.</span> <span class="nav-text">工具箱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenAI-Functions"><span class="nav-number">4.</span> <span class="nav-text">OpenAI Functions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">5.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0%E5%99%A8%E8%AF%AD%E6%B3%95"><span class="nav-number">5.1.</span> <span class="nav-text">装饰器语法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kuga.fun" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>
