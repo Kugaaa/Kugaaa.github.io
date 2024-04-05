@@ -17,25 +17,25 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"www.kuga.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="背景桥接（bridge）模式首先的场景是内部实现逻辑分为多个模块，每个模块又可能对应多种实现 在桥接内部，这些不同类型的模块按照组合或聚合的方式组织在一起，将逻辑模块抽象部分与实现部分相分离 目的降低内部多种类型逻辑模块的耦合，扩展变成以各模块为单位，更为灵活 现实世界类比Vans自由定制鞋_Vans(范斯)中国官方网站">
 <meta property="og:type" content="article">
 <meta property="og:title" content="桥接模式 - Bridge">
-<meta property="og:url" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html">
 <meta property="og:site_name" content="贫瘠之地">
 <meta property="og:description" content="背景桥接（bridge）模式首先的场景是内部实现逻辑分为多个模块，每个模块又可能对应多种实现 在桥接内部，这些不同类型的模块按照组合或聚合的方式组织在一起，将逻辑模块抽象部分与实现部分相分离 目的降低内部多种类型逻辑模块的耦合，扩展变成以各模块为单位，更为灵活 现实世界类比Vans自由定制鞋_Vans(范斯)中国官方网站">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
 <meta property="article:published_time" content="2022-12-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-12-24T16:00:00.000Z">
 <meta property="article:author" content="Kuga">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge/jdbc%E7%B1%BB%E5%9B%BE.drawio.png">
 
-<link rel="canonical" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html">
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html">
 
 
 <script id="page-configurations">
@@ -197,7 +197,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kuga.fun/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -340,12 +340,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92.html" rel="prev" title="精酿啤酒入门">
-      <i class="fa fa-chevron-left"></i> 精酿啤酒入门
+    <a href="/%E5%BC%80%E5%8F%91/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html" rel="prev" title="布隆 & 布谷鸟过滤器">
+      <i class="fa fa-chevron-left"></i> 布隆 & 布谷鸟过滤器
     </a></div>
       <div class="post-nav-item">
-    <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Flatliner.html" rel="next" title="RECIPES - Flatliner">
-      RECIPES - Flatliner <i class="fa fa-chevron-right"></i>
+    <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92.html" rel="next" title="精酿啤酒入门">
+      精酿啤酒入门 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
