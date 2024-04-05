@@ -644,20 +644,6 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Prompt/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/AI/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kugaaa.com/tags/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -672,7 +658,14 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Java/</loc>
+    <loc>https://www.kugaaa.com/tags/Prompt/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/AI/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -693,6 +686,20 @@
   </url>
   
   <url>
+    <loc>https://www.kugaaa.com/tags/Java/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/LangChain/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kugaaa.com/tags/LiteFlow/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -701,13 +708,6 @@
   
   <url>
     <loc>https://www.kugaaa.com/tags/%E6%BA%90%E7%A0%81/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/LangChain/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -791,13 +791,6 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Redis-%E8%84%9A%E6%9C%AC/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kugaaa.com/tags/DB/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -805,14 +798,21 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Vector-DB/</loc>
+    <loc>https://www.kugaaa.com/tags/MySQL/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/MySQL/</loc>
+    <loc>https://www.kugaaa.com/tags/Redis-%E8%84%9A%E6%9C%AC/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/Vector-DB/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -849,7 +849,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/LangChain/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/LiteFlow/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -863,21 +863,14 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/MQ/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/Java/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/ES/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/MQ/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -905,6 +898,13 @@
   </url>
   
   <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/Java/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -912,7 +912,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/LiteFlow/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/LangChain/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -947,6 +947,13 @@
   </url>
   
   <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/MySQL/</loc>
+    <lastmod>2024-04-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/Redis/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
@@ -955,13 +962,6 @@
   
   <url>
     <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/Vector-DB/</loc>
-    <lastmod>2024-04-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/MySQL/</loc>
     <lastmod>2024-04-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
