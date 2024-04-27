@@ -191,6 +191,181 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20%E5%B0%8F%E5%BF%83%20FOR%20UPDATE%20%E7%9A%84%20Record%20%E9%94%81.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20%E5%B0%8F%E5%BF%83%20FOR%20UPDATE%20%E7%9A%84%20Record%20%E9%94%81.html" class="post-title-link" itemprop="url">MySQL 小心 FOR UPDATE 的 Record 锁</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-12-25 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-25T00:00:00+08:00">2023-12-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/DB/" itemprop="url" rel="index"><span itemprop="name">DB</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/DB/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="FOR-UPDATE"><a href="#FOR-UPDATE" class="headerlink" title="FOR UPDATE"></a>FOR UPDATE</h1><p><code>FOR UPDATE</code> 是 SELECT 语句的可选参数</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html">MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement</a></p>
+<ul>
+<li><p>如果将 <code>FOR UPDATE</code> 和支持页锁或行锁的数据库引擎一起使用（比如 InnoDB），被查询的行将被写锁定，直到当前事务结束<br>使用 <code>LOCK IN SHARE MODE</code> 将设置共享锁，允许其他事务读取检查的行，但不更新或删除它们</p>
+</li>
+<li><p>当使用类似的语句 <code>CREATE TABLE new_table SELECT ... FROM old_table</code> 不能在 <code>SELECT</code> 中使用 <code>FOR UPDATE</code></p>
+<p>如果您尝试执行此操作，则该语句将被拒绝，并显示 <code>Can&#39;t update table &#39;old_table&#39; while &#39;new_table&#39; is being created.</code></p>
+</li>
+</ul>
+<h1 id="锁定读"><a href="#锁定读" class="headerlink" title="锁定读"></a>锁定读</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20%E5%B0%8F%E5%BF%83%20FOR%20UPDATE%20%E7%9A%84%20Record%20%E9%94%81.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Mulled%20Wine.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Mulled%20Wine.html" class="post-title-link" itemprop="url">RECIPES - Mulled Wine</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-12-24 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-24T00:00:00+08:00">2023-12-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BA%BA%E7%94%9F/" itemprop="url" rel="index"><span itemprop="name">人生</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/" itemprop="url" rel="index"><span itemprop="name">宿醉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <img src="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Mulled%20Wine/Mulled%20Wine%20Recipe-1.jpg" class title="Mulled Wine Recipe-1">
+<blockquote>
+<p> <em>This traditional homemade mulled wine recipe is incredibly easy to make and always SO cozy and delicious.</em></p>
+<p>这种传统的自制热葡萄酒配方非常容易制作，而且非常舒适美味</p>
+</blockquote>
+<p>圣诞节来喝热红酒吧~</p>
+<h1 id="Mulled-Wine-热葡萄酒"><a href="#Mulled-Wine-热葡萄酒" class="headerlink" title="Mulled Wine 热葡萄酒"></a>Mulled Wine 热葡萄酒</h1><p>也被称为 glühwein、vino-caliente、glögg、vin brulé、bisschopswijn、vin chaud、candola、vinho quente… 或者其他上百个名字，这取决于你在世界上的位置</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Mulled%20Wine.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LLM%20%E4%BF%A1%E6%81%AF%E6%8F%90%E5%8F%96%E7%BB%93%E6%9E%84%E5%8C%96%E8%BE%93%E5%87%BA.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -517,168 +692,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html" class="post-title-link" itemprop="url">LangChain 文档学习 No.4 - 输出解析器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-12-02 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-02T00:00:00+08:00">2023-12-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="列表解析器"><a href="#列表解析器" class="headerlink" title="列表解析器"></a>列表解析器</h1><p>返回逗号分隔的项目列表时，可以使用此输出解析器</p>
-<p><strong>解析器和 prompt</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列表解析器</span></span><br><span class="line">output_parser = CommaSeparatedListOutputParser()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列表解析器自带格式说明</span></span><br><span class="line">format_instructions = output_parser.get_format_instructions()</span><br><span class="line"><span class="comment"># prompt template</span></span><br><span class="line">prompt_template = PromptTemplate(</span><br><span class="line">    template=<span class="string">&quot;列举出五个&#123;subject&#125;.\n&#123;format_instructions&#125;&quot;</span>,</span><br><span class="line">    input_variables=[<span class="string">&quot;subject&quot;</span>],</span><br><span class="line">    partial_variables=&#123;<span class="string">&quot;format_instructions&quot;</span>: format_instructions&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p><strong>使用</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.3%20-%20%E7%A4%BA%E4%BE%8B%E9%80%89%E6%8B%A9%E5%99%A8.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.3%20-%20%E7%A4%BA%E4%BE%8B%E9%80%89%E6%8B%A9%E5%99%A8.html" class="post-title-link" itemprop="url">LangChain 文档学习 No.3 - 示例选择器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-12-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-01T00:00:00+08:00">2023-12-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MMR"><a href="#MMR" class="headerlink" title="MMR"></a>MMR</h1><p>MMR 为最大边际相关性，<code>MaxMarginalRelevanceExampleSelector</code> 根据示例与输入之间的相似度以及多样性来选择示例</p>
-<p>通过寻找与输入具有最大余弦相似度的嵌入的示例，并在迭代中进行添加；同时对与已选择示例的相似度进行惩罚来进行实现</p>
-<p><strong>import</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain.prompts.example_selector <span class="keyword">import</span> (</span><br><span class="line">    MaxMarginalRelevanceExampleSelector,</span><br><span class="line">    SemanticSimilarityExampleSelector,</span><br><span class="line">)</span><br><span class="line"><span class="keyword">from</span> langchain.vectorstores <span class="keyword">import</span> FAISS</span><br><span class="line"><span class="keyword">from</span> langchain.embeddings <span class="keyword">import</span> OpenAIEmbeddings</span><br><span class="line"><span class="keyword">from</span> langchain.prompts <span class="keyword">import</span> FewShotPromptTemplate, PromptTemplate</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.3%20-%20%E7%A4%BA%E4%BE%8B%E9%80%89%E6%8B%A9%E5%99%A8.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -748,7 +761,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -761,7 +774,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
