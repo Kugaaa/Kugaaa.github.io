@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="背景之前一直对索引分析中 type range 有误解 下面是官方文档对 type range 的解释  range can be used when a key column is compared to a constant using any of the &#x3D;, &lt;&gt;, &gt;, &gt;&#x3D;, &lt;, &lt;&#x3D;, IS NULL, &lt;&#x3D;&gt;, BETWEEN,">
+  <meta name="description" content="背景 之前一直对索引分析中 type range 有误解 下面是官方文档对 type range 的解释  range can be used when a key column is compared to a constant using any of the &#x3D;, &lt;&gt;, &gt;, &gt;&#x3D;, &lt;, &lt;&#x3D;, IS NULL, &lt;&#x3D;&amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL EXPLAIN 中的 type range">
 <meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="背景之前一直对索引分析中 type range 有误解 下面是官方文档对 type range 的解释  range can be used when a key column is compared to a constant using any of the &#x3D;, &lt;&gt;, &gt;, &gt;&#x3D;, &lt;, &lt;&#x3D;, IS NULL, &lt;&#x3D;&gt;, BETWEEN,">
+<meta property="og:description" content="背景 之前一直对索引分析中 type range 有误解 下面是官方文档对 type range 的解释  range can be used when a key column is compared to a constant using any of the &#x3D;, &lt;&gt;, &gt;, &gt;&#x3D;, &lt;, &lt;&#x3D;, IS NULL, &lt;&#x3D;&amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-1.png">
 <meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-2.png">
@@ -261,43 +261,88 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>之前一直对索引分析中 type range 有误解</p>
+        <h1 id="背景">背景</h1>
+<p>之前一直对索引分析中 type range 有误解</p>
 <p>下面是官方文档对 type range 的解释</p>
 <blockquote>
-<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#jointype_range"><code>range</code></a> can be used when a key column is compared to a constant using any of the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal"><code>=</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_not-equal"><code>&lt;&gt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than"><code>&gt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than-or-equal"><code>&gt;=</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than"><code>&lt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than-or-equal"><code>&lt;=</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_is-null"><code>IS NULL</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal-to"><code>&lt;=&gt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_between"><code>BETWEEN</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/string-comparison-functions.html#operator_like"><code>LIKE</code></a>, or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_in"><code>IN()</code></a> operators:</p>
+<p><a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#jointype_range"><code>range</code></a>
+can be used when a key column is compared to a constant using any of the
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal"><code>=</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_not-equal"><code>&lt;&gt;</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than"><code>&gt;</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than-or-equal"><code>&gt;=</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than"><code>&lt;</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than-or-equal"><code>&lt;=</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_is-null"><code>IS NULL</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal-to"><code>&lt;=&gt;</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_between"><code>BETWEEN</code></a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/string-comparison-functions.html#operator_like"><code>LIKE</code></a>,
+or <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_in"><code>IN()</code></a>
+operators:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_column <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_column <span class="keyword">BETWEEN</span> <span class="number">10</span> <span class="keyword">and</span> <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_column <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_part1 <span class="operator">=</span> <span class="number">10</span> <span class="keyword">AND</span> key_part2 <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br></pre></td></tr></table></figure>
 </blockquote>
-<p><code>IN</code> 查询下的 range 什么时候会恶化为 ALL 呢？按照我之前的理解，可能有两点</p>
+<p><code>IN</code> 查询下的 range 什么时候会恶化为 ALL
+呢？按照我之前的理解，可能有两点</p>
 <ul>
-<li>数量太多；这点是一个老生常谈的问题，例如 <code>IN</code> 需要不能传过多的值，否则优化器不会选择走索引</li>
+<li>数量太多；这点是一个老生常谈的问题，例如 <code>IN</code>
+需要不能传过多的值，否则优化器不会选择走索引</li>
 <li>范围太大；事实证明，<code>IN</code> 和范围无关</li>
 </ul>
-<p>上述两点中，第二点是错误的，范围太大并不会导致 <code>IN</code> 的索引 type 退化为 ALL</p>
+<p>上述两点中，第二点是错误的，范围太大并不会导致 <code>IN</code> 的索引
+type 退化为 ALL</p>
 <p>这篇文档就是进行验证和记录答案</p>
-<h1 id="理清概念"><a href="#理清概念" class="headerlink" title="理清概念"></a>理清概念</h1><h2 id="type"><a href="#type" class="headerlink" title="type"></a>type</h2><p>在 EXLAIN 中，type 指的是 join type</p>
+<h1 id="理清概念">理清概念</h1>
+<h2 id="type">type</h2>
+<p>在 EXLAIN 中，type 指的是 join type</p>
 <blockquote>
-<p>The <code>type</code> column of <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain.html"><code>EXPLAIN</code></a> output describes how tables are joined. In JSON-formatted output, these are found as values of the <code>access_type</code> property.</p>
+<p>The <code>type</code> column of <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain.html"><code>EXPLAIN</code></a>
+output describes how tables are joined. In JSON-formatted output, these
+are found as values of the <code>access_type</code> property.</p>
 </blockquote>
 <p>对于 type 的好坏这里就不再赘述</p>
 <p>从好到坏为：</p>
-<ol>
+<ol type="1">
 <li><code>system</code> 该表只有一行（系统表）；特殊的 const</li>
 <li><code>const</code> 该表最多有一个匹配行，该行在查询开始时读取</li>
-<li><code>eq_ref</code> 对于前一个表中的每一行组合，都会从该表中读取一行；出现在联表查询时，当联接使用索引的所有部分，并且该索引是 PRIMARY KEY 或 UNIQUE NOT NULL 索引时</li>
-<li><code>ref</code> 对于前一个表中的每一个行组合，都会从此表中读取索引值匹配的所有行；出现在联表查询时，如果联接不能根据键值选择一行</li>
+<li><code>eq_ref</code>
+对于前一个表中的每一行组合，都会从该表中读取一行；出现在联表查询时，当联接使用索引的所有部分，并且该索引是
+PRIMARY KEY 或 UNIQUE NOT NULL 索引时</li>
+<li><code>ref</code>
+对于前一个表中的每一个行组合，都会从此表中读取索引值匹配的所有行；出现在联表查询时，如果联接不能根据键值选择一行</li>
 <li><code>fulltext</code> 联表查询使用 FULLTEXT 索引</li>
-<li><code>ref_or_null</code> 类似于 <code>ref</code>，但 MySQL 会对包含 <code>NULL</code> 值的行进行额外搜索</li>
+<li><code>ref_or_null</code> 类似于 <code>ref</code>，但 MySQL 会对包含
+<code>NULL</code> 值的行进行额外搜索</li>
 <li><code>index_merge</code> 使用了索引合并（Index Merge）优化</li>
 <li><code>unique_subquery</code> 含有 <code>eq_ref</code> 的子查询</li>
-<li><code>index_subquery</code> 类似 <code>unique_subquery</code>，但索引是非唯一约束</li>
+<li><code>index_subquery</code> 类似
+<code>unique_subquery</code>，但索引是非唯一约束</li>
 <li><code>range</code> 只检索给定范围内的行，使用索引选择行</li>
-<li><code>index</code> 与 <code>ALL</code> 相同，只是扫描了索引树；区别在于索引覆盖或者按照索引顺序回表</li>
+<li><code>index</code> 与 <code>ALL</code>
+相同，只是扫描了索引树；区别在于索引覆盖或者按照索引顺序回表</li>
 <li><code>ALL</code> 完整的表扫描</li>
 </ol>
-<p>也就是说 type 表达的是 JOIN 下索引的执行类型（单表可以理解为特殊的 JOIN）</p>
-<h2 id="rows"><a href="#rows" class="headerlink" title="rows"></a>rows</h2><blockquote>
-<p>The <code>rows</code> column indicates the number of rows MySQL believes it must examine to execute the query.</p>
-<p>For <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-storage-engine.html"><code>InnoDB</code></a> tables, this number is an estimate, and may not always be exact.</p>
+<p>也就是说 type 表达的是 JOIN 下索引的执行类型（单表可以理解为特殊的
+JOIN）</p>
+<h2 id="rows">rows</h2>
+<blockquote>
+<p>The <code>rows</code> column indicates the number of rows MySQL
+believes it must examine to execute the query.</p>
+<p>For <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-storage-engine.html"><code>InnoDB</code></a>
+tables, this number is an estimate, and may not always be exact.</p>
 </blockquote>
 <p>这里有一个疑问，rows 指的是扫描索引的行数还是回表的行数？</p>
 <p>官方文档只表达为 <code>must examine to execute</code></p>
@@ -306,70 +351,130 @@
 <p>执行下面的分析</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="operator">=</span> &quot;BRA&quot; <span class="keyword">AND</span> name <span class="operator">=</span> &quot;Fortaleza&quot;;</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-1.png" class="" title="img-1">
-<p>可以看到使用了索引 <code>CountryCode</code>，type 为 <code>ref</code>，行数为 250，我们表中 <code>CountryCode = &quot;BRA&quot;</code> 对应的数据就是 250 行</p>
-<p>如果我们在索引上加上 <code>name</code>，可以猜测使用新的索引 rows 应该是 1 行</p>
+<p>可以看到使用了索引 <code>CountryCode</code>，type 为
+<code>ref</code>，行数为 250，我们表中 <code>CountryCode = "BRA"</code>
+对应的数据就是 250 行</p>
+<p>如果我们在索引上加上 <code>name</code>，可以猜测使用新的索引 rows
+应该是 1 行</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> city <span class="keyword">ADD</span> KEY `idx_CountryCode_name`(`CountryCode`,`name`);</span><br></pre></td></tr></table></figure>
 <p>再次执行分析</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="operator">=</span> &quot;BRA&quot; <span class="keyword">AND</span> name <span class="operator">=</span> &quot;Fortaleza&quot;;</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-2.png" class="" title="img-2">
 <p>和猜想的没错，rows 其实表示的是回表的行数</p>
-<p>如果我们将语句修改为只查询 name 呢？会产生索引覆盖，那么 rows 如何显示？</p>
+<p>如果我们将语句修改为只查询 name 呢？会产生索引覆盖，那么 rows
+如何显示？</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> name <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="operator">=</span> &quot;BRA&quot; <span class="keyword">AND</span> name <span class="operator">=</span> &quot;Fortaleza&quot;;</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-3.png" class="" title="img-3">
-<p>可以看到 Extra 告诉我们 <code>Using index</code> 使用了索引覆盖，但是 rows 还是 1</p>
-<p>不过不管怎么说，我们可以认为 rows 表达的是回表的行，起码不是代表扫过的索引；事实上从语义上也可以这么理解，索引中也不会有 row 这个概念（BTree）</p>
-<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><h2 id="和数量有关"><a href="#和数量有关" class="headerlink" title="和数量有关"></a>和数量有关</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="keyword">IN</span> (&quot;ABW&quot;, &quot;AFG&quot;, &quot;AGO&quot;);</span><br></pre></td></tr></table></figure>
+<p>可以看到 Extra 告诉我们 <code>Using index</code> 使用了索引覆盖，但是
+rows 还是 1</p>
+<p>不过不管怎么说，我们可以认为 rows
+表达的是回表的行，起码不是代表扫过的索引；事实上从语义上也可以这么理解，索引中也不会有
+row 这个概念（BTree）</p>
+<h1 id="验证">验证</h1>
+<h2 id="和数量有关">和数量有关</h2>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="keyword">IN</span> (&quot;ABW&quot;, &quot;AFG&quot;, &quot;AGO&quot;);</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-4.png" class="" title="img-4">
 <p>可以看到上面这个语句成功走了索引，type 为 range</p>
 <p>如果加大 <code>IN</code> 中的值数量</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="keyword">IN</span> (&quot;ABW&quot;, &quot;AFG&quot;, &quot;AGO&quot;, &quot;AIA&quot;, &quot;ALB&quot;, &quot;AND&quot;, &quot;ANT&quot;, &quot;ARE&quot;, &quot;ARG&quot;, &quot;ARM&quot;, &quot;ASM&quot;, &quot;ATG&quot;, &quot;AUS&quot;, &quot;AUT&quot;, &quot;AZE&quot;, &quot;BDI&quot;, &quot;BEL&quot;, &quot;BEN&quot;, &quot;BFA&quot;, &quot;BGD&quot;, &quot;BGR&quot;, &quot;BHR&quot;, &quot;BHS&quot;, &quot;BIH&quot;, &quot;BLR&quot;, &quot;BLZ&quot;, &quot;BMU&quot;, &quot;BOL&quot;, &quot;BRA&quot;, &quot;BRB&quot;, &quot;BRN&quot;, &quot;BTN&quot;, &quot;BWA&quot;, &quot;CAF&quot;, &quot;CAN&quot;, &quot;CCK&quot;, &quot;CHE&quot;, &quot;CHL&quot;, &quot;CHN&quot;, &quot;CIV&quot;, &quot;CMR&quot;, &quot;COD&quot;, &quot;COG&quot;, &quot;COK&quot;, &quot;COL&quot;, &quot;COM&quot;, &quot;CPV&quot;, &quot;CRI&quot;, &quot;CUB&quot;, &quot;CXR&quot;, &quot;CYM&quot;, &quot;CYP&quot;, &quot;CZE&quot;, &quot;DEU&quot;, &quot;DJI&quot;, &quot;DMA&quot;, &quot;DNK&quot;, &quot;DOM&quot;, &quot;DZA&quot;, &quot;ECU&quot;, &quot;EGY&quot;, &quot;ERI&quot;, &quot;ESH&quot;, &quot;ESP&quot;, &quot;EST&quot;, &quot;ETH&quot;, &quot;FIN&quot;, &quot;FJI&quot;, &quot;FLK&quot;, &quot;FRA&quot;, &quot;FRO&quot;, &quot;FSM&quot;, &quot;GAB&quot;, &quot;GBR&quot;, &quot;GEO&quot;, &quot;GHA&quot;, &quot;GIB&quot;, &quot;GIN&quot;, &quot;GLP&quot;, &quot;GMB&quot;, &quot;GNB&quot;, &quot;GNQ&quot;, &quot;GRC&quot;, &quot;GRD&quot;, &quot;GRL&quot;, &quot;GTM&quot;, &quot;GUF&quot;, &quot;GUM&quot;, &quot;GUY&quot;, &quot;HKG&quot;, &quot;HND&quot;, &quot;HRV&quot;, &quot;HTI&quot;, &quot;HUN&quot;, &quot;IDN&quot;, &quot;IND&quot;, &quot;IRL&quot;, &quot;IRN&quot;, &quot;IRQ&quot;, &quot;ISL&quot;, &quot;ISR&quot;, &quot;ITA&quot;, &quot;JAM&quot;, &quot;JOR&quot;, &quot;JPN&quot;, &quot;KAZ&quot;, &quot;KEN&quot;, &quot;KGZ&quot;, &quot;KHM&quot;);</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-5.png" class="" title="img-5">
 <p>可以看到走了 type 为 ALL 的全表扫描</p>
-<h2 id="和范围有关"><a href="#和范围有关" class="headerlink" title="和范围有关"></a>和范围有关</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">MIN</span>(CountryCode) <span class="keyword">FROM</span> city;</span><br></pre></td></tr></table></figure>
+<h2 id="和范围有关">和范围有关</h2>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">MIN</span>(CountryCode) <span class="keyword">FROM</span> city;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span>(CountryCode) <span class="keyword">FROM</span> city <span class="keyword">ORDER</span> <span class="keyword">BY</span> CountryCode LIMIT <span class="number">110</span>, <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<p>得到 <code>CountryCode</code> 最小值和中间值为 <code>ABW</code> 和 <code>KNA</code></p>
+<p>得到 <code>CountryCode</code> 最小值和中间值为 <code>ABW</code> 和
+<code>KNA</code></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="keyword">IN</span> (&quot;ABW&quot;, &quot;KNA&quot;);</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-6.png" class="" title="img-6">
 <p>可以发现依然是 range，和 <code>IN</code> 中的范围没有关系</p>
-<p>而且扫描行数是 2，这是不是可以说明表中值为 <code>ABW</code> 和 <code>KNA</code> 的数据只有两条呢？（虽然 InnoDB 引擎下的行数不一定准确）</p>
+<p>而且扫描行数是 2，这是不是可以说明表中值为 <code>ABW</code> 和
+<code>KNA</code> 的数据只有两条呢？（虽然 InnoDB
+引擎下的行数不一定准确）</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="keyword">IN</span> (&quot;ABW&quot;, &quot;KNA&quot;);</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-7.png" class="" title="img-7">
 <p>结果确实是 2 行</p>
-<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><h2 id="为什么和数量有关"><a href="#为什么和数量有关" class="headerlink" title="为什么和数量有关"></a>为什么和数量有关</h2><blockquote>
-<p>Read about <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/range-optimization.html#range-optimization-memory-use">Limiting Memory Use for Range Optimization</a>.</p>
-<p>When you have a large list of values in an <code>IN()</code> predicate, it uses more memory during the query optimization step. This was considered a problem in some cases, so recent versions of MySQL set a max memory limit (it’s 8MB by default).</p>
-<p>If the optimizer finds that it would need more memory than the limit, there is not another condition in your query it can use to optimize, it gives up trying to optimize, and resorts to a table-scan. I infer that your table statistics actually show that the table has ~221 million rows (though table statistics are inexact estimates).</p>
-<p>I can’t say I know the exact formula to know how much memory is needed for a given list of values, but given your observed behavior, we could guess that it’s about 600 bytes per item on average, given that 14k items works and more than that does not work.</p>
-<p>You can set <code>range_optimizer_max_mem_size = 0</code> to disable the memory limit. This creates a risk of excessive memory use, but it avoids the optimizer “giving up.” We set this value on all MySQL instances at my last job, because we couldn’t educate the developers to avoid creating huge lists of values in their queries.</p>
+<h1 id="结论">结论</h1>
+<h2 id="为什么和数量有关">为什么和数量有关</h2>
+<blockquote>
+<p>Read about <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/range-optimization.html#range-optimization-memory-use">Limiting
+Memory Use for Range Optimization</a>.</p>
+<p>When you have a large list of values in an <code>IN()</code>
+predicate, it uses more memory during the query optimization step. This
+was considered a problem in some cases, so recent versions of MySQL set
+a max memory limit (it's 8MB by default).</p>
+<p>If the optimizer finds that it would need more memory than the limit,
+there is not another condition in your query it can use to optimize, it
+gives up trying to optimize, and resorts to a table-scan. I infer that
+your table statistics actually show that the table has ~221 million rows
+(though table statistics are inexact estimates).</p>
+<p>I can't say I know the exact formula to know how much memory is
+needed for a given list of values, but given your observed behavior, we
+could guess that it's about 600 bytes per item on average, given that
+14k items works and more than that does not work.</p>
+<p>You can set <code>range_optimizer_max_mem_size = 0</code> to disable
+the memory limit. This creates a risk of excessive memory use, but it
+avoids the optimizer "giving up." We set this value on all MySQL
+instances at my last job, because we couldn't educate the developers to
+avoid creating huge lists of values in their queries.</p>
 </blockquote>
 <p>总结：</p>
 <ul>
 <li>优化器认为应该走全表扫描</li>
-<li>索引使用的内存超出了 <code>range_optimizer_max_mem_size</code> 的限制</li>
+<li>索引使用的内存超出了 <code>range_optimizer_max_mem_size</code>
+的限制</li>
 </ul>
-<p><code>range_optimizer_max_mem_size</code> 的默认值为 <code>8388608</code> 即 8 MB</p>
+<p><code>range_optimizer_max_mem_size</code> 的默认值为
+<code>8388608</code> 即 8 MB</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> SESSION range_optimizer_max_mem_size <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> city <span class="keyword">WHERE</span> CountryCode <span class="keyword">IN</span> (&quot;ABW&quot;, &quot;KNA&quot;);</span><br></pre></td></tr></table></figure>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-8.png" class="" title="img-8">
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-9.png" class="" title="img-9">
-<h2 id="InnoDB-引擎下-rows-近似值"><a href="#InnoDB-引擎下-rows-近似值" class="headerlink" title="InnoDB 引擎下 rows 近似值"></a>InnoDB 引擎下 rows 近似值</h2><p>对于 InnoDB 引擎而言，EXPLAIN 下的 rows 数字是一个估计值，可能并不总是准确的</p>
-<p>因为 InnoDB 存储引擎使用了一种称为多版本并发控制（MVCC）的机制来处理并发事务，MVCC 允许多个事务同时读取和修改表中的数据，而不会相互干扰</p>
+<h2 id="innodb-引擎下-rows-近似值">InnoDB 引擎下 rows 近似值</h2>
+<p>对于 InnoDB 引擎而言，EXPLAIN 下的 rows
+数字是一个估计值，可能并不总是准确的</p>
+<p>因为 InnoDB
+存储引擎使用了一种称为多版本并发控制（MVCC）的机制来处理并发事务，MVCC
+允许多个事务同时读取和修改表中的数据，而不会相互干扰</p>
 <p>为了支持 MVCC，InnoDB 使用 Undo Log 用于存储旧版本的数据</p>
-<p>当一个事务修改了表中的数据时，InnoDB 会将旧版本的数据存储在回滚段中，以便其他事务可以读取到一致的数据视图</p>
-<p>由于回滚段中可能存在多个事务的旧版本数据，InnoDB 无法精确地知道表中的行数。它只能根据回滚段中的数据估计出大致的行数</p>
-<h2 id="eq-range-index-dive-limit"><a href="#eq-range-index-dive-limit" class="headerlink" title="eq_range_index_dive_limit"></a>eq_range_index_dive_limit</h2><p><code>eq_range_index_dive_limit</code> 这个参数在控制什么呢？</p>
+<p>当一个事务修改了表中的数据时，InnoDB
+会将旧版本的数据存储在回滚段中，以便其他事务可以读取到一致的数据视图</p>
+<p>由于回滚段中可能存在多个事务的旧版本数据，InnoDB
+无法精确地知道表中的行数。它只能根据回滚段中的数据估计出大致的行数</p>
+<h2 id="eq_range_index_dive_limit">eq_range_index_dive_limit</h2>
+<p><code>eq_range_index_dive_limit</code> 这个参数在控制什么呢？</p>
 <p>其实控制的是对扫描行数的预估</p>
-<p>简单来说就是根据 <code>eq_range_index_dive_limit</code> 参数设置的阀值来按照不同算法预估影响行数，对于 <code>IN</code> 或 <code>OR</code> 条件中的每个范围段视为一个元组，对于元组数低于 <code>eq_range_index_dive_limit</code> 参数阀值时使用 index dive 算法，对于高于阈值使用 index statistics 算法</p>
+<p>简单来说就是根据 <code>eq_range_index_dive_limit</code>
+参数设置的阀值来按照不同算法预估影响行数，对于 <code>IN</code> 或
+<code>OR</code> 条件中的每个范围段视为一个元组，对于元组数低于
+<code>eq_range_index_dive_limit</code> 参数阀值时使用 index dive
+算法，对于高于阈值使用 index statistics 算法</p>
 <ul>
-<li><strong>index dive</strong> 针对每个元组 dive 到 index 中使用索引完成元组数的估算，类似于使用索引进行实际查询得到影响行数</li>
-<li><strong>index statistics</strong> 根据索引的统计数值进行估算，例如索引统计信息计算出每个等值影响 100 条数据，那么 <code>IN</code> 条件中包含 5 个等值则影响 <code>5 * 100</code> 条记录</li>
+<li><strong>index dive</strong> 针对每个元组 dive 到 index
+中使用索引完成元组数的估算，类似于使用索引进行实际查询得到影响行数</li>
+<li><strong>index statistics</strong>
+根据索引的统计数值进行估算，例如索引统计信息计算出每个等值影响 100
+条数据，那么 <code>IN</code> 条件中包含 5 个等值则影响
+<code>5 * 100</code> 条记录</li>
 </ul>
-<p><code>eq_range_index_dive_limit</code> 在 5.7 版本下默认 <code>200</code></p>
+<p><code>eq_range_index_dive_limit</code> 在 5.7 版本下默认
+<code>200</code></p>
 <img src="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range/img-10.png" class="" title="img-10">
-<p>可以看到将 <code>eq_range_index_dive_limit</code> 设置为 1 时，优化器认为超出了阈值，使用 index statistics 进行估算，返回的 rows 是不符合实际情况的估算值</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain-join-types">MySQL :: MySQL 5.7 Reference Manual :: 8.8.2 EXPLAIN Output Format</a></p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/638202900?utm_id=0">in用不用索引，啥时候能用啥时候不能用，一文说清 - 知乎 (zhihu.com)</a></p>
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/72361880/mysql-in-operator-on-large-number-of-values">MySQL ‘IN’ operator on large number of values - Stack Overflow</a></p>
-<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/range-optimization.html#range-optimization-memory-use">Limiting Memory Use for Range Optimization</a></p>
+<p>可以看到将 <code>eq_range_index_dive_limit</code> 设置为 1
+时，优化器认为超出了阈值，使用 index statistics 进行估算，返回的 rows
+是不符合实际情况的估算值</p>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#explain-join-types">MySQL
+:: MySQL 5.7 Reference Manual :: 8.8.2 EXPLAIN Output Format</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/638202900?utm_id=0">in用不用索引，啥时候能用啥时候不能用，一文说清
+- 知乎 (zhihu.com)</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/72361880/mysql-in-operator-on-large-number-of-values">MySQL
+'IN' operator on large number of values - Stack Overflow</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/range-optimization.html#range-optimization-memory-use">Limiting
+Memory Use for Range Optimization</a></p>
 
     </div>
 
@@ -454,7 +559,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E6%B8%85%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">理清概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#type"><span class="nav-number">2.1.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rows"><span class="nav-number">2.2.</span> <span class="nav-text">rows</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">3.</span> <span class="nav-text">验证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%92%8C%E6%95%B0%E9%87%8F%E6%9C%89%E5%85%B3"><span class="nav-number">3.1.</span> <span class="nav-text">和数量有关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%92%8C%E8%8C%83%E5%9B%B4%E6%9C%89%E5%85%B3"><span class="nav-number">3.2.</span> <span class="nav-text">和范围有关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">结论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%92%8C%E6%95%B0%E9%87%8F%E6%9C%89%E5%85%B3"><span class="nav-number">4.1.</span> <span class="nav-text">为什么和数量有关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB-%E5%BC%95%E6%93%8E%E4%B8%8B-rows-%E8%BF%91%E4%BC%BC%E5%80%BC"><span class="nav-number">4.2.</span> <span class="nav-text">InnoDB 引擎下 rows 近似值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eq-range-index-dive-limit"><span class="nav-number">4.3.</span> <span class="nav-text">eq_range_index_dive_limit</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E6%B8%85%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">理清概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#type"><span class="nav-number">2.1.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rows"><span class="nav-number">2.2.</span> <span class="nav-text">rows</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">3.</span> <span class="nav-text">验证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%92%8C%E6%95%B0%E9%87%8F%E6%9C%89%E5%85%B3"><span class="nav-number">3.1.</span> <span class="nav-text">和数量有关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%92%8C%E8%8C%83%E5%9B%B4%E6%9C%89%E5%85%B3"><span class="nav-number">3.2.</span> <span class="nav-text">和范围有关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">结论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%92%8C%E6%95%B0%E9%87%8F%E6%9C%89%E5%85%B3"><span class="nav-number">4.1.</span> <span class="nav-text">为什么和数量有关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#innodb-%E5%BC%95%E6%93%8E%E4%B8%8B-rows-%E8%BF%91%E4%BC%BC%E5%80%BC"><span class="nav-number">4.2.</span> <span class="nav-text">InnoDB 引擎下 rows 近似值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eq_range_index_dive_limit"><span class="nav-number">4.3.</span> <span class="nav-text">eq_range_index_dive_limit</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -468,7 +573,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="背景突然发现 Hexo 中的有些文章突然打不开了 表现是点击无反应，无论是点击 “阅读原文” 还是在归档等页面中点击文章标题都无法正常打开 查看控制台发现对页面的请求 404 了 排查">
+  <meta name="description" content="背景 突然发现 Hexo 中的有些文章突然打不开了 表现是点击无反应，无论是点击 “阅读原文” 还是在归档等页面中点击文章标题都无法正常打开 查看控制台发现对页面的请求 404 了 排查">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo 部署 Github Pages 404 问题">
 <meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Hexo%20%E9%83%A8%E7%BD%B2%20Github%20Pages%20404%20%E9%97%AE%E9%A2%98.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="背景突然发现 Hexo 中的有些文章突然打不开了 表现是点击无反应，无论是点击 “阅读原文” 还是在归档等页面中点击文章标题都无法正常打开 查看控制台发现对页面的请求 404 了 排查">
+<meta property="og:description" content="背景 突然发现 Hexo 中的有些文章突然打不开了 表现是点击无反应，无论是点击 “阅读原文” 还是在归档等页面中点击文章标题都无法正常打开 查看控制台发现对页面的请求 404 了 排查">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Hexo%20%E9%83%A8%E7%BD%B2%20Github%20Pages%20404%20%E9%97%AE%E9%A2%98/image-20230427231601450.png">
 <meta property="article:published_time" content="2023-04-26T16:00:00.000Z">
@@ -248,30 +248,43 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>突然发现 Hexo 中的有些文章突然打不开了</p>
-<p>表现是点击无反应，无论是点击 “阅读原文” 还是在归档等页面中点击文章标题都无法正常打开</p>
+        <h1 id="背景">背景</h1>
+<p>突然发现 Hexo 中的有些文章突然打不开了</p>
+<p>表现是点击无反应，无论是点击 “阅读原文”
+还是在归档等页面中点击文章标题都无法正常打开</p>
 <p>查看控制台发现对页面的请求 404 了</p>
-<h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><p><strong>Github 的 Actions 正常</strong></p>
+<h1 id="排查">排查</h1>
+<p><strong>Github 的 Actions 正常</strong></p>
 <p>也没出现部署失败的情况</p>
 <img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Hexo%20%E9%83%A8%E7%BD%B2%20Github%20Pages%20404%20%E9%97%AE%E9%A2%98/image-20230427231601450.png" class="" title="image-20230427231601450">
 <p>查看 push 上来的源文件，发现可能是因为大小写问题</p>
-<p>文件路径为 <code>...bridge</code> ，而请求的路径为 <code>...Bridge</code>，尝试将路径手动修改为小写，发现正常跳转</p>
-<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>查询了一下，基本上可以确定原因为 git 默认忽略大小写</p>
-<ol>
+<p>文件路径为 <code>...bridge</code> ，而请求的路径为
+<code>...Bridge</code>，尝试将路径手动修改为小写，发现正常跳转</p>
+<h1 id="解决">解决</h1>
+<p>查询了一下，基本上可以确定原因为 git 默认忽略大小写</p>
+<ol type="1">
 <li>首先 push 了小写标题的文章</li>
 <li>修改了文章标题为大写，此时 Hexo 解析其他页面也更换了大写</li>
-<li>但是因为 git 忽略大小写，所以更名为大写的内容并没有 push 到仓库，导致解析 pages 时没有更新相应的资源路径；此时点击 Hexo 生成的其他页面则资源名称已经更新为大写，导致 404</li>
+<li>但是因为 git 忽略大小写，所以更名为大写的内容并没有 push
+到仓库，导致解析 pages 时没有更新相应的资源路径；此时点击 Hexo
+生成的其他页面则资源名称已经更新为大写，导致 404</li>
 </ol>
-<h2 id="修改-git-config-文件"><a href="#修改-git-config-文件" class="headerlink" title="修改 git config 文件"></a>修改 git config 文件</h2><p>在博客根目录下编辑 <code>./.git/config</code> 文件</p>
+<h2 id="修改-git-config-文件">修改 git config 文件</h2>
+<p>在博客根目录下编辑 <code>./.git/config</code> 文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[core]</span><br><span class="line">	repositoryformatversion = 0</span><br><span class="line">	filemode = <span class="literal">false</span></span><br><span class="line">	bare = <span class="literal">false</span></span><br><span class="line">	logallrefupdates = <span class="literal">true</span></span><br><span class="line">	symlinks = <span class="literal">false</span></span><br><span class="line">	ignorecase = <span class="literal">true</span></span><br><span class="line">	<span class="comment"># ignorecase = false</span></span><br></pre></td></tr></table></figure>
 <p>修改 <code>ignorecase</code> 为 false</p>
 <p>进行推送即可，也可以直接重新 push 整个项目</p>
-<h2 id="全部重新-push"><a href="#全部重新-push" class="headerlink" title="全部重新 push"></a>全部重新 push</h2><p>在博客根目录 <code>./.deploy_git</code> 目录下</p>
+<h2 id="全部重新-push">全部重新 push</h2>
+<p>在博客根目录 <code>./.deploy_git</code> 目录下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">rm</span> -rf *</span><br><span class="line">git commit -m <span class="string">&#x27;clean all file&#x27;</span></span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
 <p>使用 Hexo 插件进行 deploy</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line">hexo clean</span><br><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="http://1mhz.me/2015/hexo-deploy-case-sensitive/">Hexo 部署到 Github Pages 文件夹大小写问题 // Yizhao He’s Notes (1mhz.me)</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43219615/article/details/102536642">利用hexo在GitHub搭建博客改变tag因为大小写问题而404的解决方法_hexo的next用tag就404_轨迹 ‎‎ ‎‎的博客-CSDN博客</a></p>
+<h1 id="参考">参考</h1>
+<p><a target="_blank" rel="noopener" href="http://1mhz.me/2015/hexo-deploy-case-sensitive/">Hexo 部署到
+Github Pages 文件夹大小写问题 // Yizhao He's Notes (1mhz.me)</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43219615/article/details/102536642">利用hexo在GitHub搭建博客改变tag因为大小写问题而404的解决方法_hexo的next用tag就404_轨迹
+‎‎‎‎的博客-CSDN博客</a></p>
 
     </div>
 
@@ -370,7 +383,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

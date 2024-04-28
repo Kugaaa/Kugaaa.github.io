@@ -74,7 +74,119 @@
   </style>
 </noscript>
 
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -191,6 +303,89 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html" class="post-title-link" itemprop="url">二分查找红蓝分区思想</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-04-28 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-28T00:00:00+08:00">2024-04-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">结构算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景">背景</h1>
+<p>二分的思想很简单，但是难在 coding 上，因为需要考虑边界条件</p>
+<p>在 B 站上看了一个视频，<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1d54y1q7k7">二分查找为什么总是写错？</a>
+动画讲解了一种比较好记忆处理边界的方式（我认为并不是在讲二分的思想，而是用一种图示的方式避免边界处理错误），所以在这里记录下</p>
+<h1 id="应用">应用</h1>
+<p>引入抛出了一个问题</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E6%B0%B4%E5%A1%98%E6%8A%BD%E6%A0%B7.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -242,9 +437,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在 n 个数中，如何让抽到每一个数的概率相等</p>
+          <h1 id="背景">背景</h1>
+<p>在 n 个数中，如何让抽到每一个数的概率相等</p>
 <p>可以产生一个随机数，n 个数则在 [1,n] 中产生一个随机数即可</p>
-<p>但如果涉及到外部数据，即一次并不能全部读取 n 个数（n 未知）；例如一共 1000 个数据，一次只能加载 10 个，那么再每 10 个加载一次，总共加载 100 次的过程中如何保证最终取到的值满足 1/n</p>
+<p>但如果涉及到外部数据，即一次并不能全部读取 n 个数（n 未知）；例如一共
+1000 个数据，一次只能加载 10 个，那么再每 10 个加载一次，总共加载 100
+次的过程中如何保证最终取到的值满足 1/n</p>
 <p>使用<strong>水塘抽样算法</strong>可以解决</p>
           <!--noindex-->
             <div class="post-button">
@@ -323,9 +521,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h1><p>LiteFlow 2.12.0 版本的主要 Feature 就是对决策路由的支持</p>
+          <h1 id="思想">思想</h1>
+<p>LiteFlow 2.12.0 版本的主要 Feature 就是对决策路由的支持</p>
 <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KeTx9lZGWn0-mF6ilmO7Fg">功能引入的文章</a></p>
-<p><a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I96A33">对应的 Issue</a></p>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/dromara/liteFlow/issues/I96A33">对应的
+Issue</a></p>
 <p>这样就能实现类似 Drools 中的决策表功能</p>
           <!--noindex-->
             <div class="post-button">
@@ -408,13 +608,28 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>之前一直对索引分析中 type range 有误解</p>
+          <h1 id="背景">背景</h1>
+<p>之前一直对索引分析中 type range 有误解</p>
 <p>下面是官方文档对 type range 的解释</p>
 <blockquote>
-<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#jointype_range"><code>range</code></a> can be used when a key column is compared to a constant using any of the <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal"><code>=</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_not-equal"><code>&lt;&gt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than"><code>&gt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than-or-equal"><code>&gt;=</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than"><code>&lt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than-or-equal"><code>&lt;=</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_is-null"><code>IS NULL</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal-to"><code>&lt;=&gt;</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_between"><code>BETWEEN</code></a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/string-comparison-functions.html#operator_like"><code>LIKE</code></a>, or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_in"><code>IN()</code></a> operators:</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/explain-output.html#jointype_range"><code>range</code></a>
+can be used when a key column is compared to a constant using any of the
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal"><code>=</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_not-equal"><code>&lt;&gt;</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than"><code>&gt;</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_greater-than-or-equal"><code>&gt;=</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than"><code>&lt;</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_less-than-or-equal"><code>&lt;=</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_is-null"><code>IS NULL</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_equal-to"><code>&lt;=&gt;</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_between"><code>BETWEEN</code></a>,
+<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/string-comparison-functions.html#operator_like"><code>LIKE</code></a>,
+or <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html#operator_in"><code>IN()</code></a>
+operators:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_column <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_column <span class="keyword">BETWEEN</span> <span class="number">10</span> <span class="keyword">and</span> <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_column <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> tbl_name</span><br><span class="line"><span class="keyword">WHERE</span> key_part1 <span class="operator">=</span> <span class="number">10</span> <span class="keyword">AND</span> key_part2 <span class="keyword">IN</span> (<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>);</span><br></pre></td></tr></table></figure>
 </blockquote>
-<p><code>IN</code> 查询下的 range 什么时候会恶化为 ALL 呢？按照我之前的理解，可能有两点</p>
+<p><code>IN</code> 查询下的 range 什么时候会恶化为 ALL
+呢？按照我之前的理解，可能有两点</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20EXPLAIN%20%E4%B8%AD%E7%9A%84%20type%20range.html#more" rel="contents">
@@ -496,10 +711,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h1><p><strong>语法</strong></p>
+          <h1 id="如何使用">如何使用</h1>
+<p><strong>语法</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SCAN cursor [MATCH pattern] [COUNT count] [TYPE <span class="built_in">type</span>]</span><br></pre></td></tr></table></figure>
 <p><strong>时间复杂度</strong></p>
-<p>一次调用是 <code>O(1)</code>，完整的迭代是 <code>O(N)</code>，包括不断调用直到返回 cursor 为 0；N 为集合内元素数量</p>
+<p>一次调用是 <code>O(1)</code>，完整的迭代是
+<code>O(N)</code>，包括不断调用直到返回 cursor 为 0；N
+为集合内元素数量</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/DB/Redis/Redis%20SCAN%20%E5%8E%9F%E7%90%86.html#more" rel="contents">
@@ -577,94 +795,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h1><h2 id="fork"><a href="#fork" class="headerlink" title="fork"></a>fork</h2><p>Unix/Linux 操作系统提供了一个 <code>fork</code> 系统调用，它非常特殊，因为普通的函数调用，调用一次就返回一次，但是 <code>fork</code> 调用一次，返回两次</p>
-<p>因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后分别在父进程和子进程内返回，子进程永远返回 <code>0</code>，而父进程返回子进程的 ID</p>
-<p>这样做的理由是，一个父进程可以 fork 出很多子进程，所以，父进程要记下每个子进程的 ID，而子进程只需要调用 <code>getppid</code> 就可以拿到父进程的 ID</p>
+          <h1 id="多进程">多进程</h1>
+<h2 id="fork">fork</h2>
+<p>Unix/Linux 操作系统提供了一个 <code>fork</code>
+系统调用，它非常特殊，因为普通的函数调用，调用一次就返回一次，但是
+<code>fork</code> 调用一次，返回两次</p>
+<p>因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后分别在父进程和子进程内返回，子进程永远返回
+<code>0</code>，而父进程返回子进程的 ID</p>
+<p>这样做的理由是，一个父进程可以 fork
+出很多子进程，所以，父进程要记下每个子进程的 ID，而子进程只需要调用
+<code>getppid</code> 就可以拿到父进程的 ID</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/%E5%BC%80%E5%8F%91/Python/Python%20%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%BC%82%E6%AD%A5.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html" class="post-title-link" itemprop="url">Python 进阶语法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-31 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-31T00:00:00+08:00">2024-01-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>因为 Python 并非是工作内容需要使用的语言，所以对语法并没有系统地学习过，加上也不会使用 Python 编写什么复杂的逻辑，所以一直以来都是使用过程中遇到需要的逻辑语法就查一下</p>
-<p>在学习 LangChain 的过程中，发现 Python 的语法糖很多，很多设计思想提供了语法层面的支持，使得阅读源码挺费劲的</p>
-<p>所以在这里还是系统地了解下 Python 都提供了哪些语法，也了解下 Python 编写代码的主要思想</p>
-<p>这里主要是整理下 Python 中比较特殊的、和 Java 有较大区别的操作</p>
-<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -753,7 +896,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -940,6 +1083,59 @@ window.addEventListener('pjax:success', () => {
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

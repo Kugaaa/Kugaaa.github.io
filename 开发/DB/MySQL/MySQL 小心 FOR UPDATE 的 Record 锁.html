@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="FOR UPDATEFOR UPDATE 是 SELECT 语句的可选参数 MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement  如果将 FOR UPDATE 和支持页锁或行锁的数据库引擎一起使用（比如 InnoDB），被查询的行将被写锁定，直到当前事务结束使用 LOCK IN SHARE MODE 将设置共享锁，允许其他事">
+  <meta name="description" content="FOR UPDATE FOR UPDATE 是 SELECT 语句的可选参数 MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement  如果将 FOR UPDATE 和支持页锁或行锁的数据库引擎一起使用（比如 InnoDB），被查询的行将被写锁定，直到当前事务结束 使用 LOCK IN SHARE MODE 将">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL 小心 FOR UPDATE 的 Record 锁">
 <meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20%E5%B0%8F%E5%BF%83%20FOR%20UPDATE%20%E7%9A%84%20Record%20%E9%94%81.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="FOR UPDATEFOR UPDATE 是 SELECT 语句的可选参数 MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement  如果将 FOR UPDATE 和支持页锁或行锁的数据库引擎一起使用（比如 InnoDB），被查询的行将被写锁定，直到当前事务结束使用 LOCK IN SHARE MODE 将设置共享锁，允许其他事">
+<meta property="og:description" content="FOR UPDATE FOR UPDATE 是 SELECT 语句的可选参数 MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement  如果将 FOR UPDATE 和支持页锁或行锁的数据库引擎一起使用（比如 InnoDB），被查询的行将被写锁定，直到当前事务结束 使用 LOCK IN SHARE MODE 将">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-12-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-12-24T16:00:00.000Z">
@@ -250,24 +250,43 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="FOR-UPDATE"><a href="#FOR-UPDATE" class="headerlink" title="FOR UPDATE"></a>FOR UPDATE</h1><p><code>FOR UPDATE</code> 是 SELECT 语句的可选参数</p>
-<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html">MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement</a></p>
+        <h1 id="for-update">FOR UPDATE</h1>
+<p><code>FOR UPDATE</code> 是 SELECT 语句的可选参数</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html">MySQL
+:: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement</a></p>
 <ul>
-<li><p>如果将 <code>FOR UPDATE</code> 和支持页锁或行锁的数据库引擎一起使用（比如 InnoDB），被查询的行将被写锁定，直到当前事务结束<br>使用 <code>LOCK IN SHARE MODE</code> 将设置共享锁，允许其他事务读取检查的行，但不更新或删除它们</p>
-</li>
-<li><p>当使用类似的语句 <code>CREATE TABLE new_table SELECT ... FROM old_table</code> 不能在 <code>SELECT</code> 中使用 <code>FOR UPDATE</code></p>
-<p>如果您尝试执行此操作，则该语句将被拒绝，并显示 <code>Can&#39;t update table &#39;old_table&#39; while &#39;new_table&#39; is being created.</code></p>
-</li>
+<li><p>如果将 <code>FOR UPDATE</code>
+和支持页锁或行锁的数据库引擎一起使用（比如
+InnoDB），被查询的行将被写锁定，直到当前事务结束 使用
+<code>LOCK IN SHARE MODE</code>
+将设置共享锁，允许其他事务读取检查的行，但不更新或删除它们</p></li>
+<li><p>当使用类似的语句
+<code>CREATE TABLE new_table SELECT ... FROM old_table</code> 不能在
+<code>SELECT</code> 中使用 <code>FOR UPDATE</code></p>
+<p>如果您尝试执行此操作，则该语句将被拒绝，并显示
+<code>Can't update table 'old_table' while 'new_table' is being created.</code></p></li>
 </ul>
-<h1 id="锁定读"><a href="#锁定读" class="headerlink" title="锁定读"></a>锁定读</h1><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">MySQL :: MySQL 5.7 Reference Manual :: 14.7.2.4 Locking Reads</a></p>
-<p>如果查询数据后希望在同一事务中插入或更新相关数据，则常规 SELECT 语句无法提供足够的保护，其他事务可以更新或删除您刚才查询的同一行</p>
+<h1 id="锁定读">锁定读</h1>
+<p><a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">MySQL
+:: MySQL 5.7 Reference Manual :: 14.7.2.4 Locking Reads</a></p>
+<p>如果查询数据后希望在同一事务中插入或更新相关数据，则常规 SELECT
+语句无法提供足够的保护，其他事务可以更新或删除您刚才查询的同一行</p>
 <p>InnoDB 引擎提供了两种锁定读的方式来提供额外的安全保证：</p>
 <ul>
-<li><code>SELECT ... LOCK IN SHARE MODE</code><br>在读取到的所有行上设置共享锁（shared mode lock）其他事务可以进行读取，但是在事务提交之前都不能进行修改，如果查询过程中这些行中的任意行被另一个尚未提交的事务修改，则查询将等待该事务结束，然后使用更新后的值</li>
-<li><code>SELECT ... FOR UPDATE</code><br>对于查询到的索引记录，锁定行和任何关联的索引条目，就像为这些行进行 UPDATE 语句一样<br>对其他事务被阻止更新这些行、进行查询、在共享模式下锁定或读取特定事务隔离级别的数据<br>一致读（快照读）将忽略在读取视图中存在的记录上设置的任何锁（记录的旧版本无法锁定，因为它们是通过在记录的内存副本上应用 undo log 来重建的）</li>
+<li><code>SELECT ... LOCK IN SHARE MODE</code>
+在读取到的所有行上设置共享锁（shared mode
+lock）其他事务可以进行读取，但是在事务提交之前都不能进行修改，如果查询过程中这些行中的任意行被另一个尚未提交的事务修改，则查询将等待该事务结束，然后使用更新后的值</li>
+<li><code>SELECT ... FOR UPDATE</code>
+对于查询到的索引记录，锁定行和任何关联的索引条目，就像为这些行进行
+UPDATE 语句一样
+对其他事务被阻止更新这些行、进行查询、在共享模式下锁定或读取特定事务隔离级别的数据
+一致读（快照读）将忽略在读取视图中存在的记录上设置的任何锁（记录的旧版本无法锁定，因为它们是通过在记录的内存副本上应用
+undo log 来重建的）</li>
 </ul>
 <p>这些子句在处理树结构或图结构数据时非常有用，无论是在单个表中还是在多个表中拆分；可以从一个位置遍历边或树枝到另一个位置，同时保留返回并更改任何这些“指针”值的权利</p>
-<p>当事务被提交或回滚时，由 LOCK IN SHARE MODE 和 FOR UPDATE 查询设置的所有锁都会被释放</p>
+<p>当事务被提交或回滚时，由 LOCK IN SHARE MODE 和 FOR UPDATE
+查询设置的所有锁都会被释放</p>
 <p><br></p>
 <p><strong>FOR UPDATE 不会传递</strong></p>
 <p>外部语句中的锁定读取子句不会锁定嵌套子查询中表的行，除非在子查询中也指定了锁定读取子句</p>
@@ -277,125 +296,178 @@
 <p><code>SELECT * FROM t1 WHERE c1 = (SELECT c1 FROM t2 FOR UPDATE) FOR UPDATE;</code></p>
 <blockquote>
 <p>locking read</p>
-<p>A <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html"><code>SELECT</code></a> statement that also performs a <strong>locking</strong> operation on an <code>InnoDB</code> table. Either <code>SELECT ... FOR UPDATE</code> or <code>SELECT ... LOCK IN SHARE MODE</code>. It has the potential to produce a <strong>deadlock</strong>, depending on the <strong>isolation level</strong> of the transaction. The opposite of a <strong>non-locking read*</strong>. Not allowed for global tables in a <strong>read-only transaction</strong>.</p>
-<p><code>SELECT ... FOR SHARE</code> replaces <code>SELECT ... LOCK IN SHARE MODE</code> in MySQL 8.0.1, but <code>LOCK IN SHARE MODE</code> remains available for backward compatibility.</p>
-<p>See <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">Section 14.7.2.4, “Locking Reads”</a>.</p>
-<p>See Also <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_deadlock">deadlock</a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_isolation_level">isolation level</a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking">locking</a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_non_locking_read">non-locking read</a>, <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_read_only_transaction">read-only transaction</a>.</p>
+<p>A <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html"><code>SELECT</code></a>
+statement that also performs a <strong>locking</strong> operation on an
+<code>InnoDB</code> table. Either <code>SELECT ... FOR UPDATE</code> or
+<code>SELECT ... LOCK IN SHARE MODE</code>. It has the potential to
+produce a <strong>deadlock</strong>, depending on the <strong>isolation
+level</strong> of the transaction. The opposite of a <strong>non-locking
+read</strong>*. Not allowed for global tables in a <strong>read-only
+transaction</strong>.</p>
+<p><code>SELECT ... FOR SHARE</code> replaces
+<code>SELECT ... LOCK IN SHARE MODE</code> in MySQL 8.0.1, but
+<code>LOCK IN SHARE MODE</code> remains available for backward
+compatibility.</p>
+<p>See <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">Section
+14.7.2.4, “Locking Reads”</a>.</p>
+<p>See Also <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_deadlock">deadlock</a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_isolation_level">isolation
+level</a>, <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_locking">locking</a>,
+<a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_non_locking_read">non-locking
+read</a>, <a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_read_only_transaction">read-only
+transaction</a>.</p>
 </blockquote>
-<h1 id="一致性非锁定读"><a href="#一致性非锁定读" class="headerlink" title="一致性非锁定读"></a>一致性非锁定读</h1><p>上面介绍锁定读中，有一句解释</p>
+<h1 id="一致性非锁定读">一致性非锁定读</h1>
+<p>上面介绍锁定读中，有一句解释</p>
 <blockquote>
-<p>Consistent reads ignore any locks set on the records that exist in the read view.</p>
+<p>Consistent reads ignore any locks set on the records that exist in
+the read view.</p>
 <p>一致读将忽略在读取视图中存在的记录上设置的任何锁</p>
 </blockquote>
 <p>这里的一致读指的就是一致性非锁定读（Consistent Nonlocking Reads）</p>
-<p>一致读取意味着 InnoDB 使用多版本控制在某个时间点（timepoint）向查询显示数据库的快照，查询会看到在此时间点之前提交的事务所做的修改，而不会看到以后或未提交的事务进行的修改</p>
-<p>您可以通过提交事务，然后使用一致快照执行另一个 SELECT 或开启一个新事务来推进时间点</p>
+<p>一致读取意味着 InnoDB
+使用多版本控制在某个时间点（timepoint）向查询显示数据库的快照，查询会看到在此时间点之前提交的事务所做的修改，而不会看到以后或未提交的事务进行的修改</p>
+<p>您可以通过提交事务，然后使用一致快照执行另一个 SELECT
+或开启一个新事务来推进时间点</p>
 <p>不同隔离级别的快照策略：</p>
 <ul>
-<li>REPEATABLE READ：第一次读取设置快照；提交事务后的读取则会使用最新数据</li>
+<li>REPEATABLE
+READ：第一次读取设置快照；提交事务后的读取则会使用最新数据</li>
 <li>READ COMMITTED：事务中的每个一致读取都会设置并读取自己的新快照</li>
 </ul>
 <p><br></p>
 <p><strong>举一个例子说明一致性读</strong></p>
-<p>事务 A 只有在 B 提交了事务，并且 A 也提交了事务时才看到由 B 插入的行</p>
-<div class="table-container">
+<p>事务 A 只有在 B 提交了事务，并且 A 也提交了事务时才看到由 B
+插入的行</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>事务 A</th>
 <th>事务 B</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>开启事务</td>
 <td>开启事务</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SELECT * FROM t;（empty set）</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td></td>
 <td>INSERT INTO tVALUES (1, 2);</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SELECT * FROM t;（empty set）</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td></td>
 <td>COMMIT;</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SELECT * FROM t;（empty set）</td>
 <td></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>COMMIT;</td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td>SELECT * FROM t;（1,2）</td>
+<td></td>
 </tr>
 </tbody>
 </table>
-</div>
-<p>如果您想查看数据库的“最新”状态，请使用 READ COMMITTED 隔离级别或使用锁定读</p>
+<p>如果您想查看数据库的“最新”状态，请使用 READ COMMITTED
+隔离级别或使用锁定读</p>
 <p><br></p>
 <p><strong>需要注意 DML 对数据可见的影响</strong></p>
-<p>数据库状态的快照应用于事务中的 SELECT 语句，而不一定应用于 DML 语句</p>
-<p>如果插入或修改某些行，然后提交该事务，则从另一个并发的 REPEATABLE READ 事务发出的 DELETE 或 UPDATE 语句可能会影响那些刚刚提交的行，即使会话无法查询到这些数据（因为快照）</p>
+<p>数据库状态的快照应用于事务中的 SELECT 语句，而不一定应用于 DML
+语句</p>
+<p>如果插入或修改某些行，然后提交该事务，则从另一个并发的 REPEATABLE
+READ 事务发出的 DELETE 或 UPDATE
+语句可能会影响那些刚刚提交的行，即使会话无法查询到这些数据（因为快照）</p>
 <p>如果事务确实更新或删除了由其他事务提交的行，则这些更改对当前事务可见</p>
- <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(c1) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 <span class="operator">=</span> <span class="string">&#x27;xyz&#x27;</span>;</span><br><span class="line"><span class="comment">-- 0 行</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 <span class="operator">=</span> <span class="string">&#x27;xyz&#x27;</span>;</span><br><span class="line"><span class="comment">-- 可能会删除最近由其他事务提交的匹配到的行</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;</span><br><span class="line"><span class="comment">-- 0 行</span></span><br><span class="line"><span class="keyword">UPDATE</span> t1 <span class="keyword">SET</span> c2 <span class="operator">=</span> <span class="string">&#x27;cba&#x27;</span> <span class="keyword">WHERE</span> c2 <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;</span><br><span class="line"><span class="comment">-- 如果另一个事务刚刚提交了 abc 值的 10 行</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 <span class="operator">=</span> <span class="string">&#x27;cba&#x27;</span>;</span><br><span class="line"><span class="comment">-- 10 行；这个事务现在可以看到它刚刚更新的行</span></span><br></pre></td></tr></table></figure>
-<h1 id="合理使用-FOR-UPDATE"><a href="#合理使用-FOR-UPDATE" class="headerlink" title="合理使用 FOR UPDATE"></a>合理使用 FOR UPDATE</h1><p>业务中有时需要查询数据，对数据进行 check 之后再更新，就需要使用锁机制</p>
-<p>往往简单的实现方式是在并发不高的场景下开启事务直接使用 <code>FOR UPDATE</code> 进行查询后进行修改</p>
-<p>不过需要注意查询数据是否存在，如果数据不存在可能会严重影响性能，具体原因将会在下面进行分析，当然一句话概括也很简单：<code>FOR UPDATE</code> 会上 record 锁，如果数据不存在 record 锁会变为 gap 锁</p>
-<h2 id="真实背景"><a href="#真实背景" class="headerlink" title="真实背景"></a>真实背景</h2><p>压测中发现涉及积分表写入的响应特别慢，甚至还存在死锁</p>
+<p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(c1) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 <span class="operator">=</span> <span class="string">&#x27;xyz&#x27;</span>;</span><br><span class="line"><span class="comment">-- 0 行</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c1 <span class="operator">=</span> <span class="string">&#x27;xyz&#x27;</span>;</span><br><span class="line"><span class="comment">-- 可能会删除最近由其他事务提交的匹配到的行</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;</span><br><span class="line"><span class="comment">-- 0 行</span></span><br><span class="line"><span class="keyword">UPDATE</span> t1 <span class="keyword">SET</span> c2 <span class="operator">=</span> <span class="string">&#x27;cba&#x27;</span> <span class="keyword">WHERE</span> c2 <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;</span><br><span class="line"><span class="comment">-- 如果另一个事务刚刚提交了 abc 值的 10 行</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(c2) <span class="keyword">FROM</span> t1 <span class="keyword">WHERE</span> c2 <span class="operator">=</span> <span class="string">&#x27;cba&#x27;</span>;</span><br><span class="line"><span class="comment">-- 10 行；这个事务现在可以看到它刚刚更新的行</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="合理使用-for-update">合理使用 FOR UPDATE</h1>
+<p>业务中有时需要查询数据，对数据进行 check
+之后再更新，就需要使用锁机制</p>
+<p>往往简单的实现方式是在并发不高的场景下开启事务直接使用
+<code>FOR UPDATE</code> 进行查询后进行修改</p>
+<p>不过需要注意查询数据是否存在，如果数据不存在可能会严重影响性能，具体原因将会在下面进行分析，当然一句话概括也很简单：<code>FOR UPDATE</code>
+会上 record 锁，如果数据不存在 record 锁会变为 gap 锁</p>
+<h2 id="真实背景">真实背景</h2>
+<p>压测中发现涉及积分表写入的响应特别慢，甚至还存在死锁</p>
 <p>逻辑流程：</p>
-<ol>
+<ol type="1">
 <li>写锁定读对应行（因为需要 check 余额）</li>
 <li>检查余额，计算更新参数</li>
-<li>插入或者更新（使用 <code>INSERT IGNORE ... ON DUPLICATE KEY UPDATE</code> 实现）</li>
+<li>插入或者更新（使用
+<code>INSERT IGNORE ... ON DUPLICATE KEY UPDATE</code> 实现）</li>
 </ol>
 <p>这是使用锁定读容易忽略的一个点，即<strong>有可能不存在对应行数据，导致锁的范围变大</strong></p>
-<h2 id="记录锁和间隙锁"><a href="#记录锁和间隙锁" class="headerlink" title="记录锁和间隙锁"></a>记录锁和间隙锁</h2><p><strong>记录锁 Record Locks</strong></p>
+<h2 id="记录锁和间隙锁">记录锁和间隙锁</h2>
+<p><strong>记录锁 Record Locks</strong></p>
 <p>记录锁是索引记录上的锁</p>
-<p>例如 <code>SELECT c1 FROM t WHERE c1=10 For UPDATE；</code>；将会阻止任何其他事务插入、更新或删除 <code>t.c1</code> 值为 <code>10</code> 的行</p>
-<p>记录锁总是锁定索引记录，即使定义的表没有索引；这种情况 InnoDB 会创建一个隐藏的聚集索引，并将该索引用于记录锁定</p>
-<p>记录锁的事务数据在 SHOW ENGINE INNODB STATUS 和 InnoDB 监视器输出中显示如下</p>
+<p>例如
+<code>SELECT c1 FROM t WHERE c1=10 For UPDATE；</code>；将会阻止任何其他事务插入、更新或删除
+<code>t.c1</code> 值为 <code>10</code> 的行</p>
+<p>记录锁总是锁定索引记录，即使定义的表没有索引；这种情况 InnoDB
+会创建一个隐藏的聚集索引，并将该索引用于记录锁定</p>
+<p>记录锁的事务数据在 SHOW ENGINE INNODB STATUS 和 InnoDB
+监视器输出中显示如下</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RECORD LOCKS space id <span class="number">58</span> page <span class="keyword">no</span> <span class="number">3</span> n bits <span class="number">72</span> index `<span class="keyword">PRIMARY</span>` <span class="keyword">of</span> <span class="keyword">table</span> `test`.`t`</span><br><span class="line">trx id <span class="number">10078</span> lock_mode X locks rec but <span class="keyword">not</span> gap</span><br><span class="line">Record lock, heap <span class="keyword">no</span> <span class="number">2</span> PHYSICAL RECORD: n_fields <span class="number">3</span>; compact format; info bits <span class="number">0</span></span><br><span class="line"> <span class="number">0</span>: len <span class="number">4</span>; hex <span class="number">8000000</span>a; <span class="keyword">asc</span>     ;;</span><br><span class="line"> <span class="number">1</span>: len <span class="number">6</span>; hex <span class="number">00000000274</span>f; <span class="keyword">asc</span>     <span class="string">&#x27;O;;</span></span><br><span class="line"><span class="string"> 2: len 7; hex b60000019d0110; asc        ;;</span></span><br></pre></td></tr></table></figure>
 <p><br></p>
 <p><strong>间隙锁 Gap Locks</strong></p>
 <p>间隙锁定是对索引记录之间间隙的锁定，或对第一个索引记录之前（上确界）或最后一个索引记录之后（下确界）间隙的锁定</p>
-<p>例如 <code>SELECT c1 FROM t WHERE c1 BETWEEN 10 and 20 FOR UPDATE;</code>；将会防止其他事务将值 <code>15</code> 插入到 <code>t.c1</code> 列中，无论该列中是否已经存在任何此类值，因为该范围中所有现有值之间的间隙都被锁定</p>
+<p>例如
+<code>SELECT c1 FROM t WHERE c1 BETWEEN 10 and 20 FOR UPDATE;</code>；将会防止其他事务将值
+<code>15</code> 插入到 <code>t.c1</code>
+列中，无论该列中是否已经存在任何此类值，因为该范围中所有现有值之间的间隙都被锁定</p>
 <p>间隙可能跨越单个索引值、多个索引值，甚至为空</p>
 <p>间隙锁只存在于部分隔离级别中</p>
 <p>对于唯一索引并且只查询唯一行的语句，不会设置间隙锁</p>
-<p>例如 <code>SELECT * FROM child WHERE id = 100;</code>；但是如果 id 没有索引或具有非唯一索引，则该语句会锁定前面的间隙（这里就是背景问题的根源）</p>
+<p>例如 <code>SELECT * FROM child WHERE id = 100;</code>；但是如果 id
+没有索引或具有非唯一索引，则该语句会锁定前面的间隙（这里就是背景问题的根源）</p>
 <p><strong>间隙锁的冲突性</strong></p>
 <p>需要注意不同的事务可以在间隙上持有冲突的间隙锁（只有间隙锁和间隙锁之前不冲突）</p>
-<p>例如，事务 A 可以在间隙上保持共享间隙锁（gap S-lock），而事务 B 在相同间隙上保持独占间隙锁（gap X-lock）；允许冲突的间隙锁的原因是，如果从索引中删除记录，必须合并不同事务在记录上保留的间隙锁</p>
-<p>InnoDB 中的间隙锁是“纯抑制性的（purely inhibitive）”，这意味着它们的唯一目的是防止其他事务插入到间隙中，所以间隙锁可以共存</p>
+<p>例如，事务 A 可以在间隙上保持共享间隙锁（gap S-lock），而事务 B
+在相同间隙上保持独占间隙锁（gap
+X-lock）；允许冲突的间隙锁的原因是，如果从索引中删除记录，必须合并不同事务在记录上保留的间隙锁</p>
+<p>InnoDB 中的间隙锁是“纯抑制性的（purely
+inhibitive）”，这意味着它们的唯一目的是防止其他事务插入到间隙中，所以间隙锁可以共存</p>
 <p>一个事务占用的间隙锁不会阻止另一个事务对同一间隙占用间隙锁，共享和独占间隙锁之间没有区别，它们彼此不冲突，并且具备相同的功能</p>
-<h2 id="验证-普通索引"><a href="#验证-普通索引" class="headerlink" title="验证 - 普通索引"></a>验证 - 普通索引</h2><p>创建 DB 和插入基本数据</p>
+<h2 id="验证---普通索引">验证 - 普通索引</h2>
+<p>创建 DB 和插入基本数据</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `test_key` (</span><br><span class="line">  `id` <span class="type">BIGINT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `key` <span class="type">INT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">  KEY `idx_key` (`key`)</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB AUTO_INCREMENT <span class="operator">=</span> <span class="number">1</span> <span class="keyword">DEFAULT</span> CHARSET <span class="operator">=</span> utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test_key`(`key`) <span class="keyword">VALUES</span>(<span class="number">10</span>),(<span class="number">20</span>),(<span class="number">30</span>),(<span class="number">40</span>),(<span class="number">50</span>);</span><br></pre></td></tr></table></figure>
-<p>查询 <code>performance_schema.data_locks</code> 可以获取当前持有锁的事务及锁相关信息（我使用的 MySQL 版本为 8.0，需要注意不同版本的区别）</p>
+<p>查询 <code>performance_schema.data_locks</code>
+可以获取当前持有锁的事务及锁相关信息（我使用的 MySQL 版本为
+8.0，需要注意不同版本的区别）</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `performance_schema.data_locks`;</span><br></pre></td></tr></table></figure>
 <p>隔离级别为 RR</p>
 <p><strong>查询命中索引</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `test_key` <span class="keyword">WHERE</span> `key` <span class="operator">=</span> <span class="number">30</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
 <p>表中存在 key = 30 的数据，持有的锁：</p>
 <ul>
-<li>表级别的<strong>插入意向锁</strong>（<code>FOR UPDATE</code> 带来）</li>
+<li>表级别的<strong>插入意向锁</strong>（<code>FOR UPDATE</code>
+带来）</li>
 <li>idx_key 30 索引上的<strong>临键锁</strong></li>
 <li>PRIMARY 3 索引上的<strong>记录锁</strong></li>
 <li>RECORD 40 索引上的<strong>间隙锁</strong></li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>INDEX_NAME</th>
 <th>LOCK_TYPE</th>
 <th>LOCK_MODE</th>
@@ -403,25 +475,25 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>/</td>
 <td>TABLE</td>
 <td>IX</td>
 <td>/</td>
 </tr>
-<tr>
+<tr class="even">
 <td>idx_key</td>
 <td>RECORD</td>
 <td>X</td>
 <td>30, 3</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PRIMARY</td>
 <td>RECORD</td>
 <td>X,REC_NOT_GAP</td>
 <td>3</td>
 </tr>
-<tr>
+<tr class="even">
 <td>idx_key</td>
 <td>RECORD</td>
 <td>X,GAP</td>
@@ -429,7 +501,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p><strong>查询未命中索引，但有更大的索引</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `test_key` <span class="keyword">WHERE</span> `key` <span class="operator">=</span> <span class="number">35</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
 <p>表中不存在 key = 30 的数据，但存在 key = 40 的数据，持有的锁：</p>
@@ -437,10 +508,9 @@
 <li>表级别的<strong>插入意向锁</strong></li>
 <li>idx_key 40 索引上的<strong>间隙锁</strong></li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>INDEX_NAME</th>
 <th>LOCK_TYPE</th>
 <th>LOCK_MODE</th>
@@ -448,13 +518,13 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>/</td>
 <td>TABLE</td>
 <td>IX</td>
 <td>/</td>
 </tr>
-<tr>
+<tr class="even">
 <td>idx_key</td>
 <td>RECORD</td>
 <td>X,GAP</td>
@@ -462,7 +532,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p><strong>查询未命中索引，没有更大的索引</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `test_key` <span class="keyword">WHERE</span> `key` <span class="operator">=</span> <span class="number">60</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
 <p>表中不存在 key = 60 的数据，且没有比 60 更大的索引，持有的锁：</p>
@@ -470,10 +539,9 @@
 <li>表级别的<strong>插入意向锁</strong></li>
 <li>上确界伪记录<strong>临键锁</strong></li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>INDEX_NAME</th>
 <th>LOCK_TYPE</th>
 <th>LOCK_MODE</th>
@@ -481,13 +549,13 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>/</td>
 <td>TABLE</td>
 <td>IX</td>
 <td>/</td>
 </tr>
-<tr>
+<tr class="even">
 <td>idx_key</td>
 <td>RECORD</td>
 <td>X</td>
@@ -495,8 +563,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="验证-唯一约束"><a href="#验证-唯一约束" class="headerlink" title="验证 - 唯一约束"></a>验证 - 唯一约束</h2><p>同理</p>
+<h2 id="验证---唯一约束">验证 - 唯一约束</h2>
+<p>同理</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `test_uni_key` (</span><br><span class="line">  `id` <span class="type">BIGINT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `key` <span class="type">INT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">  <span class="keyword">UNIQUE</span> KEY `uni_key` (`key`)</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB AUTO_INCREMENT <span class="operator">=</span> <span class="number">1</span> <span class="keyword">DEFAULT</span> CHARSET <span class="operator">=</span> utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test_uni_key`(`key`) <span class="keyword">VALUES</span>(<span class="number">10</span>),(<span class="number">20</span>),(<span class="number">30</span>),(<span class="number">40</span>),(<span class="number">50</span>);</span><br></pre></td></tr></table></figure>
 <p><strong>查询命中索引</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `test_uni_key` <span class="keyword">WHERE</span> `key` <span class="operator">=</span> <span class="number">30</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
@@ -506,10 +574,9 @@
 <li>uni_key 30 索引上的<strong>记录锁</strong></li>
 <li>PRIMARY 3 索引上的<strong>记录锁</strong></li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>INDEX_NAME</th>
 <th>LOCK_TYPE</th>
 <th>LOCK_MODE</th>
@@ -517,19 +584,19 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>/</td>
 <td>TABLE</td>
 <td>IX</td>
 <td>/</td>
 </tr>
-<tr>
+<tr class="even">
 <td>idx_key</td>
 <td>RECORD</td>
 <td>X,REC_NOT_GAP</td>
 <td>30, 3</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PRIMARY</td>
 <td>RECORD</td>
 <td>X,REC_NOT_GAP</td>
@@ -537,7 +604,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p><strong>查询未命中索引，但有更大的索引</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `test_uni_key` <span class="keyword">WHERE</span> `key` <span class="operator">=</span> <span class="number">35</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
 <p>表中不存在 key = 30 的数据，但存在 key = 40 的数据，持有的锁：</p>
@@ -545,10 +611,9 @@
 <li>表级别的<strong>插入意向锁</strong></li>
 <li>uni_key 40 索引上的<strong>间隙锁</strong></li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>INDEX_NAME</th>
 <th>LOCK_TYPE</th>
 <th>LOCK_MODE</th>
@@ -556,13 +621,13 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>/</td>
 <td>TABLE</td>
 <td>IX</td>
 <td>/</td>
 </tr>
-<tr>
+<tr class="even">
 <td>uni_key</td>
 <td>RECORD</td>
 <td>X,GAP</td>
@@ -570,7 +635,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p><strong>查询未命中索引，没有更大的索引</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `test_uni_key` <span class="keyword">WHERE</span> `key` <span class="operator">=</span> <span class="number">60</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
 <p>表中不存在 key = 60 的数据，且没有比 60 更大的索引，持有的锁：</p>
@@ -578,10 +642,9 @@
 <li>表级别的<strong>插入意向锁</strong></li>
 <li>上确界伪记录<strong>临键锁</strong></li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>INDEX_NAME</th>
 <th>LOCK_TYPE</th>
 <th>LOCK_MODE</th>
@@ -589,13 +652,13 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>/</td>
 <td>TABLE</td>
 <td>IX</td>
 <td>/</td>
 </tr>
-<tr>
+<tr class="even">
 <td>uni_key</td>
 <td>RECORD</td>
 <td>X</td>
@@ -603,16 +666,29 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从验证中可以看出，普通索引和唯一约束索引的区别在于对于存在的数据，普通索引多了<strong>索引记录的临键锁</strong>和<strong>索引记录下个范围的间隙锁</strong>；这是因为没有了唯一约束，同值数据可能存在多行，例如 <code>key = 30</code> 的数据可能在其他事务中被插入最终造成幻读，所以需要更多的锁来保证</p>
-<p>此外可以看出导致不规范使用 <code>FOR UPDATE</code> 严重影响效率的核心原因，<code>supremum pseudo-record</code> 的<strong>临键锁</strong>或下一个索引范围的<strong>间隙锁</strong>，可能会锁住表中大片区域导致并发下降、线程等待</p>
-<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><ul>
-<li>业务中是否可以提前写入数据，避免 <code>FOR UPDATE</code> 操作找不到索引而升级为间隙锁甚至锁住上确界</li>
-<li>必要时可以使用其他效率更高、更轻量的锁实现代替，例如使用 Redis 锁</li>
+<h2 id="总结">总结</h2>
+<p>从验证中可以看出，普通索引和唯一约束索引的区别在于对于存在的数据，普通索引多了<strong>索引记录的临键锁</strong>和<strong>索引记录下个范围的间隙锁</strong>；这是因为没有了唯一约束，同值数据可能存在多行，例如
+<code>key = 30</code>
+的数据可能在其他事务中被插入最终造成幻读，所以需要更多的锁来保证</p>
+<p>此外可以看出导致不规范使用 <code>FOR UPDATE</code>
+严重影响效率的核心原因，<code>supremum pseudo-record</code>
+的<strong>临键锁</strong>或下一个索引范围的<strong>间隙锁</strong>，可能会锁住表中大片区域导致并发下降、线程等待</p>
+<h2 id="改进">改进</h2>
+<ul>
+<li>业务中是否可以提前写入数据，避免 <code>FOR UPDATE</code>
+操作找不到索引而升级为间隙锁甚至锁住上确界</li>
+<li>必要时可以使用其他效率更高、更轻量的锁实现代替，例如使用 Redis
+锁</li>
 </ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html">MySQL :: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement</a></p>
-<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">MySQL :: MySQL 5.7 Reference Manual :: 14.7.2.4 Locking Reads</a></p>
-<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html#innodb-record-locks">MySQL :: MySQL 5.7 Reference Manual :: 14.7.1 InnoDB Locking</a></p>
+<h1 id="参考">参考</h1>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/select.html">MySQL
+:: MySQL 5.7 Reference Manual :: 13.2.9 SELECT Statement</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html">MySQL
+:: MySQL 5.7 Reference Manual :: 14.7.2.4 Locking Reads</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html#innodb-record-locks">MySQL
+:: MySQL 5.7 Reference Manual :: 14.7.1 InnoDB Locking</a></p>
 
     </div>
 
@@ -697,7 +773,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#FOR-UPDATE"><span class="nav-number">1.</span> <span class="nav-text">FOR UPDATE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81%E5%AE%9A%E8%AF%BB"><span class="nav-number">2.</span> <span class="nav-text">锁定读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E9%9D%9E%E9%94%81%E5%AE%9A%E8%AF%BB"><span class="nav-number">3.</span> <span class="nav-text">一致性非锁定读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8-FOR-UPDATE"><span class="nav-number">4.</span> <span class="nav-text">合理使用 FOR UPDATE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%9F%E5%AE%9E%E8%83%8C%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">真实背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E9%94%81%E5%92%8C%E9%97%B4%E9%9A%99%E9%94%81"><span class="nav-number">4.2.</span> <span class="nav-text">记录锁和间隙锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95"><span class="nav-number">4.3.</span> <span class="nav-text">验证 - 普通索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-%E5%94%AF%E4%B8%80%E7%BA%A6%E6%9D%9F"><span class="nav-number">4.4.</span> <span class="nav-text">验证 - 唯一约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B"><span class="nav-number">4.6.</span> <span class="nav-text">改进</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#for-update"><span class="nav-number">1.</span> <span class="nav-text">FOR UPDATE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81%E5%AE%9A%E8%AF%BB"><span class="nav-number">2.</span> <span class="nav-text">锁定读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E9%9D%9E%E9%94%81%E5%AE%9A%E8%AF%BB"><span class="nav-number">3.</span> <span class="nav-text">一致性非锁定读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8-for-update"><span class="nav-number">4.</span> <span class="nav-text">合理使用 FOR UPDATE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%9F%E5%AE%9E%E8%83%8C%E6%99%AF"><span class="nav-number">4.1.</span> <span class="nav-text">真实背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E9%94%81%E5%92%8C%E9%97%B4%E9%9A%99%E9%94%81"><span class="nav-number">4.2.</span> <span class="nav-text">记录锁和间隙锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81---%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95"><span class="nav-number">4.3.</span> <span class="nav-text">验证 - 普通索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81---%E5%94%AF%E4%B8%80%E7%BA%A6%E6%9D%9F"><span class="nav-number">4.4.</span> <span class="nav-text">验证 - 唯一约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B"><span class="nav-number">4.6.</span> <span class="nav-text">改进</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -711,7 +787,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
