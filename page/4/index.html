@@ -191,6 +191,90 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/Java%20%E4%BB%8E%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9C%8B%E5%B8%B8%E9%87%8F%E6%B1%A0.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BC%80%E5%8F%91/Java/Java%20%E4%BB%8E%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9C%8B%E5%B8%B8%E9%87%8F%E6%B1%A0.html" class="post-title-link" itemprop="url">Java 从弱引用看常量池</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-12-09 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-09T00:00:00+08:00">2023-12-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言">前言</h1>
+<p>在看阿里开源的 TransmittableThreadLocal Agent
+时发现了在对类进行增强的流程中使用了 <code>WeakHashMap</code></p>
+<p>com.alibaba.ttl3.agent.TtlExtensionTransformletManager</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> use WeakHashMap as a Set collection, value is always null.</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> WeakHashMap&lt;ClassLoader, ?&gt; collectedClassLoaderHistory = <span class="keyword">new</span> <span class="title class_">WeakHashMap</span>&lt;&gt;(<span class="number">512</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Map: ExtensionTransformlet ClassLoader -&gt; ExtensionTransformlet ClassName -&gt; ExtensionTransformlet instance(not include from parent classloader)</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> WeakHashMap&lt;ClassLoader, Map&lt;String, TtlTransformlet&gt;&gt; classLoader2ExtensionTransformlets =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">WeakHashMap</span>&lt;&gt;(<span class="number">512</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Map: ExtensionTransformlet ClassLoader -&gt; ExtensionTransformlet ClassName -&gt; ExtensionTransformlet instance(include from parent classloader)</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> WeakHashMap&lt;ClassLoader, Map&lt;String, TtlTransformlet&gt;&gt; classLoader2ExtensionTransformletsIncludeParentCL =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">WeakHashMap</span>&lt;&gt;(<span class="number">512</span>);</span><br></pre></td></tr></table></figure>
+<p>这里使用了弱引用元素的 HashMap，应该是只用于 JVM
+启动的类加载阶段，所以使用了特殊的引用类型</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/Java/Java%20%E4%BB%8E%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9C%8B%E5%B8%B8%E9%87%8F%E6%B1%A0.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20%E8%AD%A6%E5%8F%B75.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -618,97 +702,10 @@ LangChain 框架的其他部分，都可以轻松使用</li>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Neon%20City.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Neon%20City.html" class="post-title-link" itemprop="url">RECIPES - Neon City</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-11-19 00:00:00" itemprop="dateCreated datePublished" datetime="2023-11-19T00:00:00+08:00">2023-11-19</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BA%BA%E7%94%9F/" itemprop="url" rel="index"><span itemprop="name">人生</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/" itemprop="url" rel="index"><span itemprop="name">宿醉</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://assets-prd.punchdrink.com/wp-content/uploads/2023/11/03141805/Vertical_NeonCity-500x688.jpg"></p>
-<h1 id="霓虹都市-neon-city">霓虹都市 Neon City</h1>
-<p>在这场有趣的 highball 比赛中，Nine Bar 的老板 Lily Wang 和 Joe
-Briglio
-展示了他们最喜欢的夏季美食之一的味道：意大利冰，尽管有一些意想不到的添加</p>
-<p>Lily Wang 和 Joe Briglio 将 Nine Bar 描述为
-“亚洲风格的鸡尾酒酒吧”，Neon City
-以烧酒（shochu）为基础，辅以清酒（sake）、可尔必思（Calpico）和白酒（baijiu）</p>
-<p>所有这些结合在一起形成了层次分明的基础，开胃利口酒和新鲜柠檬汁带来了饮料灵感中预期的浓郁柑橘味。Lily
-Wang 形容它 “让人耳目一新，有点时髦，拥有令人愉快的酸味”</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Neon%20City.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -774,7 +771,7 @@ Wang 形容它 “让人耳目一新，有点时髦，拥有令人愉快的酸�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -787,7 +784,7 @@ Wang 形容它 “让人耳目一新，有点时髦，拥有令人愉快的酸�
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

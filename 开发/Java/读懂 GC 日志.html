@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="当使用 Java 或任何其他基于 JVM 的编程语言时，其中一个核心功能是内存清理（垃圾回收） 和 C 和 C++ 等语言不同，使用者不需要关注内存相关的操作，例如 malloc、calloc、realloc、free 等函数 释放内存的操作就是由 JVM 中名为 Garbage Collector 的角色完成的 垃圾回收器是如何工作的 JVM 在后台运行垃圾回收器来查找未使用的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读懂 GC 日志">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="当使用 Java 或任何其他基于 JVM 的编程语言时，其中一个核心功能是内存清理（垃圾回收） 和 C 和 C++ 等语言不同，使用者不需要关注内存相关的操作，例如 malloc、calloc、realloc、free 等函数 释放内存的操作就是由 JVM 中名为 Garbage Collector 的角色完成的 垃圾回收器是如何工作的 JVM 在后台运行垃圾回收器来查找未使用的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-7.png.webp">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-6.png.webp">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-4.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-3.png.webp">
+<meta property="article:published_time" content="2024-05-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-10T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-7.png.webp">
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>读懂 GC 日志 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          读懂 GC 日志
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-05-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-11T00:00:00+08:00">2024-05-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>当使用 Java 或任何其他基于 JVM
+的编程语言时，其中一个核心功能是内存清理（垃圾回收）</p>
+<p>和 C 和 C++ 等语言不同，使用者不需要关注内存相关的操作，例如
+<code>malloc</code>、<code>calloc</code>、<code>realloc</code>、<code>free</code>
+等函数</p>
+<p>释放内存的操作就是由 JVM 中名为 <strong>Garbage Collector</strong>
+的角色完成的</p>
+<h1 id="垃圾回收器是如何工作的">垃圾回收器是如何工作的</h1>
+<p>JVM
+在后台运行垃圾回收器来查找未使用的引用，这些引用占用的内存可以被释放并重新使用</p>
+<p>堆内存被划分为不同的区域，每个区域都有自己的垃圾收集器类型</p>
+<p>垃圾回收器有很多种实现，同时 JVM
+在符合规范的情况下也会有不同的实现，在理论和实践中每个 JVM
+实现都可以提供自己的垃圾收集器实现，从而提供不同的性能</p>
+<p>JVM 堆的三个主要区域的简化视图可以可视化如下：</p>
+<img src="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-7.png.webp" class="" title="java garbage collection logs">
+<p>拥有一个健康的垃圾收集过程是实现基于 JVM
+的应用程序的最佳性能的关键，因此我们需要确保监控 Java
+虚拟机及其垃圾回收器，通过 GC logs，我们可以了解 JVM
+的垃圾收集器的工作</p>
+<h1 id="什么是-gc-日志">什么是 GC 日志</h1>
+<p>垃圾收集器日志是 Java
+虚拟机生成的文本文件，用于描述垃圾收集器的工作</p>
+<p>包含查看内存清理过程如何工作所需的所有信息，提供了垃圾收集器的行为以及它使用了多少资源；尽管我们可以使用
+APM
+提供程序或内部构建的监控工具来监控我们的应用程序，但垃圾收集器日志对于快速识别堆内存利用率方面的任何潜在问题和瓶颈将是非常宝贵的</p>
+<p>下面是一个 GC 日志的示例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">CommandLine flags: -XX:-BytecodeVerificationLocal -XX:-BytecodeVerificationRemote -XX:InitialHeapSize=52428800 -XX:+ManagementServer -XX:MaxGCPauseMillis=200 -XX:MaxHeapSize=52428800 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:-PrintGCDetails -XX:+PrintGCTimeStamps -XX:TieredStopAtLevel=1 -XX:-UseAdaptiveSizePolicy -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC </span><br><span class="line">2024-05-11T15:55:49.541-0800: 0.517: [GC (Allocation Failure)  12800K-&gt;2492K(49152K), 0.0021661 secs]</span><br><span class="line">2024-05-11T15:55:49.710-0800: 0.687: [GC (Allocation Failure)  15292K-&gt;3412K(49152K), 0.0025412 secs]</span><br><span class="line">2024-05-11T15:55:49.810-0800: 0.787: [GC (Allocation Failure)  16212K-&gt;4807K(49152K), 0.0024151 secs]</span><br><span class="line">2024-05-11T15:55:49.899-0800: 0.876: [GC (Allocation Failure)  17607K-&gt;6061K(49152K), 0.0021924 secs]</span><br><span class="line">2024-05-11T15:55:49.997-0800: 0.973: [GC (Allocation Failure)  18861K-&gt;7424K(49152K), 0.0029084 secs]</span><br><span class="line">2024-05-11T15:55:50.076-0800: 1.053: [GC (Allocation Failure)  20224K-&gt;8503K(49152K), 0.0023001 secs]</span><br><span class="line">2024-05-11T15:55:50.112-0800: 1.089: [GC (Allocation Failure)  21303K-&gt;9742K(49152K), 0.0025567 secs]</span><br><span class="line">2024-05-11T15:55:50.153-0800: 1.129: [GC (Allocation Failure)  22542K-&gt;10927K(49152K), 0.0025338 secs]</span><br><span class="line">2024-05-11T15:55:50.192-0800: 1.168: [GC (Allocation Failure)  23727K-&gt;12205K(49152K), 0.0027763 secs]</span><br><span class="line">2024-05-11T15:55:50.298-0800: 1.275: [GC (Allocation Failure)  25005K-&gt;13338K(49152K), 0.0041218 secs]</span><br><span class="line">2024-05-11T15:55:50.394-0800: 1.371: [GC (Metadata GC Threshold)  24027K-&gt;14554K(49152K), 0.0026052 secs]</span><br><span class="line">2024-05-11T15:55:50.397-0800: 1.373: [Full GC (Metadata GC Threshold)  14554K-&gt;8390K(49152K), 0.0282067 secs]</span><br><span class="line">2024-05-11T15:55:50.472-0800: 1.448: [GC (Allocation Failure)  21190K-&gt;9606K(49152K), 0.0011170 secs]</span><br><span class="line">2024-05-11T15:55:50.553-0800: 1.530: [GC (Allocation Failure)  22406K-&gt;10211K(49152K), 0.0021453 secs]</span><br><span class="line">2024-05-11T15:55:50.625-0800: 1.602: [GC (Allocation Failure)  23011K-&gt;10545K(49152K), 0.0015239 secs]</span><br><span class="line">2024-05-11T15:55:50.722-0800: 1.698: [GC (Allocation Failure)  23345K-&gt;11492K(49152K), 0.0021307 secs]</span><br><span class="line">2024-05-11T15:55:50.810-0800: 1.786: [GC (Allocation Failure)  24292K-&gt;12785K(49152K), 0.0017124 secs]</span><br></pre></td></tr></table></figure>
+<img src="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-6.png.webp" class="" title="java gc logs">
+<h1 id="启动-gc-日志">启动 GC 日志</h1>
+<p>在现代设备上，启用垃圾收集器日志时不必担心性能问题，理论上应该始终打开
+Java 垃圾收集日志</p>
+<p>对于 Java 8 及更早版本，通过如下参数启动</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCDetails -Xloggc:&lt;PATH_TO_GC_LOG_FILE&gt;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>PATH_TO_GC_LOG_FILE</code> 是日志文件存放的位置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintGCDetails -Xloggc:/home/shared/log/gc.log -jar my_app.jar</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<p>对于 Java 9 及更新版本，可以简化上面的命令</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xlog:gc*:file=&lt;PATH_TO_GC_LOG_FILE&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xlog:gc*:file=/home/shared/gc.log -jar my_app.jar</span><br></pre></td></tr></table></figure>
+<p>Java 9 及更新的版本还支持 GC
+调试日志，会输入更详细的日志内容，通过如下配置设置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xlog:gc*,gc+phases=debug</span><br></pre></td></tr></table></figure>
+<p>一旦启用了 GC
+日志，那么需要注意轮换（rotation）的重要配置，当使用较旧的 JVM 版本（如
+JDK 8）时，可能需要轮换 GC 日志</p>
+<p>有以下参数进行控制：</p>
+<ul>
+<li>-XX:+UseGCLogFileRotation 启用日志轮换</li>
+<li>-XX:NumberOfGCLogFiles 设置保留多少 GC 日志文件，例如
+<code>-XX:NumberOfGCLogFiles=10</code> 将保留最多 10 个 GC 日志文件</li>
+<li>-XX:GCLogFileSize 单个 GC 日志文件可以有多大，例如
+<code>-XX/GCLogFileSize=10m</code> 将在日志文件达到 10 MB 时覆盖 GC
+日志文件</li>
+</ul>
+<p>开启 GC 日志后，就可以根据日志进行分析了</p>
+<h1 id="如何分析">如何分析</h1>
+<p>垃圾收集日志将能够回答以下问题：</p>
+<ul>
+<li>Young 区什么时候进行的 GC</li>
+<li>Old 区什么时候进行的 GC</li>
+<li>运行了多少次 GC</li>
+<li>GC 一共进行了多长时间</li>
+<li>GC 前后的内存利用率是多少</li>
+</ul>
+<p>下面来看一个 JVM
+垃圾收集器日志中的示例，并分析每个片段，突出显示其背后的关键部分</p>
+<h2 id="ps-cms">PS + CMS</h2>
+<p>一行日志如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-10-30T11:13:00.920-0100: 6.399: [Full GC (Allocation Failure) 2019-10-30T11:13:00.920-0100: 6.399: [CMS: 43711K-&gt;43711K(43712K), 0.1417937 secs] 63359K-&gt;48737K(63360K), [Metaspace: 47130K-&gt;47130K(1093632K)], 0.1418689 secs] [Times: user=0.14 sys=0.00, real=0.14 secs]</span><br></pre></td></tr></table></figure>
+<p>第一部分是时间，可以看到这条日志是在
+<strong>2019-10-30T11:13:00.920-0100</strong> 产生的</p>
+<p>第二部分是 GC 的类型，可以看到日志的类型是 <strong>Full
+GC</strong></p>
+<p>对于 GC 的类型有如下三种</p>
+<ul>
+<li>Minor GC：当 Eden
+区已满或即将满时触发，如果应用会频繁创建新对象，那么这个 GC
+会经常进行；Eden 区和 Survivor 不会产生碎片</li>
+<li>Major GC：Major GC 意味着产生了老年代的
+GC，根据不同垃圾收集器的设置，该操作可能发生的更少或者更频繁</li>
+<li>Full
+GC：完全收集，表示年轻代和老年代都会进行收集；通过标记、扫描、压缩的步骤避免内存碎片</li>
+</ul>
+<p><em>Major 和 Full GC 没有严格区分，不要特别在意，见
+https://stackoverflow.com/questions/50081873/full-garbage-collection-vs-major-garbage-collection</em></p>
+<img src="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-4.png" class="" title="how to read gc logs">
+<p>第三部分是进行 GC 的原因，可以看到该日志的原因是 <strong>Allocation
+Failure</strong>，通常意味着堆内存的 Eden
+区中没有空间用于新对象分配，垃圾收集器试图为新对象释放一些内存</p>
+<p>再次更详细地了解这行日志：</p>
+<img src="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97/java-collection-3.png.webp" class="" title="java garbage collection log analysis">
+<p>JVM
+垃圾收集器给我们的一条非常重要的信息是应用程序线程停止的总时间，应该预期线程会经常停止，但时间很短</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-10-29T10:00:28.879-0100: 0.488: Total time for which application threads were stopped: 0.0001006 seconds, Stopping threads took: 0.0000065 seconds</span><br></pre></td></tr></table></figure>
+<p>可以看到线程停止了 0.0001006 秒，线程的停止花费了 0.0000065
+秒，我们将在 GC logs 中一次又一次地看到这样的信息</p>
+<p>应该引起一个危险信号的是长线程停止时间——也称为 stop the
+world，它的发生将基本停止整个应用，例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2019-11-02T17:11:54.259-0100: 7.438: Total time for which application threads were stopped: 11.2305001 seconds, Stopping threads took: 0.5230011 seconds</span><br></pre></td></tr></table></figure>
+<p>在上面的日志行中，我们可以看到应用程序线程停止的时间超过了 11
+秒，意味着应用程序没有响应的时间超过了 11
+秒，应该不惜一切代价避免出现这种情况</p>
+<h2 id="g1">G1</h2>
+<p>使用如下配置来设置使用 G1 垃圾回收器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseG1GC</span><br><span class="line">-XX:-UseConcMarkSweepGC</span><br><span class="line">-XX:-UseCMSInitiatingOccupancyOnly</span><br></pre></td></tr></table></figure>
+<p>G1 的日志如下所示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">2019-11-03T21:26:21.827-0100: 2.069: [GC pause (G1 Evacuation Pause) (young)</span><br><span class="line">Desired survivor size 2097152 bytes, new threshold 15 (max 15)</span><br><span class="line">- age   1:     341608 bytes,     341608 total</span><br><span class="line">, 0.0021740 secs]</span><br><span class="line">   [Parallel Time: 0.9 ms, GC Workers: 10]</span><br><span class="line">      [GC Worker Start (ms): Min: 2069.4, Avg: 2069.5, Max: 2069.6, Diff: 0.1]</span><br><span class="line">      [Ext Root Scanning (ms): Min: 0.1, Avg: 0.2, Max: 0.4, Diff: 0.3, Sum: 1.5]</span><br><span class="line">      [Update RS (ms): Min: 0.1, Avg: 0.2, Max: 0.3, Diff: 0.2, Sum: 2.3]</span><br><span class="line">         [Processed Buffers: Min: 1, Avg: 1.4, Max: 4, Diff: 3, Sum: 14]</span><br><span class="line">      [Scan RS (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]</span><br><span class="line">      [Code Root Scanning (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]</span><br><span class="line">      [Object Copy (ms): Min: 0.2, Avg: 0.3, Max: 0.3, Diff: 0.1, Sum: 3.0]</span><br><span class="line">      [Termination (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]</span><br><span class="line">         [Termination Attempts: Min: 1, Avg: 1.0, Max: 1, Diff: 0, Sum: 10]</span><br><span class="line">      [GC Worker Other (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.1]</span><br><span class="line">      [GC Worker Total (ms): Min: 0.6, Avg: 0.7, Max: 0.8, Diff: 0.1, Sum: 7.0]</span><br><span class="line">      [GC Worker End (ms): Min: 2070.2, Avg: 2070.2, Max: 2070.2, Diff: 0.0]</span><br><span class="line">   [Code Root Fixup: 0.0 ms]</span><br><span class="line">   [Code Root Purge: 0.0 ms]</span><br><span class="line">   [Clear CT: 0.2 ms]</span><br><span class="line">   [Other: 1.1 ms]</span><br><span class="line">      [Choose CSet: 0.0 ms]</span><br><span class="line">      [Ref Proc: 0.8 ms]</span><br><span class="line">      [Ref Enq: 0.0 ms]</span><br><span class="line">      [Redirty Cards: 0.2 ms]</span><br><span class="line">      [Humongous Register: 0.0 ms]</span><br><span class="line">      [Humongous Reclaim: 0.0 ms]</span><br><span class="line">      [Free CSet: 0.0 ms]</span><br><span class="line">   [Eden: 26.0M(26.0M)-&gt;0.0B(30.0M) Survivors: 5120.0K-&gt;3072.0K Heap: 51.4M(64.0M)-&gt;22.6M(64.0M)]</span><br><span class="line"> [Times: user=0.01 sys=0.00, real=0.01 secs]</span><br></pre></td></tr></table></figure>
+<p>上面的日志展示了一次年轻代的 GC 事件 <strong>[GC pause (G1 Evacuation
+Pause) (young)</strong></p>
+<p>导致一些内存区域被清理 <strong>[Eden: 26.0M(26.0M)-&gt;0.0B(30.0M)
+Survivors: 5120.0K-&gt;3072.0K Heap:
+51.4M(64.0M)-&gt;22.6M(64.0M)]</strong></p>
+<p>还可以看到时间和 CPU 的相关信息 <strong>[Times: user=0.01 sys=0.00,
+real=0.01 secs]</strong></p>
+<p>下面是更详细的内存信息摘要</p>
+<ul>
+<li>Eden 区被完全清空了</li>
+<li>Survivors 的空间由 5120K 降为 3072K</li>
+<li>整个堆的空间从 64 MB 的总大小中的 51.4 MB 开始，到 22.6 MB 结束</li>
+</ul>
+<p>除此之外，还可以看到有关并行垃圾收集器工作程序内部及其工作阶段（如启动、扫描和工作）的更详细信息</p>
+<p>还可以看到与 G1 垃圾收集器相关的其他日志条目</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">2019-11-03T21:26:23.704-0100: 2019-11-03T21:26:23.704-0100: 3.946: 3.946: [GC concurrent-root-region-scan-start]</span><br><span class="line">Total time for which application threads were stopped: 0.0035771 seconds, Stopping threads took: 0.0000111 seconds</span><br><span class="line">2019-11-03T21:26:23.706-0100: 3.948: [GC concurrent-root-region-scan-end, 0.0017994 secs]</span><br><span class="line">2019-11-03T21:26:23.706-0100: 3.948: [GC concurrent-mark-start]</span><br><span class="line">2019-11-03T21:26:23.737-0100: 3.979: [GC concurrent-mark-end, 0.0315921 secs]</span><br><span class="line">2019-11-03T21:26:23.737-0100: 3.979: [GC remark 2019-11-03T21:26:23.737-0100: 3.979: [Finalize Marking, 0.0002017 secs] 2019-11-03T21:26:23.738-0100: 3.980: [GC ref-proc, 0.0004151 secs] 2019-11-03T21:26:23.738-0100: 3.980: [Unloading, 0.0025065 secs], 0.0033738 secs]</span><br><span class="line"> [Times: user=0.04 sys=0.01, real=0.01 secs]</span><br><span class="line">2019-11-03T21:26:23.741-0100: 3.983: Total time for which application threads were stopped: 0.0034705 seconds, Stopping threads took: 0.0000308 seconds</span><br><span class="line">2019-11-03T21:26:23.741-0100: 3.983: [GC cleanup 54M-&gt;54M(64M), 0.0004419 secs]</span><br><span class="line"> [Times: user=0.00 sys=0.00, real=0.00 secs]</span><br></pre></td></tr></table></figure>
+<p>日志为我们提供了有关应用程序线程停止的总时间、垃圾收集器所做清理的结果以及所使用的资源的信息</p>
+<h1 id="补充">补充</h1>
+<h2 id="outofmemory-错误">OutOfMemory 错误</h2>
+<h3 id="java-heap-space">Java heap space</h3>
+<ul>
+<li>对象不能被分配进堆内存</li>
+<li>过大的流量</li>
+<li>应用中引用持有过多，导致无法回收足够的空间（泄漏）</li>
+<li>应用中使用了过多的 Finalizers，Finalizers 的对象不会立即进行
+GC，会通过相关的守护线程在队列中执行，有时线程会跟不上队列（生产大于消费）</li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>增加堆内存大小 <code>-Xmx</code>（GB -&gt; G or g | MB -&gt; M or m
+| KB -&gt; K or k）</li>
+<li>修复应用中的内存泄漏</li>
+</ul>
+<h3 id="gc-overhead-limit-exceeded">GC overhead limit exceeded</h3>
+<ul>
+<li>Java 进程花费了 98% 以上的时间进行垃圾收集，回收的内存不到
+2%，而且到目前为止已经连续进行了 5 次垃圾收集（编译时常量）</li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>增加堆内存大小 <code>-Xmx</code></li>
+<li>GC 开销限制可以调整 <code>-XX:- UseGCOverheadLimit</code></li>
+<li>修复应用中的内存泄漏</li>
+</ul>
+<h3 id="unable-to-create-new-native-thread">Unable to create new native
+thread</h3>
+<ul>
+<li>没有足够的空间创建新的线程</li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>为服务器分配更多内存</li>
+<li>增加堆内存大小</li>
+<li>修复应用中的线程泄漏</li>
+<li>增加 OS 的限制
+<code>ulimit -a max user processes (-u) 1800</code></li>
+<li>通过 <code>-Xss</code> 参数减少线程栈的大小</li>
+</ul>
+<h3 id="permgen-space">Permgen space</h3>
+<ul>
+<li>永久代的内容包括
+<ul>
+<li>Class 对象的名字、变量、方法</li>
+<li>与类关联的对象数组和类型数组</li>
+<li>JIT 优化（Just In Time）</li>
+</ul></li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>增加永久代的大小 <code>-XX:MaxPermSize</code></li>
+<li>重新启动 JVM</li>
+</ul>
+<h3 id="metaspace">Metaspace</h3>
+<ul>
+<li>Java 8 之后永久代被元空间取代，Class 相关的元数据被分配在 native
+memory 中（称为元空间），如果元空间耗尽，则会抛出该错误</li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>如果设置了 <code>-XX:MaxMetaSpaceSize</code> ，则增加其值</li>
+<li>移除 <code>-XX:MaxMetaSpaceSize</code></li>
+<li>减少 Java 堆内存大小，分配更多的内存给元空间</li>
+<li>为服务器分配更多内存</li>
+<li>应用中可能存在 bug</li>
+</ul>
+<h3 id="requested-array-size-exceeds-vm-limit">Requested array size
+exceeds VM limit</h3>
+<ul>
+<li>应用尝试分配一个大于堆内存的数组</li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>增加堆内存大小 <code>-Xmx</code></li>
+<li>修复 bug，大概率不需要一个巨大的数组</li>
+</ul>
+<h3 id="kill-process-or-sacrifice-child">Kill process or sacrifice
+child</h3>
+<ul>
+<li>Kernel Job – Out of Memory Killer
+进程将会在内存不足情况下被终止</li>
+</ul>
+<p>和其他 OOM 不同，这个OOM 是由操作系统触发</p>
+<p><strong>处理</strong></p>
+<ul>
+<li>将进程迁移到其他计算机</li>
+<li>给机器增加内存</li>
+</ul>
+<h3 id="reason-stack_trace_with_native_-method">reason
+stack_trace_with_native_ method</h3>
+<ul>
+<li>native 方法遇到分配失败</li>
+<li>打印堆栈跟踪，其中底层是 native 方法</li>
+</ul>
+<p><strong>处理</strong></p>
+<ul>
+<li>结合 OS 进行分析</li>
+</ul>
+<h2 id="jvm-运维工具">JVM 运维工具</h2>
+<h3 id="jps">jps</h3>
+<blockquote>
+<p>jps - Lists the instrumented Java Virtual Machines (JVMs) on the
+target system. This command is experimental and unsupported.</p>
+<p>列出目标系统上的可观测的 Java 虚拟机（JVM）</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps [ options ] [ hostid ]</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">jps -l</span><br><span class="line"></span><br><span class="line"><span class="number">24947</span> org.jetbrains.jps.cmdline.Launcher</span><br><span class="line"><span class="number">29863</span> sun.tools.jps.Jps</span><br><span class="line"><span class="number">43962</span> org.jetbrains.jps.cmdline.Launcher</span><br><span class="line"><span class="number">34074</span> com.intellij.idea.Main</span><br></pre></td></tr></table></figure>
+<h3 id="jstat">jstat</h3>
+<blockquote>
+<p>jstat - Monitors Java Virtual Machine (JVM) statistics. This command
+is experimental and unsupported.</p>
+<p>用于监控 Java 虚拟机（JVM）统计信息的命令</p>
+<p>使用 jstat
+命令，可以获取有关堆内存、垃圾回收、类加载、线程和编译等方面的数据</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat [ generalOption | outputOptions vmid [ interval[s|ms] [ count ] ]</span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jstat -gccause <span class="number">34074</span> <span class="number">1000</span> <span class="number">5</span></span><br><span class="line"></span><br><span class="line">  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT    LGCC                 GCC</span><br><span class="line">  <span class="number">0</span>.<span class="number">00</span>  <span class="number">94</span>.<span class="number">67</span>  <span class="number">93</span>.<span class="number">44</span>  <span class="number">33</span>.<span class="number">98</span>  <span class="number">99</span>.<span class="number">05</span>  <span class="number">96</span>.<span class="number">95</span>   <span class="number">2101</span>  <span class="number">503</span>.<span class="number">477</span>     <span class="number">9</span>   <span class="number">65</span>.<span class="number">924</span>  <span class="number">569</span>.<span class="number">401</span> No GC                G1 Evacuation <span class="built_in">Pause</span></span><br><span class="line">  <span class="number">0</span>.<span class="number">00</span>  <span class="number">91</span>.<span class="number">63</span>  <span class="number">45</span>.<span class="number">07</span>  <span class="number">33</span>.<span class="number">34</span>  <span class="number">99</span>.<span class="number">05</span>  <span class="number">96</span>.<span class="number">95</span>   <span class="number">2101</span>  <span class="number">504</span>.<span class="number">128</span>     <span class="number">9</span>   <span class="number">65</span>.<span class="number">924</span>  <span class="number">570</span>.<span class="number">052</span> G1 Evacuation <span class="built_in">Pause</span>  No GC</span><br><span class="line">  <span class="number">0</span>.<span class="number">00</span>  <span class="number">91</span>.<span class="number">63</span>  <span class="number">59</span>.<span class="number">15</span>  <span class="number">33</span>.<span class="number">34</span>  <span class="number">99</span>.<span class="number">05</span>  <span class="number">96</span>.<span class="number">95</span>   <span class="number">2101</span>  <span class="number">504</span>.<span class="number">128</span>     <span class="number">9</span>   <span class="number">65</span>.<span class="number">924</span>  <span class="number">570</span>.<span class="number">052</span> G1 Evacuation <span class="built_in">Pause</span>  No GC</span><br><span class="line">  <span class="number">0</span>.<span class="number">00</span>  <span class="number">91</span>.<span class="number">63</span>  <span class="number">60</span>.<span class="number">56</span>  <span class="number">33</span>.<span class="number">34</span>  <span class="number">99</span>.<span class="number">05</span>  <span class="number">96</span>.<span class="number">95</span>   <span class="number">2101</span>  <span class="number">504</span>.<span class="number">128</span>     <span class="number">9</span>   <span class="number">65</span>.<span class="number">924</span>  <span class="number">570</span>.<span class="number">052</span> G1 Evacuation <span class="built_in">Pause</span>  No GC</span><br><span class="line">  <span class="number">0</span>.<span class="number">00</span>  <span class="number">91</span>.<span class="number">63</span>  <span class="number">61</span>.<span class="number">97</span>  <span class="number">33</span>.<span class="number">34</span>  <span class="number">99</span>.<span class="number">05</span>  <span class="number">96</span>.<span class="number">95</span>   <span class="number">2101</span>  <span class="number">504</span>.<span class="number">128</span>     <span class="number">9</span>   <span class="number">65</span>.<span class="number">924</span>  <span class="number">570</span>.<span class="number">052</span> G1 Evacuation <span class="built_in">Pause</span>  No GC</span><br></pre></td></tr></table></figure>
+<p>以 <code>gccause</code> 查看堆内存为例，这里表格标头分别代表</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">name</th>
+<th style="text-align: center;">meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">S0</td>
+<td style="text-align: center;">Survivor 0 区占用百分比</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">S1</td>
+<td style="text-align: center;">Survivor 1 区占用百分比</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">E</td>
+<td style="text-align: center;">Eden 区占用百分比</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">O</td>
+<td style="text-align: center;">老年代占用百分比</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">M</td>
+<td style="text-align: center;">元空间占用百分比</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">CCS</td>
+<td style="text-align: center;">压缩类空间占用百分比</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">YGC</td>
+<td style="text-align: center;">young GC 发生次数</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">YGCT</td>
+<td style="text-align: center;">yong GC 垃圾回收时间</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">FGC</td>
+<td style="text-align: center;">full GC 发生次数</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">FGCT</td>
+<td style="text-align: center;">full GC 垃圾回收时间</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">GCT</td>
+<td style="text-align: center;">总共的垃圾回收时间</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">LGCC</td>
+<td style="text-align: center;">最后一次 GC 的原因</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">GCC</td>
+<td style="text-align: center;">当前 GC 的原因</td>
+</tr>
+</tbody>
+</table>
+<h3 id="jstack">jstack</h3>
+<blockquote>
+<p>jstack - Prints Java thread stack traces for a Java process, core
+file, or remote debug server. This command is experimental and
+unsupported.</p>
+<p>输出 Java 进程、核心文件或远程调试服务器的 Java 线程堆栈跟踪</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jstack [ options ] pid</span><br><span class="line">jstack [ options ] executable core</span><br><span class="line">jstack [ options ] [ server-id@ ] remote-hostname-or-IP</span><br></pre></td></tr></table></figure>
+<h3 id="jmap">jmap</h3>
+<blockquote>
+<p>jmap - Prints shared object memory maps or heap memory details for a
+process, core file, or remote debug server.</p>
+<p>打印进程、核心文件或远程调试服务器的共享对象内存映射或堆内存详细信息</p>
+</blockquote>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap [ options ] pid</span><br><span class="line">jmap [ options ] executable core</span><br><span class="line">jmap [ options ] [ pid ] server-id@ ] remote-hostname-or-IP</span><br></pre></td></tr></table></figure>
+<p>这里直接使用会报错（MacOS）</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Attaching to process ID 34074, please wait...</span><br><span class="line"><span class="keyword">ERROR: </span>attach: task_for_pid(34074) failed: &#x27;(os/kern) failure&#x27; (5)</span><br><span class="line"><span class="keyword">Error </span>attaching to process: sun.jvm.hotspot.debugger.DebuggerException: Can&#x27;t attach to the process. Could be caused by an incorrect pid or lack of privileges.</span><br><span class="line">sun.jvm.hotspot.debugger.DebuggerException: sun.jvm.hotspot.debugger.DebuggerException: Can&#x27;t attach to the process. Could be caused by an incorrect pid or lack of privileges.</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>因为新版的 Linux 系统加入了 <code>ptrace-scope</code>
+机制，该机制的目的是防止用户访问正在执行的进程的内存，但是如
+<code>jinfo</code>、<code>jmap</code> 这些调试类工具本身就是利用
+<code>ptrace</code> 来获取执行进程的内存等信息</p>
+<p>一些文章给出的解决方案需要修改内核参数，可以参考</p>
+<p><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42272869/article/details/124174890">Error
+attaching to process sun.jvm.hotspot.debugger.DebuggerException cannot
+open binary file_sun.jvm.hotspot.debugger.debuggerexception:
+cannot-CSDN博客</a></p>
+<h2 id="担保机制与-ergonomics">担保机制与 Ergonomics</h2>
+<p>在 PS + PO 日志中可以看到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2024-05-11T15:56:45.857-0800: 56.923: [Full GC (Ergonomics)  46904K-&gt;46903K(49152K), 0.1493527 secs]</span><br></pre></td></tr></table></figure>
+<p>日志中 GC 的原因是 Ergonomics，在一些文章中把原因称为因为担保导致的
+GC，实际上是不准确的</p>
+<h3 id="担保机制">担保机制</h3>
+<p>担保机制的官方术语称为 Guarantee</p>
+<blockquote>
+<p>-XX:+HandlePromotionFailure</p>
+<p>The youngest generation collection does not require a guarantee of
+full promotion of all live objects. (Introduced in 1.4.2 update 11) [5.0
+and earlier: false.]</p>
+</blockquote>
+<p>发生 GC
+时，当老年代剩余空间小于平均年轻代向老年代晋升的空间大小，就会进行一次
+Full GC</p>
+<h3 id="ergonomics">Ergonomics</h3>
+<p>Ergonomics 是一种 JVM 自动优化手段</p>
+<p>https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/ergonomics.html#ergonomics</p>
+<p>JVM 会根据一些配置自动调整堆内存的大小：</p>
+<ul>
+<li>Maximum Pause Time Goal：期望最大暂停时间</li>
+<li>Throughput Goal：吞吐量目标，例如 <code>-XX:GCTimeRatio=19</code>
+是将垃圾收集的目标设置为总时间的 5%</li>
+<li>Footprint
+Goal：如果已经达到吞吐量和最大暂停时间目标，那么垃圾收集器会减小堆的大小，直到其中一个目标（总是吞吐量目标）无法达到为止</li>
+</ul>
+<p><strong>调优的策略</strong></p>
+<ul>
+<li>除非您知道需要一个大于默认最大堆大小的堆，否则不要为堆选择最大值，应该选择一个足以满足应用程序的吞吐量目标</li>
+<li>堆将增长或收缩到支持所选吞吐量目标的大小。应用程序行为的更改可能会导致堆增长或收缩。例如如果应用程序开始以更高的速率进行分配，则堆将增长以保持相同的吞吐量。</li>
+<li>如果堆增长到其最大大小，并且没有达到吞吐量目标，则最大堆大小对于吞吐量目标来说太小，应该将最大堆大小设置为一个值，该值接近平台上的总物理内存，但不会导致应用程序的交换（swapping），再次执行应用程序，如果仍未达到吞吐量目标那么说明应用程序时间的目标对于平台上的可用内存来说太高了（机器内存不足）</li>
+<li>如果可以达到吞吐量目标，但暂停时间过长，则选择最大暂停时间目标，选择最长暂停时间目标可能意味着无法达到吞吐量目标，因此选择对应用程序来说可以接受的折衷值</li>
+<li>通常情况下堆的大小会随着垃圾收集器试图满足竞争目标而波动，即使应用程序已达到稳定状态，也是如此实现吞吐量目标（可能需要更大的堆）的压力与最大暂停时间和最小内存占用（两者都可能需要小堆）的目标相竞争</li>
+</ul>
+<p>Ergonomics 操作可以通过参数 <code>-XX:-UseAdaptiveSizePolicy</code>
+来进行关闭</p>
+<p><br></p>
+<p>我这里启动了一个服务，分配了足够小的内存，不断创建对象直到发生
+OOM</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xms50m -Xmx50m -Xloggc:/Users/guorunze/temp/log/gc.log -XX:+PrintGCDateStamps -XX:-PrintGCDetails -XX:MaxGCPauseMillis=<span class="number">200</span></span><br></pre></td></tr></table></figure>
+<p>默认开启</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT</span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">1268</span>.<span class="number">1</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">3632</span>.<span class="number">7</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">14786</span>.<span class="number">9</span>   <span class="number">39600</span>.<span class="number">0</span> <span class="number">36885</span>.<span class="number">3</span> <span class="number">5296</span>.<span class="number">0</span> <span class="number">4742</span>.<span class="number">0</span>     <span class="number">40</span>    <span class="number">0</span>.<span class="number">094</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">089</span>    <span class="number">0</span>.<span class="number">183</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">1268</span>.<span class="number">1</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">3632</span>.<span class="number">7</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">14786</span>.<span class="number">9</span>   <span class="number">39600</span>.<span class="number">0</span> <span class="number">36885</span>.<span class="number">3</span> <span class="number">5296</span>.<span class="number">0</span> <span class="number">4742</span>.<span class="number">0</span>     <span class="number">40</span>    <span class="number">0</span>.<span class="number">094</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">089</span>    <span class="number">0</span>.<span class="number">183</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">4096</span>.<span class="number">0</span> <span class="number">2032</span>.<span class="number">9</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">8704</span>.<span class="number">0</span>   <span class="number">2406</span>.<span class="number">1</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">19640</span>.<span class="number">4</span>   <span class="number">41008</span>.<span class="number">0</span> <span class="number">38297</span>.<span class="number">3</span> <span class="number">5424</span>.<span class="number">0</span> <span class="number">4929</span>.<span class="number">8</span>     <span class="number">42</span>    <span class="number">0</span>.<span class="number">103</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">089</span>    <span class="number">0</span>.<span class="number">192</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">3465</span>.<span class="number">9</span>  <span class="number">5632</span>.<span class="number">0</span>   <span class="number">994</span>.<span class="number">9</span>    <span class="number">34304</span>.<span class="number">0</span>    <span class="number">27764</span>.<span class="number">1</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38739</span>.<span class="number">4</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4985</span>.<span class="number">5</span>     <span class="number">45</span>    <span class="number">0</span>.<span class="number">118</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">089</span>    <span class="number">0</span>.<span class="number">207</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>     <span class="number">34304</span>.<span class="number">0</span>    <span class="number">31724</span>.<span class="number">0</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38545</span>.<span class="number">4</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">5</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>   <span class="number">4</span>      <span class="number">0</span>.<span class="number">433</span>    <span class="number">0</span>.<span class="number">556</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>   <span class="number">4387</span>.<span class="number">9</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34278</span>.<span class="number">5</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38545</span>.<span class="number">5</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">5</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>   <span class="number">8</span>      <span class="number">0</span>.<span class="number">778</span>    <span class="number">0</span>.<span class="number">902</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>   <span class="number">5604</span>.<span class="number">6</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34115</span>.<span class="number">6</span>   <span class="number">41648</span>.<span class="number">0</span> <span class="number">38718</span>.<span class="number">9</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4986</span>.<span class="number">1</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>  <span class="number">13</span>      <span class="number">1</span>.<span class="number">648</span>    <span class="number">1</span>.<span class="number">771</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>   <span class="number">5581</span>.<span class="number">2</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34114</span>.<span class="number">0</span>   <span class="number">41904</span>.<span class="number">0</span> <span class="number">39071</span>.<span class="number">1</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">5027</span>.<span class="number">2</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>  <span class="number">17</span>      <span class="number">2</span>.<span class="number">409</span>    <span class="number">2</span>.<span class="number">532</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>   <span class="number">5599</span>.<span class="number">6</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34114</span>.<span class="number">0</span>   <span class="number">41904</span>.<span class="number">0</span> <span class="number">39071</span>.<span class="number">1</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">5027</span>.<span class="number">2</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>  <span class="number">17</span>      <span class="number">2</span>.<span class="number">409</span>    <span class="number">2</span>.<span class="number">532</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>   <span class="number">4822</span>.<span class="number">1</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34110</span>.<span class="number">1</span>   <span class="number">41904</span>.<span class="number">0</span> <span class="number">39111</span>.<span class="number">5</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">5035</span>.<span class="number">1</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>  <span class="number">20</span>      <span class="number">2</span>.<span class="number">833</span>    <span class="number">2</span>.<span class="number">957</span></span><br><span class="line"><span class="number">5632</span>.<span class="number">0</span> <span class="number">5632</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>    <span class="number">5632</span>.<span class="number">0</span>   <span class="number">4836</span>.<span class="number">1</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34110</span>.<span class="number">1</span>   <span class="number">41904</span>.<span class="number">0</span> <span class="number">39111</span>.<span class="number">5</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">5035</span>.<span class="number">1</span>     <span class="number">46</span>    <span class="number">0</span>.<span class="number">124</span>  <span class="number">20</span>      <span class="number">2</span>.<span class="number">833</span>    <span class="number">2</span>.<span class="number">957</span></span><br></pre></td></tr></table></figure>
+<p>关闭</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT</span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">2043</span>.<span class="number">5</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">1071</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">17905</span>.<span class="number">8</span>   <span class="number">39600</span>.<span class="number">0</span> <span class="number">37015</span>.<span class="number">0</span> <span class="number">5296</span>.<span class="number">0</span> <span class="number">4774</span>.<span class="number">8</span>     <span class="number">32</span>    <span class="number">0</span>.<span class="number">112</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">085</span>    <span class="number">0</span>.<span class="number">197</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">2043</span>.<span class="number">5</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">1071</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">17905</span>.<span class="number">8</span>   <span class="number">39600</span>.<span class="number">0</span> <span class="number">37015</span>.<span class="number">0</span> <span class="number">5296</span>.<span class="number">0</span> <span class="number">4774</span>.<span class="number">8</span>     <span class="number">32</span>    <span class="number">0</span>.<span class="number">112</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">085</span>    <span class="number">0</span>.<span class="number">197</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">2043</span>.<span class="number">5</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">1071</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">17905</span>.<span class="number">8</span>   <span class="number">39600</span>.<span class="number">0</span> <span class="number">37015</span>.<span class="number">0</span> <span class="number">5296</span>.<span class="number">0</span> <span class="number">4774</span>.<span class="number">8</span>     <span class="number">32</span>    <span class="number">0</span>.<span class="number">112</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">085</span>    <span class="number">0</span>.<span class="number">197</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">2043</span>.<span class="number">5</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">9275</span>.<span class="number">9</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">17905</span>.<span class="number">8</span>   <span class="number">39600</span>.<span class="number">0</span> <span class="number">37015</span>.<span class="number">0</span> <span class="number">5296</span>.<span class="number">0</span> <span class="number">4774</span>.<span class="number">8</span>     <span class="number">32</span>    <span class="number">0</span>.<span class="number">112</span>   <span class="number">2</span>      <span class="number">0</span>.<span class="number">085</span>    <span class="number">0</span>.<span class="number">197</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">2032</span>.<span class="number">0</span> <span class="number">12800</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>     <span class="number">34304</span>.<span class="number">0</span>    <span class="number">30780</span>.<span class="number">1</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38723</span>.<span class="number">6</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4988</span>.<span class="number">0</span>     <span class="number">35</span>    <span class="number">0</span>.<span class="number">147</span>   <span class="number">3</span>      <span class="number">0</span>.<span class="number">085</span>    <span class="number">0</span>.<span class="number">232</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span> <span class="number">2025</span>.<span class="number">9</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>     <span class="number">34304</span>.<span class="number">0</span>    <span class="number">29831</span>.<span class="number">1</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38661</span>.<span class="number">2</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4974</span>.<span class="number">4</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>   <span class="number">4</span>      <span class="number">0</span>.<span class="number">249</span>    <span class="number">0</span>.<span class="number">401</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>   <span class="number">9340</span>.<span class="number">6</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34087</span>.<span class="number">4</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38510</span>.<span class="number">8</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">2</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>   <span class="number">6</span>      <span class="number">0</span>.<span class="number">691</span>    <span class="number">0</span>.<span class="number">843</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>  <span class="number">12800</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">34083</span>.<span class="number">5</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38510</span>.<span class="number">8</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">2</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>  <span class="number">10</span>      <span class="number">1</span>.<span class="number">101</span>    <span class="number">1</span>.<span class="number">253</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>  <span class="number">12800</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">33978</span>.<span class="number">9</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38510</span>.<span class="number">8</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">2</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>  <span class="number">16</span>      <span class="number">2</span>.<span class="number">011</span>    <span class="number">2</span>.<span class="number">163</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>  <span class="number">12800</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">33963</span>.<span class="number">1</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38510</span>.<span class="number">8</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">2</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>  <span class="number">23</span>      <span class="number">3</span>.<span class="number">003</span>    <span class="number">3</span>.<span class="number">155</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>  <span class="number">12800</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">33948</span>.<span class="number">6</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38510</span>.<span class="number">8</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">2</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>  <span class="number">30</span>      <span class="number">4</span>.<span class="number">007</span>    <span class="number">4</span>.<span class="number">159</span></span><br><span class="line"><span class="number">2048</span>.<span class="number">0</span> <span class="number">2048</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>    <span class="number">0</span>.<span class="number">0</span>   <span class="number">12800</span>.<span class="number">0</span>  <span class="number">12800</span>.<span class="number">0</span>   <span class="number">34304</span>.<span class="number">0</span>    <span class="number">33936</span>.<span class="number">1</span>   <span class="number">41392</span>.<span class="number">0</span> <span class="number">38510</span>.<span class="number">8</span> <span class="number">5552</span>.<span class="number">0</span> <span class="number">4952</span>.<span class="number">2</span>     <span class="number">36</span>    <span class="number">0</span>.<span class="number">152</span>  <span class="number">37</span>      <span class="number">5</span>.<span class="number">038</span>    <span class="number">5</span>.<span class="number">190</span></span><br></pre></td></tr></table></figure>
+<p>可以看到开启了 Adaptive Size Policy 后，堆内存大小进行了变化，例如
+Eden 区由 12800 -&gt; 8704 -&gt; 5632</p>
+<p>而关闭后，各个区域的空间没有变化</p>
+<h3 id="gc-中的-ergonomics-到底是因为什么">GC 中的 Ergonomics
+到底是因为什么</h3>
+<p>所以 GC logs 中 Ergonomics 产生的 GC 是因为什么呢？</p>
+<p>其实是两类都有，也就是说 GC logs 这里展示的 Ergonomics
+存在歧义，有一个 Issue 正是和这个问题相关</p>
+<p><a
+target="_blank" rel="noopener" href="https://bugs.openjdk.org/browse/JDK-8067243?page=com.atlassian.jira.plugin.system.issuetabpanels%3Aall-tabpanel">JDK-8067243
+GC reason "Ergonomics" confusing - Java Bug System (openjdk.org)</a></p>
+<blockquote>
+<p>In this case the reason Ergonomics really mean "Not enough old space
+to handle next yc given the historical promotion rate", which does not
+necessarily indicate a Full GC triggered by the resizing of the
+heap.</p>
+<p>It would be great if we could be more specific about why we garbage
+collect, so that the information can be actionable without reading the
+HotSpot source code. After discussions with Jesper, a better name would
+probably be "Out of Old Space" possible with the addtion " for next
+YC".</p>
+</blockquote>
+<p>关闭了堆内存自动优化后，Ergonomics 的真正含义其实就变成了空间担保</p>
+<p>这里 Issue 的发起者也提供了一个更直观的表达 <strong>Out of Old
+Space</strong> + <strong>for next YC</strong></p>
+<p>不过看起来这个 Issue 还是开启状态</p>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://sematext.com/blog/java-garbage-collection-logs/">Java
+Garbage Collection Logs &amp; How to Analyze Them - Sematext</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://jun-wang.gitbook.io/learnjava/ji-shu-xue-xi/jvm-xue-xi/kan-dong-gc-ri-zhi">看懂gc日志
+| LearnJava (gitbook.io)</a></p>
+<p><a target="_blank" rel="noopener" href="https://gceasy.ycrash.cn/gc-index.jsp">Universal JVM GC
+analyzer - Java Garbage collection log analysis made easy
+(ycrash.cn)</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/50081873/full-garbage-collection-vs-major-garbage-collection">java
+- Full Garbage Collection vs. Major Garbage Collection - Stack
+Overflow</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/ergonomics.html#ergonomics">Ergonomics
+(oracle.com)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html" rel="prev" title="二分查找红蓝分区思想">
+      <i class="fa fa-chevron-left"></i> 二分查找红蓝分区思想
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84"><span class="nav-number">1.</span> <span class="nav-text">垃圾回收器是如何工作的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-gc-%E6%97%A5%E5%BF%97"><span class="nav-number">2.</span> <span class="nav-text">什么是 GC 日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-gc-%E6%97%A5%E5%BF%97"><span class="nav-number">3.</span> <span class="nav-text">启动 GC 日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">如何分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ps-cms"><span class="nav-number">4.1.</span> <span class="nav-text">PS + CMS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#g1"><span class="nav-number">4.2.</span> <span class="nav-text">G1</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">5.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#outofmemory-%E9%94%99%E8%AF%AF"><span class="nav-number">5.1.</span> <span class="nav-text">OutOfMemory 错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#java-heap-space"><span class="nav-number">5.1.1.</span> <span class="nav-text">Java heap space</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gc-overhead-limit-exceeded"><span class="nav-number">5.1.2.</span> <span class="nav-text">GC overhead limit exceeded</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unable-to-create-new-native-thread"><span class="nav-number">5.1.3.</span> <span class="nav-text">Unable to create new native
+thread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#permgen-space"><span class="nav-number">5.1.4.</span> <span class="nav-text">Permgen space</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#metaspace"><span class="nav-number">5.1.5.</span> <span class="nav-text">Metaspace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#requested-array-size-exceeds-vm-limit"><span class="nav-number">5.1.6.</span> <span class="nav-text">Requested array size
+exceeds VM limit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kill-process-or-sacrifice-child"><span class="nav-number">5.1.7.</span> <span class="nav-text">Kill process or sacrifice
+child</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reason-stack_trace_with_native_-method"><span class="nav-number">5.1.8.</span> <span class="nav-text">reason
+stack_trace_with_native_ method</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jvm-%E8%BF%90%E7%BB%B4%E5%B7%A5%E5%85%B7"><span class="nav-number">5.2.</span> <span class="nav-text">JVM 运维工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jps"><span class="nav-number">5.2.1.</span> <span class="nav-text">jps</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jstat"><span class="nav-number">5.2.2.</span> <span class="nav-text">jstat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jstack"><span class="nav-number">5.2.3.</span> <span class="nav-text">jstack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jmap"><span class="nav-number">5.2.4.</span> <span class="nav-text">jmap</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%85%E4%BF%9D%E6%9C%BA%E5%88%B6%E4%B8%8E-ergonomics"><span class="nav-number">5.3.</span> <span class="nav-text">担保机制与 Ergonomics</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%85%E4%BF%9D%E6%9C%BA%E5%88%B6"><span class="nav-number">5.3.1.</span> <span class="nav-text">担保机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ergonomics"><span class="nav-number">5.3.2.</span> <span class="nav-text">Ergonomics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gc-%E4%B8%AD%E7%9A%84-ergonomics-%E5%88%B0%E5%BA%95%E6%98%AF%E5%9B%A0%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="nav-number">5.3.3.</span> <span class="nav-text">GC 中的 Ergonomics
+到底是因为什么</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kugaaa.com" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:17px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>
