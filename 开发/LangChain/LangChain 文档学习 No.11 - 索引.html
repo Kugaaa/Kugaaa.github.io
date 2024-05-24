@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="索引（Indexing）API 支持将任何来源的文档加载到向量存储中并保持同步，具体来说有助于：  避免重复数据写入向量数据库 避免重写未更改的数据 避免在未更改的内容上重新计算 embeddings  这些目标可以帮助节省时间和金钱、改进矢量搜索结果 重要的是，即使原始文本经过了一些转换步骤（例如文本切分 chunking）索引依然可以生效 如何工作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 文档学习 No.11 - 索引">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.11%20-%20%E7%B4%A2%E5%BC%95.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="索引（Indexing）API 支持将任何来源的文档加载到向量存储中并保持同步，具体来说有助于：  避免重复数据写入向量数据库 避免重写未更改的数据 避免在未更改的内容上重新计算 embeddings  这些目标可以帮助节省时间和金钱、改进矢量搜索结果 重要的是，即使原始文本经过了一些转换步骤（例如文本切分 chunking）索引依然可以生效 如何工作">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-19T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="LangChain">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.11%20-%20%E7%B4%A2%E5%BC%95.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LangChain 文档学习 No.11 - 索引 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.11%20-%20%E7%B4%A2%E5%BC%95.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangChain 文档学习 No.11 - 索引
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-05-20 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-20T00:00:00+08:00">2024-05-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>索引（Indexing）API
+支持将任何来源的文档加载到向量存储中并保持同步，具体来说有助于：</p>
+<ul>
+<li>避免重复数据写入向量数据库</li>
+<li>避免重写未更改的数据</li>
+<li>避免在未更改的内容上重新计算 embeddings</li>
+</ul>
+<p>这些目标可以帮助节省时间和金钱、改进矢量搜索结果</p>
+<p>重要的是，即使原始文本经过了一些转换步骤（例如文本切分
+chunking）索引依然可以生效</p>
+<h1 id="如何工作">如何工作</h1>
+<p>LangChain Indexing 使用记录管理器 <code>RecordManager</code>
+来跟踪文档写入向量存储的情况</p>
+<p>当进行内容索引时，会计算每一个文档的哈希值，并且记录以下内容：</p>
+<ul>
+<li>文档的哈希值（页内容和元数据）</li>
+<li>写入时间</li>
+<li>资源 ID，每个文档都应该在其元数据中包含 ID
+信息，以便能够确定该文档的最终来源</li>
+</ul>
+<h1 id="删除模式">删除模式</h1>
+<p>将文档添加到向量数据库后，可能需要删除一些已经存在的文档</p>
+<p>有时可能希望删除与正在索引的新文档来源相同的任何现有文档（删除同源文档）</p>
+<p>或者希望批量删除所有现有文档，API
+提供的删除模式提供了所需的行为：</p>
+<table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 15%" />
+<col style="width: 7%" />
+<col style="width: 19%" />
+<col style="width: 15%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">模式</th>
+<th style="text-align: center;">重复数据</th>
+<th style="text-align: center;">并行</th>
+<th style="text-align: center;">清理源文件</th>
+<th style="text-align: center;">同源删除</th>
+<th style="text-align: center;">删除时机</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">None</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">/</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Incremental</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">立即</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Full</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">索引结束时</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>None 模式不会做任何自动化的清理，允许用户手动进行删除</li>
+<li>Incremental 和 Full 将会进行自动清理
+<ul>
+<li>如果源文档或派生文档的内容发生了更改，则 Incremental 或 Full
+模式都将清除（删除）旧版本的内容</li>
+<li>如果源文档已被删除（意味着它不包括在当前正在索引的文档中），则 Full
+模式将正确地将其从向量存储中删除，但 Incremental 模式不会</li>
+</ul></li>
+<li>当内容发生变化时（例如，源 PDF
+文件被修改），在索引期间在一定时间窗口内，新版本和旧版本都可以返回给用户，这种情况发生在写入新内容之后，但在删除旧版本之前（先加后删）
+<ul>
+<li>Incremental 最大限度地处理了这种情况，能够在写入时连续进行清理</li>
+<li>Full 只能在批量写入后进行清理</li>
+</ul></li>
+</ul>
+<h1 id="要求">要求</h1>
+<p><em>从实现的功能也可以看出来，想要实现 Indexing
+的功能对向量存储的能力有要求</em></p>
+<ol type="1">
+<li>不要对预先写入过数据的向量存储使用，因为这些旧数据没有被管理</li>
+<li>仅适用于 LangChain 集成的 <code>vectorstore</code>
+<ul>
+<li>支持通过 ID 添加（<code>add_documents</code> 方法带有
+<code>ids</code> 参数）</li>
+<li>支持通过 ID 删除（<code>delete</code> 方法带有 <code>ids</code>
+参数）</li>
+</ul></li>
+</ol>
+<h1 id="注意">注意</h1>
+<p>记录管理器基于时间来确定可以清理哪些内容（当使用 Incremental 或 Full
+模式时）</p>
+<p>如果两个任务接连运行，并且第一个任务在时间更新之前完成，那么第二个任务可能无法清理内容</p>
+<p>不过这种情况不太可能发生，因为：</p>
+<ul>
+<li><code>RecordManager</code> 使用更高精度（higher
+resolution）的时间戳</li>
+<li>数据变更在第一个任务和第二个任务这个范围内，不太发生在很小的时间间隔内</li>
+<li>索引任务通常需要几毫秒以上的时间</li>
+</ul>
+<h1 id="快速开始">快速开始</h1>
+<p>需要用到的 API</p>
+<ul>
+<li>SQLRecordManager</li>
+<li>index</li>
+<li>Document</li>
+<li>ElasticsearchStore</li>
+<li>OpenAIEmbeddings</li>
+</ul>
+<p>初始化向量数据库并设置 embeddings</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">collection_name = <span class="string">&quot;test_index&quot;</span></span><br><span class="line"></span><br><span class="line">embedding = OpenAIEmbeddings()</span><br><span class="line"></span><br><span class="line">vectorstore = ElasticsearchStore(</span><br><span class="line">    es_url=<span class="string">&quot;http://localhost:9200&quot;</span>, index_name=<span class="string">&quot;test_index&quot;</span>, embedding=embedding</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>初始化一个记录管理器（record manage）选择合适的命名空间</p>
+<p>建议使用一个既能表达向量存储，又能表达向量存储内集合的名字，例如
+<code>redis/my_docs</code>、<code>chromadb/my_docs</code> 等</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">namespace = <span class="string">f&quot;elasticsearch/<span class="subst">&#123;collection_name&#125;</span>&quot;</span></span><br><span class="line">record_manager = SQLRecordManager(</span><br><span class="line">    namespace, db_url=<span class="string">&quot;sqlite:///record_manager_cache.sql&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>使用记录管理器前创建一个 schema</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">record_manager.create_schema()</span><br></pre></td></tr></table></figure>
+<p>下面开始索引文档</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">doc1 = Document(page_content=<span class="string">&quot;kitty&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;kitty.txt&quot;</span>&#125;)</span><br><span class="line">doc2 = Document(page_content=<span class="string">&quot;doggy&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;doggy.txt&quot;</span>&#125;)</span><br></pre></td></tr></table></figure>
+<h1 id="source">Source</h1>
+<p>元数据属性中有一个名叫 <code>source</code>
+的变量，资源应该指向最终相关的文档</p>
+<p>举一个例子，如果有一些文档都是由父文档进行拆分的，那么它们的
+<code>source</code> 属性应该相同并且指向相关的父文档</p>
+<p>通常 <code>source</code> 应该是存在明确值的，在以下场景可能为
+<code>None</code></p>
+<ul>
+<li>不打算使用 Incremental 模式</li>
+<li>因为一些原因不能明确文档的来源</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_text_splitters <span class="keyword">import</span> CharacterTextSplitter</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义父文档</span></span><br><span class="line">doc1 = Document(</span><br><span class="line">    page_content=<span class="string">&quot;kitty kitty kitty kitty kitty&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;kitty.txt&quot;</span>&#125;</span><br><span class="line">)</span><br><span class="line">doc2 = Document(page_content=<span class="string">&quot;doggy doggy the doggy&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;doggy.txt&quot;</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拆分子文档</span></span><br><span class="line">new_docs = CharacterTextSplitter(</span><br><span class="line">    separator=<span class="string">&quot;t&quot;</span>, keep_separator=<span class="literal">True</span>, chunk_size=<span class="number">12</span>, chunk_overlap=<span class="number">2</span></span><br><span class="line">).split_documents([doc1, doc2])</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="name">Document</span>(<span class="name">page_content=</span><span class="symbol">&#x27;kitty</span> kit&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;kitty.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;tty</span> kitty ki&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;kitty.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;tty</span> kitty&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;kitty.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;doggy</span> doggy&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;the</span> doggy&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;)]</span><br></pre></td></tr></table></figure>
+<p>索引文档</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">index(</span><br><span class="line">    new_docs,</span><br><span class="line">    record_manager,</span><br><span class="line">    vectorstore,</span><br><span class="line">    cleanup=<span class="string">&quot;incremental&quot;</span>,</span><br><span class="line">    source_id_key=<span class="string">&quot;source&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#x27;num_added&#x27;: <span class="number">5</span>, &#x27;num_updated&#x27;: <span class="number">0</span>, &#x27;num_skipped&#x27;: <span class="number">0</span>, &#x27;num_deleted&#x27;: <span class="number">0</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>模拟相同 source 的文档，必须设置 <code>source = doggy.txt</code>
+才能让文档替换为新版本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">changed_doggy_docs = [</span><br><span class="line">    Document(page_content=<span class="string">&quot;woof woof&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;doggy.txt&quot;</span>&#125;),</span><br><span class="line">    Document(page_content=<span class="string">&quot;woof woof woof&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;doggy.txt&quot;</span>&#125;),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">index(</span><br><span class="line">    changed_doggy_docs,</span><br><span class="line">    record_manager,</span><br><span class="line">    vectorstore,</span><br><span class="line">    cleanup=<span class="string">&quot;incremental&quot;</span>,</span><br><span class="line">    source_id_key=<span class="string">&quot;source&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>可以看到新增了两条并且删除了两条</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#x27;num_added&#x27;: <span class="number">2</span>, &#x27;num_updated&#x27;: <span class="number">0</span>, &#x27;num_skipped&#x27;: <span class="number">0</span>, &#x27;num_deleted&#x27;: <span class="number">2</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>做一次查询</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vectorstore.similarity_search(<span class="string">&quot;dog&quot;</span>, k=<span class="number">30</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="name">Document</span>(<span class="name">page_content=</span><span class="symbol">&#x27;woof</span> woof&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;woof</span> woof woof&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;tty</span> kitty&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;kitty.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;tty</span> kitty ki&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;kitty.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;kitty</span> kit&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;kitty.txt</span>&#x27;&#125;)]</span><br></pre></td></tr></table></figure>
+<h1 id="使用加载器loader">使用加载器（Loader）</h1>
+<p>索引可以接受文档的 iterable，也可以接受任意的 loader</p>
+<p><strong>需要注意：使用 loader 需要明确设置 source</strong></p>
+<p>实现一个 <code>BaseLoader</code>，mock 加载了几个文档</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langchain_community.document_loaders.base <span class="keyword">import</span> BaseLoader</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyCustomLoader</span>(<span class="title class_ inherited__">BaseLoader</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">lazy_load</span>(<span class="params">self</span>):</span><br><span class="line">        text_splitter = CharacterTextSplitter(</span><br><span class="line">            separator=<span class="string">&quot;t&quot;</span>, keep_separator=<span class="literal">True</span>, chunk_size=<span class="number">12</span>, chunk_overlap=<span class="number">2</span></span><br><span class="line">        )</span><br><span class="line">        docs = [</span><br><span class="line">            Document(page_content=<span class="string">&quot;woof woof&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;doggy.txt&quot;</span>&#125;),</span><br><span class="line">            Document(page_content=<span class="string">&quot;woof woof woof&quot;</span>, metadata=&#123;<span class="string">&quot;source&quot;</span>: <span class="string">&quot;doggy.txt&quot;</span>&#125;),</span><br><span class="line">        ]</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">from</span> text_splitter.split_documents(docs)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">load</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">list</span>(self.lazy_load())</span><br></pre></td></tr></table></figure>
+<p>从 loader 中读取数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">loader = MyCustomLoader()</span><br><span class="line">loader.load()</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="name">Document</span>(<span class="name">page_content=</span><span class="symbol">&#x27;woof</span> woof&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;woof</span> woof woof&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;)]</span><br></pre></td></tr></table></figure>
+<p>索引</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index(loader, record_manager, vectorstore, cleanup=<span class="string">&quot;full&quot;</span>, source_id_key=<span class="string">&quot;source&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#x27;num_added&#x27;: <span class="number">2</span>, &#x27;num_updated&#x27;: <span class="number">0</span>, &#x27;num_skipped&#x27;: <span class="number">0</span>, &#x27;num_deleted&#x27;: <span class="number">0</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>查询</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vectorstore.similarity_search(<span class="string">&quot;dog&quot;</span>, k=<span class="number">30</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="name">Document</span>(<span class="name">page_content=</span><span class="symbol">&#x27;woof</span> woof&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;),</span><br><span class="line"> Document(<span class="name">page_content=</span><span class="symbol">&#x27;woof</span> woof woof&#x27;, metadata=&#123;<span class="symbol">&#x27;source</span><span class="symbol">&#x27;:</span> <span class="symbol">&#x27;doggy.txt</span>&#x27;&#125;)]</span><br></pre></td></tr></table></figure>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://python.langchain.com/v0.1/docs/modules/data_connection/indexing/#deletion-modes">Indexing
+| 🦜️🔗 LangChain</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html" rel="prev" title="读懂 GC 日志">
+      <i class="fa fa-chevron-left"></i> 读懂 GC 日志
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/AI/Ragas%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5.html" rel="next" title="Ragas 核心概念">
+      Ragas 核心概念 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">如何工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">删除模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A6%81%E6%B1%82"><span class="nav-number">3.</span> <span class="nav-text">要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">4.</span> <span class="nav-text">注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B"><span class="nav-number">5.</span> <span class="nav-text">快速开始</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#source"><span class="nav-number">6.</span> <span class="nav-text">Source</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8A%A0%E8%BD%BD%E5%99%A8loader"><span class="nav-number">7.</span> <span class="nav-text">使用加载器（Loader）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:5px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+        </a>
+      </div>
+
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kugaaa.com" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>

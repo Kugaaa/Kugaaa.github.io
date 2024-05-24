@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Prompt 工程的工作原理 由于指导遵循模型的训练方式或训练数据，有一些特定的提示格式效果特别好，与手头的任务更为一致 下面我们介绍了一些提示格式，我们认为这些格式运行可靠，但可以随意探索不同的格式，这些格式可能最适合您的任务 经验法则和示例 注意： &amp;#123;text input here&amp;#125; 是实际文本 &#x2F; 上下文的占位符">
+  <meta name="description" content="Prompt 工程的工作原理 由于指导遵循模型的训练方式或训练数据，有一些特定的提示格式效果特别好，与手头的任务更为一致 下面我们介绍了一些提示格式，我们认为这些格式运行可靠，但可以随意探索不同的格式，这些格式可能最适合您的任务 经验法则和示例 注意： &amp;#123;text input here&amp;#125; 是实际文本 &#x2F; 上下文的占位符">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 OpenAI API 进行 Prompt 工程的最佳实践">
 <meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E4%BD%BF%E7%94%A8%20OpenAI%20API%20%E8%BF%9B%E8%A1%8C%20Prompt%20%E5%B7%A5%E7%A8%8B%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">
 <meta property="og:site_name" content="贫瘠之地">
-<meta property="og:description" content="Prompt 工程的工作原理 由于指导遵循模型的训练方式或训练数据，有一些特定的提示格式效果特别好，与手头的任务更为一致 下面我们介绍了一些提示格式，我们认为这些格式运行可靠，但可以随意探索不同的格式，这些格式可能最适合您的任务 经验法则和示例 注意： &amp;#123;text input here&amp;#125; 是实际文本 &#x2F; 上下文的占位符">
+<meta property="og:description" content="Prompt 工程的工作原理 由于指导遵循模型的训练方式或训练数据，有一些特定的提示格式效果特别好，与手头的任务更为一致 下面我们介绍了一些提示格式，我们认为这些格式运行可靠，但可以随意探索不同的格式，这些格式可能最适合您的任务 经验法则和示例 注意： &amp;#123;text input here&amp;#125; 是实际文本 &#x2F; 上下文的占位符">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-13T16:00:00.000Z">
 <meta property="article:modified_time" content="2023-10-13T16:00:00.000Z">
 <meta property="article:author" content="Kuga">
-<meta property="article:tag" content="Prompt">
 <meta property="article:tag" content="AI">
+<meta property="article:tag" content="Prompt">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E4%BD%BF%E7%94%A8%20OpenAI%20API%20%E8%BF%9B%E8%A1%8C%20Prompt%20%E5%B7%A5%E7%A8%8B%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.html">
@@ -246,25 +246,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="prompt-工程的工作原理">Prompt 工程的工作原理</h1>
+        <h1>Prompt 工程的工作原理</h1>
 <p>由于指导遵循模型的训练方式或训练数据，有一些特定的提示格式效果特别好，与手头的任务更为一致</p>
 <p>下面我们介绍了一些提示格式，我们认为这些格式运行可靠，但可以随意探索不同的格式，这些格式可能最适合您的任务</p>
-<h1 id="经验法则和示例">经验法则和示例</h1>
-<p><strong>注意：</strong> <code>&#123;text input here&#125;</code> 是实际文本 /
-上下文的占位符</p>
+<h1>经验法则和示例</h1>
+<p><strong>注意：</strong> <code>&#123;text input here&#125;</code> 是实际文本 / 上下文的占位符</p>
 <h2 id="使用最新版本">使用最新版本</h2>
 <p>为了最好的结果，我们通常建议使用最新、功能最强的模型</p>
-<p>截至 2022 年 11 月，最佳选择是用于文本生成的
-<code>text-davinci-003</code> 模型和用于代码生成的
-<code>code-davinci-002</code> 模型</p>
-<h2 id="提示放在开头并且使用-或者-分隔提示和内容">提示放在开头并且使用
-### 或者 """ 分隔提示和内容</h2>
+<p>截至 2022 年 11 月，最佳选择是用于文本生成的 <code>text-davinci-003</code> 模型和用于代码生成的 <code>code-davinci-002</code> 模型</p>
+<h2 id="提示放在开头并且使用-或者-“”-分隔提示和内容">提示放在开头并且使用 ### 或者 “”&quot; 分隔提示和内容</h2>
 <p><strong>效果较差：</strong></p>
 <figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Summarize the text below as a bullet point list of the most important points.</span><br><span class="line"></span><br><span class="line">&#123;text input here&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>改进：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Summarize the text below as a bullet point list of the most important points.</span><br><span class="line"></span><br><span class="line">Text: &quot;&quot;&quot;</span><br><span class="line">&#123;text input here&#125;</span><br><span class="line">&quot;&quot;&quot;</span><br></pre></td></tr></table></figure>
-<h2
-id="对所需的上下文结果长度格式风格等进行具体和尽可能详细的描述">对所需的上下文、结果、长度、格式、风格等进行具体和尽可能详细的描述</h2>
+<h2 id="对所需的上下文、结果、长度、格式、风格等进行具体和尽可能详细的描述">对所需的上下文、结果、长度、格式、风格等进行具体和尽可能详细的描述</h2>
 <p><strong>效果较差：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Write a poem about OpenAI. </span><br></pre></td></tr></table></figure>
 <p><strong>改进：</strong></p>
@@ -276,53 +271,39 @@ id="对所需的上下文结果长度格式风格等进行具体和尽可能详�
 <p>这也使得以编程方式可靠地解析多个输出变得更加容易</p>
 <p><strong>改进：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Extract the important entities mentioned in the text below. First extract all company names, then extract all people names, then extract specific topics which fit the content and finally extract general overarching themes</span><br><span class="line"></span><br><span class="line">Desired format:</span><br><span class="line">Company names: &lt;comma_separated_list_of_company_names&gt;</span><br><span class="line">People names: -||-</span><br><span class="line">Specific topics: -||-</span><br><span class="line">General themes: -||-</span><br><span class="line"></span><br><span class="line">Text: &#123;text&#125;</span><br></pre></td></tr></table></figure>
-<h2
-id="从零样本开始然后是少量样本它们都不起作用则微调">从零样本开始，然后是少量样本，它们都不起作用则微调</h2>
+<h2 id="从零样本开始，然后是少量样本，它们都不起作用则微调">从零样本开始，然后是少量样本，它们都不起作用则微调</h2>
 <p><strong>零样本：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Extract keywords from the below text.</span><br><span class="line"></span><br><span class="line">Text: &#123;text&#125;</span><br><span class="line"></span><br><span class="line">Keywords:</span><br></pre></td></tr></table></figure>
 <p><strong>少量样本 - 举几个例子</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Extract keywords from the corresponding texts below.</span><br><span class="line"></span><br><span class="line">Text 1: Stripe provides APIs that web developers can use to integrate payment processing into their websites and mobile applications.</span><br><span class="line">Keywords 1: Stripe, payment processing, APIs, web developers, websites, mobile applications</span><br><span class="line">##</span><br><span class="line">Text 2: OpenAI has trained cutting-edge language models that are very good at understanding and generating text. Our API provides access to these models and can be used to solve virtually any task that involves processing language.</span><br><span class="line">Keywords 2: OpenAI, language models, text processing, API.</span><br><span class="line">##</span><br><span class="line">Text 3: &#123;text&#125;</span><br><span class="line">Keywords 3:</span><br></pre></td></tr></table></figure>
-<p><strong>微调：请参阅此处的微调最佳实践 <a
-target="_blank" rel="noopener" href="https://docs.google.com/document/d/1h-GTjNDDKPKU_Rsd0t1lXCAnHltaXTAzQ8K2HRhQf9U/edit#">here</a></strong></p>
-<h2 id="减少模糊不准确的描述">减少模糊、不准确的描述</h2>
+<p><strong>微调：请参阅此处的微调最佳实践 <a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1h-GTjNDDKPKU_Rsd0t1lXCAnHltaXTAzQ8K2HRhQf9U/edit#">here</a></strong></p>
+<h2 id="减少模糊、不准确的描述">减少模糊、不准确的描述</h2>
 <p><strong>效果较差：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The description for this product should be fairly short, a few sentences only, and not too much more.</span><br></pre></td></tr></table></figure>
 <p><strong>改进：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Use a 3 to 5 sentence paragraph to describe this product.</span><br></pre></td></tr></table></figure>
-<h2
-id="与其说不该做什么不如说该做什么">与其说不该做什么不如说该做什么</h2>
+<h2 id="与其说不该做什么不如说该做什么">与其说不该做什么不如说该做什么</h2>
 <p><strong>效果较差：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">The following is a conversation between an Agent and a Customer. DO NOT ASK USERNAME OR PASSWORD. DO NOT REPEAT.</span><br><span class="line"></span><br><span class="line">Customer: I can’t log in to my account.</span><br><span class="line">Agent:</span><br></pre></td></tr></table></figure>
 <p><strong>改进：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">The following is a conversation between an Agent and a Customer. The agent will attempt to diagnose the problem and suggest a solution, whilst refraining from asking any questions related to PII. Instead of asking for PII, such as username or password, refer the user to the help article www.samplewebsite.com/help/faq</span><br><span class="line"></span><br><span class="line">Customer: I can’t log in to my account.</span><br><span class="line">Agent:</span><br></pre></td></tr></table></figure>
-<h2 id="代码生成特有---使用引导词引导模型">代码生成特有 -
-使用引导词引导模型</h2>
+<h2 id="代码生成特有-使用引导词引导模型">代码生成特有 - 使用引导词引导模型</h2>
 <p><strong>效果较差：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Write a simple python function that</span><br><span class="line"># 1. Ask me for a number in mile</span><br><span class="line"># 2. It converts miles to kilometers</span><br></pre></td></tr></table></figure>
-<p>在下方的代码示例中，添加 "import" 对模型进行提示，它应该使用 Python
-进行编写（类似地，"SELECT" 是一个针对 SQL 语句好的提示）</p>
+<p>在下方的代码示例中，添加 “import” 对模型进行提示，它应该使用 Python 进行编写（类似地，“SELECT” 是一个针对 SQL 语句好的提示）</p>
 <p><strong>改进：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Write a simple python function that</span><br><span class="line"># 1. Ask me for a number in mile</span><br><span class="line"># 2. It converts miles to kilometers</span><br><span class="line"> </span><br><span class="line">import</span><br></pre></td></tr></table></figure>
-<h1 id="参数">参数</h1>
-<p>通常，我们发现 <code>model</code> 和 <code>temperature</code>
-是改变模型输出最常用的参数</p>
+<h1>参数</h1>
+<p>通常，我们发现 <code>model</code> 和 <code>temperature</code> 是改变模型输出最常用的参数</p>
 <ul>
 <li><code>model</code> - 更高性能的模型成本更高，延迟也更高</li>
-<li><code>temperature</code> - 衡量模型输出不太可能的 tokens
-的指标；温度越高，输出就越随机（通常是创造性的）；然而这并不等同于“真实性”；对于大多数实际用例，如数据提取和真实问答，0
-的参数是最好的</li>
-<li><code>max_tokens</code> - 不能控制输出的长度，是一个针对 token
-生成的硬截止限制；理想情况下你不会经常达到这个极限，因为当你的模型认为它已经完成时，或者当它达到你定义的停止序列时，它就会停止</li>
+<li><code>temperature</code> - 衡量模型输出不太可能的 tokens 的指标；温度越高，输出就越随机（通常是创造性的）；然而这并不等同于“真实性”；对于大多数实际用例，如数据提取和真实问答，0 的参数是最好的</li>
+<li><code>max_tokens</code> - 不能控制输出的长度，是一个针对 token 生成的硬截止限制；理想情况下你不会经常达到这个极限，因为当你的模型认为它已经完成时，或者当它达到你定义的停止序列时，它就会停止</li>
 <li><code>stop</code> - 一组字符（标记），生成后将导致文本生成停止</li>
 </ul>
-<p>更多的参数描述参考 <a
-target="_blank" rel="noopener" href="https://beta.openai.com/docs/api-reference/completions/create">API
-reference</a></p>
-<h1 id="参考">参考</h1>
-<p><a
-target="_blank" rel="noopener" href="https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-openai-api">Best
-practices for prompt engineering with OpenAI API | OpenAI Help
-Center</a></p>
+<p>更多的参数描述参考 <a target="_blank" rel="noopener" href="https://beta.openai.com/docs/api-reference/completions/create">API reference</a></p>
+<h1>参考</h1>
+<p><a target="_blank" rel="noopener" href="https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-openai-api">Best practices for prompt engineering with OpenAI API | OpenAI Help Center</a></p>
 
     </div>
 
@@ -332,8 +313,8 @@ Center</a></p>
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Prompt/" rel="tag"># Prompt</a>
               <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/Prompt/" rel="tag"># Prompt</a>
           </div>
 
         
@@ -407,9 +388,7 @@ Center</a></p>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#prompt-%E5%B7%A5%E7%A8%8B%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">Prompt 工程的工作原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C%E6%B3%95%E5%88%99%E5%92%8C%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">经验法则和示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC"><span class="nav-number">2.1.</span> <span class="nav-text">使用最新版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA%E6%94%BE%E5%9C%A8%E5%BC%80%E5%A4%B4%E5%B9%B6%E4%B8%94%E4%BD%BF%E7%94%A8-%E6%88%96%E8%80%85-%E5%88%86%E9%9A%94%E6%8F%90%E7%A4%BA%E5%92%8C%E5%86%85%E5%AE%B9"><span class="nav-number">2.2.</span> <span class="nav-text">提示放在开头并且使用
-### 或者 &quot;&quot;&quot; 分隔提示和内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%89%80%E9%9C%80%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87%E7%BB%93%E6%9E%9C%E9%95%BF%E5%BA%A6%E6%A0%BC%E5%BC%8F%E9%A3%8E%E6%A0%BC%E7%AD%89%E8%BF%9B%E8%A1%8C%E5%85%B7%E4%BD%93%E5%92%8C%E5%B0%BD%E5%8F%AF%E8%83%BD%E8%AF%A6%E7%BB%86%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.3.</span> <span class="nav-text">对所需的上下文、结果、长度、格式、风格等进行具体和尽可能详细的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E7%A4%BA%E4%BE%8B%E9%98%90%E6%98%8E%E6%89%80%E9%9C%80%E7%9A%84%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">通过示例阐明所需的输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E9%9B%B6%E6%A0%B7%E6%9C%AC%E5%BC%80%E5%A7%8B%E7%84%B6%E5%90%8E%E6%98%AF%E5%B0%91%E9%87%8F%E6%A0%B7%E6%9C%AC%E5%AE%83%E4%BB%AC%E9%83%BD%E4%B8%8D%E8%B5%B7%E4%BD%9C%E7%94%A8%E5%88%99%E5%BE%AE%E8%B0%83"><span class="nav-number">2.5.</span> <span class="nav-text">从零样本开始，然后是少量样本，它们都不起作用则微调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%8F%E5%B0%91%E6%A8%A1%E7%B3%8A%E4%B8%8D%E5%87%86%E7%A1%AE%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.6.</span> <span class="nav-text">减少模糊、不准确的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E8%AF%B4%E4%B8%8D%E8%AF%A5%E5%81%9A%E4%BB%80%E4%B9%88%E4%B8%8D%E5%A6%82%E8%AF%B4%E8%AF%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">2.7.</span> <span class="nav-text">与其说不该做什么不如说该做什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E7%89%B9%E6%9C%89---%E4%BD%BF%E7%94%A8%E5%BC%95%E5%AF%BC%E8%AF%8D%E5%BC%95%E5%AF%BC%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.8.</span> <span class="nav-text">代码生成特有 -
-使用引导词引导模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">Prompt 工程的工作原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">经验法则和示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC"><span class="nav-number">2.1.</span> <span class="nav-text">使用最新版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA%E6%94%BE%E5%9C%A8%E5%BC%80%E5%A4%B4%E5%B9%B6%E4%B8%94%E4%BD%BF%E7%94%A8-%E6%88%96%E8%80%85-%E2%80%9C%E2%80%9D-%E5%88%86%E9%9A%94%E6%8F%90%E7%A4%BA%E5%92%8C%E5%86%85%E5%AE%B9"><span class="nav-number">2.2.</span> <span class="nav-text">提示放在开头并且使用 ### 或者 “”&quot; 分隔提示和内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%89%80%E9%9C%80%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87%E3%80%81%E7%BB%93%E6%9E%9C%E3%80%81%E9%95%BF%E5%BA%A6%E3%80%81%E6%A0%BC%E5%BC%8F%E3%80%81%E9%A3%8E%E6%A0%BC%E7%AD%89%E8%BF%9B%E8%A1%8C%E5%85%B7%E4%BD%93%E5%92%8C%E5%B0%BD%E5%8F%AF%E8%83%BD%E8%AF%A6%E7%BB%86%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.3.</span> <span class="nav-text">对所需的上下文、结果、长度、格式、风格等进行具体和尽可能详细的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E7%A4%BA%E4%BE%8B%E9%98%90%E6%98%8E%E6%89%80%E9%9C%80%E7%9A%84%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">通过示例阐明所需的输出格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E9%9B%B6%E6%A0%B7%E6%9C%AC%E5%BC%80%E5%A7%8B%EF%BC%8C%E7%84%B6%E5%90%8E%E6%98%AF%E5%B0%91%E9%87%8F%E6%A0%B7%E6%9C%AC%EF%BC%8C%E5%AE%83%E4%BB%AC%E9%83%BD%E4%B8%8D%E8%B5%B7%E4%BD%9C%E7%94%A8%E5%88%99%E5%BE%AE%E8%B0%83"><span class="nav-number">2.5.</span> <span class="nav-text">从零样本开始，然后是少量样本，它们都不起作用则微调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%8F%E5%B0%91%E6%A8%A1%E7%B3%8A%E3%80%81%E4%B8%8D%E5%87%86%E7%A1%AE%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.6.</span> <span class="nav-text">减少模糊、不准确的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E8%AF%B4%E4%B8%8D%E8%AF%A5%E5%81%9A%E4%BB%80%E4%B9%88%E4%B8%8D%E5%A6%82%E8%AF%B4%E8%AF%A5%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">2.7.</span> <span class="nav-text">与其说不该做什么不如说该做什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E7%89%B9%E6%9C%89-%E4%BD%BF%E7%94%A8%E5%BC%95%E5%AF%BC%E8%AF%8D%E5%BC%95%E5%AF%BC%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.8.</span> <span class="nav-text">代码生成特有 - 使用引导词引导模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -423,7 +402,7 @@ Center</a></p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -436,7 +415,7 @@ Center</a></p>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -448,6 +427,12 @@ Center</a></p>
     </div>
 
     <div>
+      <div style="margin-top:5px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+        </a>
+      </div>
+
       <div style="margin-top:15px">
         <a href="https://www.foreverblog.cn/go.html" target="_blank">
           <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
@@ -460,14 +445,8 @@ Center</a></p>
         </a>
       </div>
 
-      <div style="margin-top:17px">
-        <a href="https://github.com/Kugaaa" target="_blank">
-          <img alt="Hello World" src="https://img.shields.io/badge/today-Earn%20this.%20Earn%20it-red?&labelColor=white&cacheSeconds=300" style="width:auto;height:20px;" title="Hello World">
-        </a>
-      </div>
-
       <div style="margin-top:20px">
-          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=400 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
       </div>
     </div>
   </aside>
