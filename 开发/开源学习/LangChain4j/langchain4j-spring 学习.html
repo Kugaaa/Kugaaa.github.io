@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="langchain4j-spring 学习 介绍 langchain4j-spring 是 LangChain4j 下支持 Spring Starter 机制的仓库 截止到当前版本 0.31.0 来看，仓库下的 module 主要分为两大类  流行的集成的 Starter（popular integrations）  langchain4j-open-ai-spring-boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="langchain4j-spring 学习">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="langchain4j-spring 学习 介绍 langchain4j-spring 是 LangChain4j 下支持 Spring Starter 机制的仓库 截止到当前版本 0.31.0 来看，仓库下的 module 主要分为两大类  流行的集成的 Starter（popular integrations）  langchain4j-open-ai-spring-boot">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0/fix-commit.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0/bean-lifecycle.png">
+<meta property="article:published_time" content="2024-06-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-14T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="源码">
+<meta property="article:tag" content="LangChain4j">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0/fix-commit.png">
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>langchain4j-spring 学习 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          langchain4j-spring 学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-06-15 00:00:00" itemprop="dateCreated datePublished" datetime="2024-06-15T00:00:00+08:00">2024-06-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/" itemprop="url" rel="index"><span itemprop="name">LangChain4j</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="langchain4j-spring-学习">langchain4j-spring 学习</h1>
+<h1 id="介绍">介绍</h1>
+<p>langchain4j-spring 是 LangChain4j 下支持 Spring Starter
+机制的仓库</p>
+<p>截止到当前版本 <code>0.31.0</code> 来看，仓库下的 module
+主要分为两大类</p>
+<ul>
+<li>流行的集成的 Starter（popular integrations）
+<ul>
+<li>langchain4j-open-ai-spring-boot-starter：OpenAI LLM</li>
+<li>langchain4j-azure-open-ai-spring-boot-starter：Azure OpenAI LLM</li>
+<li>langchain4j-anthropic-spring-boot-starter：Anthropic
+LLM（Claude）</li>
+<li>langchain4j-ollama-spring-boot-starter：Ollama LLM</li>
+</ul></li>
+<li>AiService、RAG、Tools 等工具的 Starter
+<ul>
+<li>langchain4j-spring-boot-starter：核心能力</li>
+<li>langchain4j-easy-rag-spring-boot-starter</li>
+</ul></li>
+</ul>
+<p>需要注意的是，LangChain4j 支持 Java 8，但是这个 Spring Starter
+项目只支持 Java 17（本质原因还是新的 Spring Boot 版本对 Java
+版本的要求，如今新的 Spring 相关仓库很少支持 Java 8 了）</p>
+<p>下面会简单了解一些核心功能的用法，以及实现方式</p>
+<h1 id="llm">LLM</h1>
+<p>这里以 Azure OpenAI 为例</p>
+<h2 id="使用">使用</h2>
+<p>在 <code>application</code> 文件中进行相关配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">langchain4j:</span></span><br><span class="line">  <span class="attr">azure-open-ai:</span></span><br><span class="line">    <span class="attr">chat-model:</span></span><br><span class="line">      <span class="attr">api-key:</span> <span class="string">&#x27;AZURE_OPENAI_KEY&#x27;</span></span><br><span class="line">      <span class="attr">endpoint:</span> <span class="string">&#x27;AZURE_OPENAI_ENDPOINT&#x27;</span></span><br><span class="line">      <span class="attr">deployment-name:</span> <span class="string">&#x27;deploymentName&#x27;</span></span><br><span class="line">      <span class="attr">max-tokens:</span> <span class="number">1000</span></span><br></pre></td></tr></table></figure>
+<p>依赖自动注入，LLM 已经作为 Bean 实例化进容器了</p>
+<p>接口为 <code>dev.langchain4j.model.chat.ChatLanguageModel</code></p>
+<p>实现类为
+<code>dev.langchain4j.model.azure.AzureOpenAiChatModel</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyLlmService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ChatLanguageModel chatLanguageModel;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">post</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">UserMessage</span> <span class="variable">message</span> <span class="operator">=</span> UserMessage.from(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">        Response&lt;AiMessage&gt; generate = chatLanguageModel.generate(message);</span><br><span class="line">        log.info(<span class="string">&quot;response content:&#123;&#125;&quot;</span>, generate.content());</span><br><span class="line">        <span class="comment">// response content:Hello! How can I assist you today?</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="源码">源码</h2>
+<h3 id="自动装配">自动装配</h3>
+<p>META 文件中指明了自动装配类为
+<code>dev.langchain4j.azure.openai.spring.AutoConfig</code></p>
+<p><code>AutoConfig</code> 主要负责如下相关 Bean 的装配工作</p>
+<ul>
+<li>AzureOpenAiChatModel</li>
+<li>AzureOpenAiStreamingChatModel</li>
+<li>AzureOpenAiEmbeddingModel</li>
+<li>AzureOpenAiImageModel</li>
+<li>AzureOpenAiTokenizer</li>
+</ul>
+<p>以 <code>AzureOpenAiChatModel</code> 和
+<code>AzureOpenAiTokenizer</code> 为例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AutoConfiguration</span></span><br><span class="line"><span class="meta">@EnableConfigurationProperties(Properties.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AutoConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnProperty(Properties.PREFIX + &quot;.chat-model.api-key&quot;)</span></span><br><span class="line">    AzureOpenAiChatModel <span class="title function_">openAiChatModelByAPIKey</span><span class="params">(Properties properties)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> openAiChatModel(properties);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    AzureOpenAiTokenizer <span class="title function_">openAiTokenizer</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">AzureOpenAiTokenizer</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到当发现存在配置 <code>.chat-model.api-key</code>
+时，将会实例化 <code>AzureOpenAiChatModel</code></p>
+<p>后面的 <code>openAiChatModel</code>
+方法会根据配置文件内容创建出相关实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">AzureOpenAiImageModel <span class="title function_">openAiImageModel</span><span class="params">(Properties properties)</span> &#123;</span><br><span class="line">      <span class="type">ImageModelProperties</span> <span class="variable">imageModelProperties</span> <span class="operator">=</span> properties.getImageModel();</span><br><span class="line">      AzureOpenAiImageModel.<span class="type">Builder</span> <span class="variable">builder</span> <span class="operator">=</span> AzureOpenAiImageModel.builder()</span><br><span class="line">              .endpoint(imageModelProperties.getEndpoint())</span><br><span class="line">              .apiKey(imageModelProperties.getApiKey())</span><br><span class="line">              .deploymentName(imageModelProperties.getDeploymentName())</span><br><span class="line">              .size(imageModelProperties.getSize())</span><br><span class="line">              .quality(imageModelProperties.getQuality())</span><br><span class="line">              .style(imageModelProperties.getStyle())</span><br><span class="line">              .user(imageModelProperties.getUser())</span><br><span class="line">              .responseFormat(imageModelProperties.getResponseFormat())</span><br><span class="line">              .timeout(imageModelProperties.getTimeout() == <span class="literal">null</span> ? <span class="literal">null</span> : Duration.ofSeconds(imageModelProperties.getTimeout()))</span><br><span class="line">              .maxRetries(imageModelProperties.getMaxRetries())</span><br><span class="line">              .proxyOptions(ProxyOptions.fromConfiguration(Configuration.getGlobalConfiguration()))</span><br><span class="line">              .logRequestsAndResponses(imageModelProperties.getLogRequestsAndResponses() != <span class="literal">null</span> &amp;&amp; imageModelProperties.getLogRequestsAndResponses());</span><br><span class="line">      <span class="keyword">if</span> (imageModelProperties.getNonAzureApiKey() != <span class="literal">null</span>) &#123;</span><br><span class="line">          builder.nonAzureApiKey(imageModelProperties.getNonAzureApiKey());</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> builder.build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的就是在获取配置文件中的属性进行实例化</p>
+<p><strong>这里多说一句！</strong></p>
+<p>一开始我的项目启动不起来，报错信息如下，明显是装配类的全限定名路径错了，前面多了一个
+<code>spring.</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Unable to read meta-data <span class="keyword">for</span> <span class="keyword">class</span> <span class="title class_">spring</span>.dev.langchain4j.azure.openai.spring.AutoConfig</span><br></pre></td></tr></table></figure>
+<p>我看了一下代码，发现项目中写的确实是
+<code>dev.langchain4j.azure.openai.spring.AutoConfig spring</code>
+，所以我的怀疑重心就放在了 Spring 和 Maven
+的编译插件上了，以为是换了新版本的 Spring Boot 有什么新机制导致的
+“水土不服”</p>
+<p>结果怎么试都不行，实在没办法了看了一下提交时间，发现竟然是 5.24
+才进行的 fix，也就是说在仓库的 <code>0.32.0-SNAPSHOT</code>
+是修复过的，而之前的 <code>0.31.0</code> 这个 RELEASE
+版本，就是错的…</p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0/fix-commit.png" class="" title="Untitled">
+<p>没办法，本地打了一个 <code>0.32.0-SNAPSHOT</code> 包继续测试</p>
+<p>那么为什么会出现这种错误呢，因为这个贡献者还写了了 Azure Search 的
+Starter，在那个 module 下，<code>AutoConfig</code> 是在
+<code>dev.langchain4j.azure.openai.spring</code>
+这个路径，所以我猜测是作者搞混了</p>
+<h3 id="配置">配置</h3>
+<p>这里简单看下都有哪些配置参数</p>
+<p>具体的属性都在
+<code>dev.langchain4j.azure.openai.spring.Properties</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="meta">@ConfigurationProperties(prefix = Properties.PREFIX)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Properties</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">PREFIX</span> <span class="operator">=</span> <span class="string">&quot;langchain4j.azure-open-ai&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NestedConfigurationProperty</span></span><br><span class="line">    ChatModelProperties chatModel; <span class="comment">// 聊天模型</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@NestedConfigurationProperty</span></span><br><span class="line">    ChatModelProperties streamingChatModel; <span class="comment">// 流式</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@NestedConfigurationProperty</span></span><br><span class="line">    EmbeddingModelProperties embeddingModel; <span class="comment">// 嵌入</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@NestedConfigurationProperty</span></span><br><span class="line">    ImageModelProperties imageModel; <span class="comment">// 图片</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以聊天模型为例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ChatModelProperties</span> &#123;</span><br><span class="line"></span><br><span class="line">    String endpoint;</span><br><span class="line">    String apiKey;</span><br><span class="line">    String nonAzureApiKey;</span><br><span class="line">    String organizationId;</span><br><span class="line">    String deploymentName;</span><br><span class="line">    Double temperature;</span><br><span class="line">    Double topP;</span><br><span class="line">    Integer maxTokens;</span><br><span class="line">    Double presencePenalty;</span><br><span class="line">    Double frequencyPenalty;</span><br><span class="line">    String responseFormat;</span><br><span class="line">    Integer seed;</span><br><span class="line">    List&lt;String&gt; stop;</span><br><span class="line">    Integer timeout;</span><br><span class="line">    Integer maxRetries;</span><br><span class="line">    Boolean logRequestsAndResponses;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就是支持的所有参数了，可以看到使用示例中的属性皆在这里</p>
+<ul>
+<li>apiKey</li>
+<li>endpoint</li>
+<li>deploymentName</li>
+<li>maxTokens</li>
+</ul>
+<h1 id="aiservice">AiService</h1>
+<h2 id="使用-1">使用</h2>
+<p>定义接口，标注 <code>@AiService</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AiService</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">MyAiService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SystemMessage(&quot;&quot;&quot;</span></span><br><span class="line"><span class="meta">            Tell me five names about the topic given by users.</span></span><br><span class="line"><span class="meta">            Separate with commas.</span></span><br><span class="line"><span class="meta">            &quot;&quot;&quot;)</span></span><br><span class="line">    String <span class="title function_">answer</span><span class="params">(String userMessage)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注入后使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Run</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyAiService myAiService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">post</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">resp</span> <span class="operator">=</span> myAiService.answer(<span class="string">&quot;国家首都&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;response content:&#123;&#125;&quot;</span>, resp);</span><br><span class="line">        <span class="comment">// response content:北京，华盛顿，伦敦，巴黎，东京</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="源码-1">源码</h2>
+<p><code>AiService</code> Bean 的创建是通过
+<code>BeanFactoryPostProcessor</code> 实现的</p>
+<p>dev.langchain4j.service.spring.AiServicesAutoConfig</p>
+<h3 id="组件获取">组件获取</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AiServicesAutoConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    BeanFactoryPostProcessor <span class="title function_">aiServicesRegisteringBeanFactoryPostProcessor</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> beanFactory -&gt; &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// all components available in the application context</span></span><br><span class="line">            String[] chatLanguageModels = beanFactory.getBeanNamesForType(ChatLanguageModel.class);</span><br><span class="line">            String[] streamingChatLanguageModels = beanFactory.getBeanNamesForType(StreamingChatLanguageModel.class);</span><br><span class="line">            String[] chatMemories = beanFactory.getBeanNamesForType(ChatMemory.class);</span><br><span class="line">            String[] chatMemoryProviders = beanFactory.getBeanNamesForType(ChatMemoryProvider.class);</span><br><span class="line">            String[] contentRetrievers = beanFactory.getBeanNamesForType(ContentRetriever.class);</span><br><span class="line">            String[] retrievalAugmentors = beanFactory.getBeanNamesForType(RetrievalAugmentor.class);</span><br><span class="line">            </span><br><span class="line">            ...</span><br><span class="line">            </span><br><span class="line">&#125;		        </span><br></pre></td></tr></table></figure>
+<p><code>AiService</code> 依赖的大部分组件，都是在 Bean
+容器内进行获取，例如 LLM、记忆等重要组件</p>
+<h3 id="扫描-aiservice">扫描 <span class="citation"
+data-cites="AiService">@AiService</span></h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Set&lt;Class&lt;?&gt;&gt; findAiServices(ConfigurableListableBeanFactory beanFactory) &#123;</span><br><span class="line">    String[] applicationBean = beanFactory.getBeanNamesForAnnotation(SpringBootApplication.class);</span><br><span class="line">    <span class="type">BeanDefinition</span> <span class="variable">applicationBeanDefinition</span> <span class="operator">=</span> beanFactory.getBeanDefinition(applicationBean[<span class="number">0</span>]);</span><br><span class="line">    <span class="type">String</span> <span class="variable">basePackage</span> <span class="operator">=</span> applicationBeanDefinition.getResolvableType().resolve().getPackage().getName();</span><br><span class="line">    <span class="type">Reflections</span> <span class="variable">reflections</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Reflections</span>(basePackage);</span><br><span class="line">    <span class="keyword">return</span> reflections.getTypesAnnotatedWith(AiService.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里为了拿到 Application 的 basePackage，然后通过
+<code>Reflections</code> 扫描所有带有 <code>@AiService</code>
+注解的类</p>
+<h3 id="创建-bean">创建 Bean</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GenericBeanDefinition</span> <span class="variable">aiServiceBeanDefinition</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GenericBeanDefinition</span>();</span><br><span class="line">        aiServiceBeanDefinition.setBeanClass(AiServiceFactory.class);</span><br><span class="line">        aiServiceBeanDefinition.getConstructorArgumentValues().addGenericArgumentValue(aiServiceClass);</span><br><span class="line">        <span class="type">MutablePropertyValues</span> <span class="variable">propertyValues</span> <span class="operator">=</span> aiServiceBeanDefinition.getPropertyValues();</span><br><span class="line"></span><br><span class="line">        <span class="type">AiService</span> <span class="variable">aiServiceAnnotation</span> <span class="operator">=</span> aiServiceClass.getAnnotation(AiService.class);</span><br><span class="line"></span><br><span class="line">        addBeanReference(</span><br><span class="line">                ChatLanguageModel.class,</span><br><span class="line">                aiServiceAnnotation,</span><br><span class="line">                aiServiceAnnotation.chatModel(),</span><br><span class="line">                chatLanguageModels,</span><br><span class="line">                <span class="string">&quot;chatModel&quot;</span>,</span><br><span class="line">                <span class="string">&quot;chatLanguageModel&quot;</span>,</span><br><span class="line">                propertyValues</span><br><span class="line">        );</span><br></pre></td></tr></table></figure>
+<p>拿到 Class 后，通过 <code>BeanDefinition</code> 的方式设置 Bean</p>
+<p>后续的 <code>addBeanReference</code> 方法将组件添加到
+<code>AiService</code> 的定义中</p>
+<p>这里还需要注意，通过包装 <code>AiServiceFactory</code>
+的方式进行创建的实现，这样可以将 Spring 包中的方式接入 Core
+包的核心方法，让创建流程更加统一</p>
+<h1 id="tools">Tools</h1>
+<p>对于工具解析相关的方法，是 <code>AiServices</code> 提供的</p>
+<p>Spring 的封装这里主要是提供到对 Bean 扫描 <code>@Tool</code>
+这一步</p>
+<p>随后在 <code>AiServiceFactory</code> 的 <code>getObject</code>
+实现上解析工具的相关属性</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!isNullOrEmpty(tools)) &#123;</span><br><span class="line">    builder = builder.tools(tools);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="rag">RAG</h1>
+<p>提供了对 RAG 相关组件 Embedding Store 自动装配的能力</p>
+<p>实现上比较简单</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableConfigurationProperties(RagProperties.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RagAutoConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    EmbeddingStore&lt;TextSegment&gt; <span class="title function_">embeddingStore</span><span class="params">()</span> &#123; <span class="comment">// TODO bean name, type</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">InMemoryEmbeddingStore</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnBean(&#123;</span></span><br><span class="line"><span class="meta">            EmbeddingModel.class,</span></span><br><span class="line"><span class="meta">            EmbeddingStore.class</span></span><br><span class="line"><span class="meta">    &#125;)</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    ContentRetriever <span class="title function_">contentRetriever</span><span class="params">(EmbeddingModel embeddingModel,</span></span><br><span class="line"><span class="params">                                      EmbeddingStore&lt;TextSegment&gt; embeddingStore,</span></span><br><span class="line"><span class="params">                                      RagProperties ragProperties)</span> &#123;  <span class="comment">// TODO bean name, type</span></span><br><span class="line"></span><br><span class="line">        EmbeddingStoreContentRetriever.<span class="type">EmbeddingStoreContentRetrieverBuilder</span> <span class="variable">builder</span> <span class="operator">=</span> EmbeddingStoreContentRetriever.builder()</span><br><span class="line">                .embeddingStore(embeddingStore)</span><br><span class="line">                .embeddingModel(embeddingModel);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ragProperties != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">RetrievalProperties</span> <span class="variable">retrievalProperties</span> <span class="operator">=</span> ragProperties.getRetrieval();</span><br><span class="line">            <span class="keyword">if</span> (retrievalProperties != <span class="literal">null</span>) &#123;</span><br><span class="line">                builder</span><br><span class="line">                        .maxResults(retrievalProperties.maxResults)</span><br><span class="line">                        .minScore(retrievalProperties.minScore);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> builder.build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>ContentRetriever</code> 依赖 <code>EmbeddingStore</code>
+和 <code>EmbeddingModel</code>，而对于存储，也提供了一个默认的
+<code>InMemoryEmbeddingStore</code> 实现</p>
+<h1 id="实现一个-agent">实现一个 Agent</h1>
+<p>这里具体就看 langchain4j-examples 的代码吧</p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/langchain4j/langchain4j-examples/tree/main/customer-support-agent-example">langchain4j-examples/customer-support-agent-example
+at main · langchain4j/langchain4j-examples (github.com)</a></p>
+<h1 id="spring">Spring</h1>
+<p>项目中的一些操作（特别是 Bean 装配）用到了一些少见的 Spring
+能力，在这里整理一下</p>
+<h2 id="beanfactorypostprocessor">BeanFactoryPostProcessor</h2>
+<blockquote>
+<p>Factory hook that allows for custom modification of an application
+context's bean definitions, adapting the bean property values of the
+context's underlying bean factory.</p>
+</blockquote>
+<p>在标准初始化（ standard initialization）后修改上下文的内部 Bean 工厂
+所有 Bean Definition 都将被加载，但还没有任何 Bean 被实例化
+将允许重写或添加属性，甚至可以将其添加到 eager-initializing beans 中
+&gt;</p>
+<p>所以 <code>BeanFactoryPostProcessor</code> 本质上就是用于增强 Bean
+Definition 即元数据，此时 Bean 还没有进行实例化</p>
+<p><code>BeanFactoryPostProcessor</code> 是一个函数式接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BeanFactoryPostProcessor</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数中提供的 <code>ConfigurableListableBeanFactory</code>
+可以用来枚举所有的 Bean Definition，从而可以进行修改 Bean Definition
+信息等操作</p>
+<p>也可以通过 <code>getBean</code> 系列方法获取 Bean 或将其初始化</p>
+<h3 id="示例">示例</h3>
+<p>以 <code>CustomAutowireConfigurer</code> 举例，它是
+<code>BeanFactoryPostProcessor</code> 的实现类，作用是用户自定义类似
+<code>@Qualifier</code> 功能的注解</p>
+<p>定义一个 Bean 类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Student</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(&#123;ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAutowired &#123;</span><br><span class="line">    String <span class="title function_">name</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>装配类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyBeanFactoryPostProcessor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@MyAutowired(name = &quot;zhangsan&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Student <span class="title function_">zhangsanStudent</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Student.builder().name(<span class="string">&quot;zhangsan&quot;</span>).age(<span class="number">18</span>).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@MyAutowired(name = &quot;lisi&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Student <span class="title function_">lisiStudent</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Student.builder().name(<span class="string">&quot;lisi&quot;</span>).age(<span class="number">19</span>).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> BeanFactoryPostProcessor <span class="title function_">initMyBeanFactoryPostProcessor</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">CustomAutowireConfigurer</span> <span class="variable">customAutowireConfigurer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CustomAutowireConfigurer</span>();</span><br><span class="line">        customAutowireConfigurer.setCustomQualifierTypes(Set.of(MyAutowired.class));</span><br><span class="line">        <span class="keyword">return</span> customAutowireConfigurer;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>验证</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyAspect</span> <span class="keyword">implements</span> <span class="title class_">ApplicationListener</span>&lt;ContextRefreshedEvent&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@MyAutowired(name = &quot;lisi&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Student student;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onApplicationEvent</span><span class="params">(ContextRefreshedEvent event)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;MyAspect student:&quot;</span> + student);</span><br><span class="line">        <span class="comment">// MyAspect student:Student(age=19, name=lisi)</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="beanpostprocessor">BeanPostProcessor</h2>
+<blockquote>
+<p>Factory hook that allows for custom modification of new bean
+instances — for example, checking for marker interfaces or wrapping
+beans with proxies.</p>
+</blockquote>
+<p>工厂相关的钩子，允许自定义修改新的 Bean 实例 例如检查标记的接口或者给
+Bean 包装代理 &gt;</p>
+<p>因为和 <code>BeanFactoryPostProcessor</code>
+名字很像，所以明确区分两个钩子区别很重要，另外也看一下
+<code>InitializingBean</code></p>
+<p><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/30455536/beanfactorypostprocessor-and-beanpostprocessor-in-lifecycle-events">java
+- BeanFactoryPostProcessor and BeanPostProcessor in lifecycle events -
+Stack Overflow</a></p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>hook</th>
+<th>BeanFactoryPostProcessor</th>
+<th>BeanPostProcessor</th>
+<th>InitializingBean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>生命周期</td>
+<td>初始化完成 initialization</td>
+<td>实例化中 instantiation</td>
+<td>实例化完成</td>
+</tr>
+<tr class="even">
+<td>核心能力</td>
+<td>获取、修改、添加 BeanDefinition</td>
+<td>检查、增强 Bean</td>
+<td>Bean 实例化完成后要做的操作</td>
+</tr>
+<tr class="odd">
+<td>调用时机</td>
+<td>所有 BeanDefinition 初始化完成</td>
+<td>每个 Bean 实例化过程中，调用构造器前后</td>
+<td>每个 Bean 实例化完成后</td>
+</tr>
+</tbody>
+</table>
+<p>放一张老生常谈的生命周期图示</p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/langchain4j-spring%20%E5%AD%A6%E4%B9%A0/bean-lifecycle.png" class="" title="Untitled">
+<h2 id="factorybean">FactoryBean</h2>
+<blockquote>
+<p>If a bean implements this interface, it is used as a factory for an
+object to expose, not directly as a bean instance that will be exposed
+it self.</p>
+</blockquote>
+<p>如果一个 Bean
+实现了这个接口，那么它将会作为一个公开的工厂，而不是作为一个公开的 Bean
+实例（也就是说这个工厂 Bean 是不公开的，其生产的实例是公开的） &gt;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">FactoryBean</span>&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    T <span class="title function_">getObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    Class&lt;?&gt; getObjectType();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span> <span class="type">boolean</span> <span class="title function_">isSingleton</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>默认、需要实现的方法</p>
+<ul>
+<li><code>getObject</code>：返回构建的 Bean</li>
+<li><code>getObjectType</code>：返回 Bean 的 Class
+对象（我认为是为了解决泛型擦除）</li>
+<li><code>isSingleton</code>：单例还是原型</li>
+</ul>
+<h3 id="示例-1">示例</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StudentFactory</span> <span class="keyword">implements</span> <span class="title class_">FactoryBean</span>&lt;Student&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Student <span class="title function_">getObject</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Student.builder()</span><br><span class="line">                .name(<span class="string">&quot;this is a factory bean&quot;</span>)</span><br><span class="line">                .age(-<span class="number">1</span>)</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;?&gt; getObjectType() &#123;</span><br><span class="line">        <span class="keyword">return</span> Student.class;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyAspect</span> <span class="keyword">implements</span> <span class="title class_">ApplicationListener</span>&lt;ContextRefreshedEvent&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> Student student;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onApplicationEvent</span><span class="params">(ContextRefreshedEvent event)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;MyAspect student:&quot;</span> + student);</span><br><span class="line">        <span class="comment">// MyAspect student:Student(age=-1, name=this is a factory bean)</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="genericbeandefinition">GenericBeanDefinition</h2>
+<p><code>GenericBeanDefinition</code> 是
+<code>AbstractBeanDefinition</code> 最基本的实现</p>
+<p>需要通过 Bean Definition 来定义一个简单 Bean 时，就可以使用这个类，在
+langchain4j-spring 中就使用它来补充 <code>AiService</code> 实现的
+Bean</p>
+<p>以下是一些 <code>GenericBeanDefinition</code> 的重要 API</p>
+<ul>
+<li><code>setParentName</code> ：用于设置父 Bean 的名称，此 Bean
+将继承父 Bean 的所有配置</li>
+<li><code>setBeanClassName</code> ：用于设置此 Bean 的全限定类名</li>
+<li><code>setScope</code> ：用于设置此 Bean 的作用范围，如
+<code>singleton</code> 或 <code>prototype</code></li>
+<li><code>setPropertyValues(MutablePropertyValues)</code> ：用于设置此
+Bean 的属性值</li>
+</ul>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/30455536/beanfactorypostprocessor-and-beanpostprocessor-in-lifecycle-events">java
+- BeanFactoryPostProcessor and BeanPostProcessor in lifecycle events -
+Stack Overflow</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://docs.langchain4j.dev/tutorials/spring-boot-integration/">Spring
+Boot Integration | LangChain4j</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/langchain4j/langchain4j-spring">langchain4j/langchain4j-spring:
+LangChain4j integration with Spring (github.com)</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/langchain4j/langchain4j-examples">langchain4j/langchain4j-examples
+(github.com)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81/" rel="tag"># 源码</a>
+              <a href="/tags/LangChain4j/" rel="tag"># LangChain4j</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/AI/Ragas%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5.html" rel="prev" title="Ragas 核心概念">
+      <i class="fa fa-chevron-left"></i> Ragas 核心概念
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#langchain4j-spring-%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.</span> <span class="nav-text">langchain4j-spring 学习</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#llm"><span class="nav-number">3.</span> <span class="nav-text">LLM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81"><span class="nav-number">3.2.</span> <span class="nav-text">源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">3.2.1.</span> <span class="nav-text">自动装配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.2.</span> <span class="nav-text">配置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#aiservice"><span class="nav-number">4.</span> <span class="nav-text">AiService</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-1"><span class="nav-number">4.1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81-1"><span class="nav-number">4.2.</span> <span class="nav-text">源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E8%8E%B7%E5%8F%96"><span class="nav-number">4.2.1.</span> <span class="nav-text">组件获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%AB%E6%8F%8F-aiservice"><span class="nav-number">4.2.2.</span> <span class="nav-text">扫描 @AiService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-bean"><span class="nav-number">4.2.3.</span> <span class="nav-text">创建 Bean</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tools"><span class="nav-number">5.</span> <span class="nav-text">Tools</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rag"><span class="nav-number">6.</span> <span class="nav-text">RAG</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA-agent"><span class="nav-number">7.</span> <span class="nav-text">实现一个 Agent</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#spring"><span class="nav-number">8.</span> <span class="nav-text">Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#beanfactorypostprocessor"><span class="nav-number">8.1.</span> <span class="nav-text">BeanFactoryPostProcessor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">8.1.1.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#beanpostprocessor"><span class="nav-number">8.2.</span> <span class="nav-text">BeanPostProcessor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#factorybean"><span class="nav-number">8.3.</span> <span class="nav-text">FactoryBean</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">8.3.1.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#genericbeandefinition"><span class="nav-number">8.4.</span> <span class="nav-text">GenericBeanDefinition</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:5px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+        </a>
+      </div>
+
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kugaaa.com" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>

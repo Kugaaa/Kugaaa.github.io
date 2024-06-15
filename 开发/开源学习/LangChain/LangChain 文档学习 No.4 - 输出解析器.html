@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="列表解析器 返回逗号分隔的项目列表时，可以使用此输出解析器 解析器和 prompt 1234567891011# 列表解析器output_parser &#x3D; CommaSeparatedListOutputParser()# 列表解析器自带格式说明format_instructions &#x3D; output_parser.get_format_instructions()# prompt temp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LangChain 文档学习 No.4 - 输出解析器">
-<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
 <meta property="og:site_name" content="贫瘠之地">
 <meta property="og:description" content="列表解析器 返回逗号分隔的项目列表时，可以使用此输出解析器 解析器和 prompt 1234567891011# 列表解析器output_parser &#x3D; CommaSeparatedListOutputParser()# 列表解析器自带格式说明format_instructions &#x3D; output_parser.get_format_instructions()# prompt temp">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta property="article:tag" content="LangChain">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
 
 
 <script id="page-configurations">
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.4%20-%20%E8%BE%93%E5%87%BA%E8%A7%A3%E6%9E%90%E5%99%A8.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -231,7 +231,11 @@
                 </span>
                   >
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
                 </span>
             </span>
 
@@ -343,7 +347,7 @@ target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/module
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/%E5%BC%80%E5%8F%91/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.3%20-%20%E7%A4%BA%E4%BE%8B%E9%80%89%E6%8B%A9%E5%99%A8.html" rel="prev" title="LangChain 文档学习 No.3 - 示例选择器">
+    <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.3%20-%20%E7%A4%BA%E4%BE%8B%E9%80%89%E6%8B%A9%E5%99%A8.html" rel="prev" title="LangChain 文档学习 No.3 - 示例选择器">
       <i class="fa fa-chevron-left"></i> LangChain 文档学习 No.3 - 示例选择器
     </a></div>
       <div class="post-nav-item">
@@ -422,20 +426,20 @@ target="_blank" rel="noopener" href="https://python.langchain.com.cn/docs/module
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-count">70</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">32</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
