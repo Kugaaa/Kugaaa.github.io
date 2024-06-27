@@ -74,7 +74,119 @@
   </style>
 </noscript>
 
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -187,6 +299,260 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html" class="post-title-link" itemprop="url">读懂 GC 日志</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-05-11 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-11T00:00:00+08:00">2024-05-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>当使用 Java 或任何其他基于 JVM
+的编程语言时，其中一个核心功能是内存清理（垃圾回收）</p>
+<p>和 C 和 C++ 等语言不同，使用者不需要关注内存相关的操作，例如
+<code>malloc</code>、<code>calloc</code>、<code>realloc</code>、<code>free</code>
+等函数</p>
+<p>释放内存的操作就是由 JVM 中名为 <strong>Garbage Collector</strong>
+的角色完成的</p>
+<h1 id="垃圾回收器是如何工作的">垃圾回收器是如何工作的</h1>
+<p>JVM
+在后台运行垃圾回收器来查找未使用的引用，这些引用占用的内存可以被释放并重新使用</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/Java/%E8%AF%BB%E6%87%82%20GC%20%E6%97%A5%E5%BF%97.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html" class="post-title-link" itemprop="url">二分查找红蓝分区思想</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-04-28 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-28T00:00:00+08:00">2024-04-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">结构算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景">背景</h1>
+<p>二分的思想很简单，但是难在 coding 上，因为需要考虑边界条件</p>
+<p>在 B 站上看了一个视频，<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1d54y1q7k7">二分查找为什么总是写错？</a>
+动画讲解了一种比较好记忆处理边界的方式（我认为并不是在讲二分的思想，而是用一种图示的方式避免边界处理错误），所以在这里记录下</p>
+<h1 id="应用">应用</h1>
+<p>引入抛出了一个问题</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%BA%A2%E8%93%9D%E5%88%86%E5%8C%BA%E6%80%9D%E6%83%B3.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E6%B0%B4%E5%A1%98%E6%8A%BD%E6%A0%B7.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E6%B0%B4%E5%A1%98%E6%8A%BD%E6%A0%B7.html" class="post-title-link" itemprop="url">水塘抽样</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-04-27 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-27T00:00:00+08:00">2024-04-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">结构算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景">背景</h1>
+<p>在 n 个数中，如何让抽到每一个数的概率相等</p>
+<p>可以产生一个随机数，n 个数则在 [1,n] 中产生一个随机数即可</p>
+<p>但如果涉及到外部数据，即一次并不能全部读取 n 个数（n 未知）；例如一共
+1000 个数据，一次只能加载 10 个，那么再每 10 个加载一次，总共加载 100
+次的过程中如何保证最终取到的值满足 1/n</p>
+<p>使用<strong>水塘抽样算法</strong>可以解决</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E6%B0%B4%E5%A1%98%E6%8A%BD%E6%A0%B7.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -465,282 +831,10 @@ operators:</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Python/Python%20%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%BC%82%E6%AD%A5.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BC%80%E5%8F%91/Python/Python%20%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%BC%82%E6%AD%A5.html" class="post-title-link" itemprop="url">Python 并发与异步</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-02-05 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-05T00:00:00+08:00">2024-02-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="多进程">多进程</h1>
-<h2 id="fork">fork</h2>
-<p>Unix/Linux 操作系统提供了一个 <code>fork</code>
-系统调用，它非常特殊，因为普通的函数调用，调用一次就返回一次，但是
-<code>fork</code> 调用一次，返回两次</p>
-<p>因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后分别在父进程和子进程内返回，子进程永远返回
-<code>0</code>，而父进程返回子进程的 ID</p>
-<p>这样做的理由是，一个父进程可以 fork
-出很多子进程，所以，父进程要记下每个子进程的 ID，而子进程只需要调用
-<code>getppid</code> 就可以拿到父进程的 ID</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/Python/Python%20%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%BC%82%E6%AD%A5.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html" class="post-title-link" itemprop="url">Python 进阶语法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-31 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-31T00:00:00+08:00">2024-01-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>因为 Python
-并非是工作内容需要使用的语言，所以对语法并没有系统地学习过，加上也不会使用
-Python
-编写什么复杂的逻辑，所以一直以来都是使用过程中遇到需要的逻辑语法就查一下</p>
-<p>在学习 LangChain 的过程中，发现 Python
-的语法糖很多，很多设计思想提供了语法层面的支持，使得阅读源码挺费劲的</p>
-<p>所以在这里还是系统地了解下 Python 都提供了哪些语法，也了解下 Python
-编写代码的主要思想</p>
-<p>这里主要是整理下 Python 中比较特殊的、和 Java 有较大区别的操作</p>
-<h1 id="函数">函数</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/Python/Python%20%E8%BF%9B%E9%98%B6%E8%AF%AD%E6%B3%95.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.8%20-%20%E5%B7%A5%E5%85%B7.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.8%20-%20%E5%B7%A5%E5%85%B7.html" class="post-title-link" itemprop="url">LangChain 文档学习 No.8 - 工具</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-21T00:00:00+08:00">2024-01-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
-                </span>
-                  >
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>工具是代理可以用来与世界交互的接口，它们包括：</p>
-<ul>
-<li>工具的名称</li>
-<li>工具的描述</li>
-<li>工具输入 JSON 参数</li>
-<li>调用的函数</li>
-<li>是否应将工具的结果直接返回给用户</li>
-</ul>
-<p>这些信息至关重要，使用这些信息可以用来建立行动系统，LLM
-就可以使用名称、描述和 JSON
-模式入参作为提示，这样它就知道如何指定要执行的操作，然后要调用的函数就相当于执行该操作</p>
-<p>工具的输入越简单，LLM
-就越容易使用它。许多代理只使用具有单个字符串输入的工具</p>
-<p>需要注意的是名称、描述和 JSON
-模式入参（如果使用）都将在提示中被使用。因此这些内容必须清楚并准确地描述应该如何使用该工具；这一点非常重要，如果
-LLM 出现了不了解如何使用该工具的情况，则可能需要更改默认名称、描述或
-JSON 模式入参</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E6%96%87%E6%A1%A3%E5%AD%A6%E4%B9%A0%20No.8%20-%20%E5%B7%A5%E5%85%B7.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -806,20 +900,20 @@ JSON 模式入参</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -993,6 +1087,59 @@ window.addEventListener('pjax:success', () => {
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="基于 LangGraph，可以轻松实现不同设计模式的 Agent、RAG 等应用 这里以 Plan-and-Execute 为例，继续深入体验一下其功能  什么是 Plan and Execute">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangGraph - Plan-and-Execute Agent">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="基于 LangGraph，可以轻松实现不同设计模式的 Agent、RAG 等应用 这里以 Plan-and-Execute 为例，继续深入体验一下其功能  什么是 Plan and Execute">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent/plan-and-execute.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent/graph.png">
+<meta property="article:published_time" content="2024-06-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-26T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="LangChain">
+<meta property="article:tag" content="LangGraph">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent/plan-and-execute.png">
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LangGraph - Plan-and-Execute Agent | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangGraph - Plan-and-Execute Agent
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-06-27 00:00:00" itemprop="dateCreated datePublished" datetime="2024-06-27T00:00:00+08:00">2024-06-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/" itemprop="url" rel="index"><span itemprop="name">LangGraph</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>基于 LangGraph，可以轻松实现不同设计模式的 Agent、RAG 等应用</p>
+<p>这里以 <strong>Plan-and-Execute</strong>
+为例，继续深入体验一下其功能</p>
+<p></br></p>
+<h1 id="什么是-plan-and-execute">什么是 Plan and Execute</h1>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent/plan-and-execute.png" class="" title="plan-and-execute">
+<p>计划执行 Agent 和核心思想是</p>
+<ul>
+<li>首先进行多计划的拆分</li>
+<li>一次一个项目地完成这个计划</li>
+<li>完成特定任务后，可以重新查看计划并根据需要进行修改</li>
+</ul>
+<p>和 ReAct Agent 相比优势在于</p>
+<ul>
+<li>明确的长期规划（但即使是真正强大的 LLM 也可能难以应对）</li>
+<li>能够在执行步骤中使用较小 / 较弱的模型，在计划步骤中仅使用较大 /
+较好的模型</li>
+</ul>
+<p></br></p>
+<h1 id="coding">Coding</h1>
+<h2 id="定义工具">定义工具</h2>
+<p>环境参数的配置就不赘述了，这里依然使用维基百科作为工具</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wikipedia = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())</span><br><span class="line">tools = [wikipedia]</span><br></pre></td></tr></table></figure>
+<p></br></p>
+<h2 id="定义执行代理">定义执行代理</h2>
+<p>创建要用于执行任务的执行代理</p>
+<p>这里针对不同的角色使用的是同一个代理，其实可以分别使用不同执行代理在实现</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">llm = Azure.chat_model_4o</span><br><span class="line">agent_executor = create_react_agent(llm, tools, messages_modifier=prompt)</span><br></pre></td></tr></table></figure>
+<p>另外注意这里的 <code>create_react_agent</code> 来自
+<code>langgraph.prebuilt</code> ，使用了一个预构建的 Agent</p>
+<p><em>所以我理解，这里是外面一个 Agent 套里面一个 Agent，将预构建的这个
+Agent 作为一个节点内的逻辑，在后面步骤可以看到，这个节点的 name 为
+agent</em></p>
+<p></br></p>
+<h2 id="定义状态">定义状态</h2>
+<p>从定义该代理的状态（流程轨迹 track）开始</p>
+<ul>
+<li>首先，跟踪当前计划的轨迹，将其表示为字符串列表</li>
+<li>接下来，应该跟踪以前执行的步骤，让我们将其表示为元组列表（这些元组将包含步骤，然后包含结果）</li>
+<li>最后，需要有一些状态来表示最终响应和原始输入</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> operator</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> Annotated, <span class="type">List</span>, <span class="type">Tuple</span>, TypedDict</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PlanExecute</span>(<span class="title class_ inherited__">TypedDict</span>):</span><br><span class="line">    <span class="built_in">input</span>: <span class="built_in">str</span></span><br><span class="line">    plan: <span class="type">List</span>[<span class="built_in">str</span>] <span class="comment"># 计划轨迹</span></span><br><span class="line">    past_steps: Annotated[<span class="type">List</span>[<span class="type">Tuple</span>], operator.add] <span class="comment"># 已经完成的步骤</span></span><br><span class="line">    response: <span class="built_in">str</span> <span class="comment"># 响应结果</span></span><br></pre></td></tr></table></figure>
+<p></br></p>
+<h2 id="计划步骤">计划步骤</h2>
+<p>创建一个计划步骤，它调用 LLM 来获取结构化返回</p>
+<p><code>Plan</code> 结构</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Plan</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Plan to follow in future&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    steps: <span class="type">List</span>[<span class="built_in">str</span>] = Field(</span><br><span class="line">        description=<span class="string">&quot;different steps to follow, should be in sorted order&quot;</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>组装</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">planner_prompt = ChatPromptTemplate.from_messages(</span><br><span class="line">    [</span><br><span class="line">        (</span><br><span class="line">            <span class="string">&quot;system&quot;</span>,</span><br><span class="line">            <span class="string">&quot;&quot;&quot;For the given objective, come up with a simple step by step plan. \</span></span><br><span class="line"><span class="string">This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps. \</span></span><br><span class="line"><span class="string">The result of the final step should be the final answer. Make sure that each step has all the information needed - do not skip steps.&quot;&quot;&quot;</span>,</span><br><span class="line">        ),</span><br><span class="line">        (<span class="string">&quot;placeholder&quot;</span>, <span class="string">&quot;&#123;messages&#125;&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br><span class="line">planner = planner_prompt | llm.with_structured_output(Plan)</span><br></pre></td></tr></table></figure>
+<p>调用验证一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(planner.invoke(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;messages&quot;</span>: [</span><br><span class="line">            (<span class="string">&quot;user&quot;</span>, <span class="string">&quot;苹果的股票在未来五年内还会继续上涨吗?&quot;</span>)</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Plan(steps=[&#x27;收集苹果公司过去五年的财务数据和股价走势。&#x27;, &#x27;分析苹果公司的财务健康状况，包括收入、利润、现金流等关键指标。&#x27;, &#x27;研究苹果公司在未来五年的发展计划和战略，包括新产品发布、市场扩展等。&#x27;, &#x27;评估全球经济环境和科技行业的整体趋势对苹果公司的影响。&#x27;, &#x27;综合以上信息，预测苹果公司未来五年的股价走势。&#x27;])</span></span><br></pre></td></tr></table></figure>
+<p>这里可以看到步骤拆分的结果</p>
+<ol type="1">
+<li>收集苹果公司过去五年的财务数据和股价走势</li>
+<li>分析苹果公司的财务健康状况，包括收入、利润、现金流等关键指标</li>
+<li>研究苹果公司在未来五年的发展计划和战略，包括新产品发布、市场扩展等</li>
+<li>评估全球经济环境和科技行业的整体趋势对苹果公司的影响</li>
+<li>综合以上信息，预测苹果公司未来五年的股价走势</li>
+</ol>
+<p></br></p>
+<h2 id="重新计划">重新计划</h2>
+<p>继续创建一个步骤，根据上一步的结果重新执行计划</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Union</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Response</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Response to user.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    response: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Act</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Action to perform.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    action: <span class="type">Union</span>[Response, Plan] = Field(</span><br><span class="line">        description=<span class="string">&quot;Action to perform. If you want to respond to user, use Response. &quot;</span></span><br><span class="line">        <span class="string">&quot;If you need to further use tools to get the answer, use Plan.&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">replanner_prompt = ChatPromptTemplate.from_template(</span><br><span class="line">    <span class="string">&quot;&quot;&quot;For the given objective, come up with a simple step by step plan. \</span></span><br><span class="line"><span class="string">This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps. \</span></span><br><span class="line"><span class="string">The result of the final step should be the final answer. Make sure that each step has all the information needed - do not skip steps.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Your objective was this:</span></span><br><span class="line"><span class="string">&#123;input&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Your original plan was this:</span></span><br><span class="line"><span class="string">&#123;plan&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">You have currently done the follow steps:</span></span><br><span class="line"><span class="string">&#123;past_steps&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Update your plan accordingly. If no more steps are needed and you can return to the user, then respond with that. Otherwise, fill out the plan. Only add steps to the plan that still NEED to be done. Do not return previously done steps as part of the plan.&quot;&quot;&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">replanner = replanner_prompt | ChatOpenAI(</span><br><span class="line">    model=<span class="string">&quot;gpt-4o&quot;</span>, temperature=<span class="number">0</span></span><br><span class="line">).with_structured_output(Act)</span><br></pre></td></tr></table></figure>
+<p></br></p>
+<h2 id="创建流程图">创建流程图</h2>
+<p>最后将这些节点组装起来、定义条件边</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Literal</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">execute_step</span>(<span class="params">state: PlanExecute</span>):</span><br><span class="line">    plan = state[<span class="string">&quot;plan&quot;</span>]</span><br><span class="line">    plan_str = <span class="string">&quot;\n&quot;</span>.join(<span class="string">f&quot;<span class="subst">&#123;i+<span class="number">1</span>&#125;</span>. <span class="subst">&#123;step&#125;</span>&quot;</span> <span class="keyword">for</span> i, step <span class="keyword">in</span> <span class="built_in">enumerate</span>(plan))</span><br><span class="line">    task = plan[<span class="number">0</span>]</span><br><span class="line">    task_formatted = <span class="string">f&quot;&quot;&quot;For the following plan:</span></span><br><span class="line"><span class="string"><span class="subst">&#123;plan_str&#125;</span>\n\nYou are tasked with executing step <span class="subst">&#123;<span class="number">1</span>&#125;</span>, <span class="subst">&#123;task&#125;</span>.&quot;&quot;&quot;</span></span><br><span class="line">    agent_response = <span class="keyword">await</span> agent_executor.ainvoke(</span><br><span class="line">        &#123;<span class="string">&quot;messages&quot;</span>: [(<span class="string">&quot;user&quot;</span>, task_formatted)]&#125;</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;past_steps&quot;</span>: [(task, agent_response[<span class="string">&quot;messages&quot;</span>][-<span class="number">1</span>].content)],</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">plan_step</span>(<span class="params">state: PlanExecute</span>):</span><br><span class="line">    plan = <span class="keyword">await</span> planner.ainvoke(&#123;<span class="string">&quot;messages&quot;</span>: [(<span class="string">&quot;user&quot;</span>, state[<span class="string">&quot;input&quot;</span>])]&#125;)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;plan&quot;</span>: plan.steps&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">replan_step</span>(<span class="params">state: PlanExecute</span>):</span><br><span class="line">    output = <span class="keyword">await</span> replanner.ainvoke(state)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(output.action, Response):</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;response&quot;</span>: output.action.response&#125;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;plan&quot;</span>: output.action.steps&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">should_end</span>(<span class="params">state: PlanExecute</span>) -&gt; <span class="type">Literal</span>[<span class="string">&quot;agent&quot;</span>, <span class="string">&quot;__end__&quot;</span>]:</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;response&quot;</span> <span class="keyword">in</span> state <span class="keyword">and</span> state[<span class="string">&quot;response&quot;</span>]:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;__end__&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;agent&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> langgraph.graph <span class="keyword">import</span> StateGraph</span><br><span class="line"></span><br><span class="line">workflow = StateGraph(PlanExecute)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add the plan node</span></span><br><span class="line">workflow.add_node(<span class="string">&quot;planner&quot;</span>, plan_step)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add the execution step</span></span><br><span class="line">workflow.add_node(<span class="string">&quot;agent&quot;</span>, execute_step)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add a replan node</span></span><br><span class="line">workflow.add_node(<span class="string">&quot;replan&quot;</span>, replan_step)</span><br><span class="line"></span><br><span class="line">workflow.set_entry_point(<span class="string">&quot;planner&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># From plan we go to agent</span></span><br><span class="line">workflow.add_edge(<span class="string">&quot;planner&quot;</span>, <span class="string">&quot;agent&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># From agent, we replan</span></span><br><span class="line">workflow.add_edge(<span class="string">&quot;agent&quot;</span>, <span class="string">&quot;replan&quot;</span>)</span><br><span class="line"></span><br><span class="line">workflow.add_conditional_edges(</span><br><span class="line">    <span class="string">&quot;replan&quot;</span>,</span><br><span class="line">    <span class="comment"># Next, we pass in the function that will determine which node is called next.</span></span><br><span class="line">    should_end,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Finally, we compile it!</span></span><br><span class="line"><span class="comment"># This compiles it into a LangChain Runnable,</span></span><br><span class="line"><span class="comment"># meaning you can use it as you would any other runnable</span></span><br><span class="line">app = workflow.<span class="built_in">compile</span>()</span><br></pre></td></tr></table></figure>
+<p>最终的流程图</p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent/graph.png" class="" title="graph">
+<p></br></p>
+<h1 id="使用">使用</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">run</span>():</span><br><span class="line">    config = &#123;<span class="string">&quot;recursion_limit&quot;</span>: <span class="number">20</span>&#125;</span><br><span class="line">    inputs = &#123;</span><br><span class="line">        <span class="string">&quot;input&quot;</span>: <span class="string">&quot;苹果的股票在未来五年内还会继续上涨吗?&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">for</span> event <span class="keyword">in</span> app.astream(inputs, config=config):</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> event.items():</span><br><span class="line">            <span class="keyword">if</span> k != <span class="string">&quot;__end__&quot;</span>:</span><br><span class="line">                <span class="built_in">print</span>(v)</span><br><span class="line"></span><br><span class="line">asyncio.run(run())</span><br></pre></td></tr></table></figure>
+<p></br></p>
+<h1 id="改进">改进</h1>
+<p>上面已经成功构建出一个 Plan-and-Execute Agent</p>
+<p>实现上存在一个已知问题，每个任务仍然是按顺序执行的，这意味着即使某些任务可以并行执行（即它们不依赖于彼此的结果，可以同时开始），但由于设计的原因，它们仍然被串行地添加到总执行时间中</p>
+<p>可以思考使用 DAG（Directed Acyclic Graph
+有向无环图），而不是常规的列表来表示任务的串并行关系</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+              <a href="/tags/LangGraph/" rel="tag"># LangGraph</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html" rel="prev" title="LangGraph - 快速开始">
+      <i class="fa fa-chevron-left"></i> LangGraph - 快速开始
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-plan-and-execute"><span class="nav-number">1.</span> <span class="nav-text">什么是 Plan and Execute</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#coding"><span class="nav-number">2.</span> <span class="nav-text">Coding</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7"><span class="nav-number">2.1.</span> <span class="nav-text">定义工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%89%A7%E8%A1%8C%E4%BB%A3%E7%90%86"><span class="nav-number">2.2.</span> <span class="nav-text">定义执行代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E7%8A%B6%E6%80%81"><span class="nav-number">2.3.</span> <span class="nav-text">定义状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E5%88%92%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.4.</span> <span class="nav-text">计划步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E8%AE%A1%E5%88%92"><span class="nav-number">2.5.</span> <span class="nav-text">重新计划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">2.6.</span> <span class="nav-text">创建流程图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B"><span class="nav-number">4.</span> <span class="nav-text">改进</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:5px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+        </a>
+      </div>
+
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kugaaa.com" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>
