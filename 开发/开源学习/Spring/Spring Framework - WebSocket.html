@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="API 快速开始 涉及 Spring WebSocket 的主要 API WebSocketHandler 第一步首先实现 WebSocketHandler ，或者直接继承 TextWebSocketHandler 或 BinaryWebSocketHandler 12345678@Componentpublic class MyTextWebSocketHandler extends">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Framework - WebSocket">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="API 快速开始 涉及 Spring WebSocket 的主要 API WebSocketHandler 第一步首先实现 WebSocketHandler ，或者直接继承 TextWebSocketHandler 或 BinaryWebSocketHandler 12345678@Componentpublic class MyTextWebSocketHandler extends">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/%E6%88%90%E5%8A%9F%E8%BF%9E%E6%8E%A5.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/%E6%8B%A6%E6%88%AA%E5%99%A8%E6%8B%92%E7%BB%9D.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/SimpleBroker.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/MessageBroker.png">
+<meta property="article:published_time" content="2024-07-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-27T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/%E6%88%90%E5%8A%9F%E8%BF%9E%E6%8E%A5.png">
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring Framework - WebSocket | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Framework - WebSocket
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-28T00:00:00+08:00">2024-07-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="api-快速开始">API 快速开始</h1>
+<p>涉及 Spring WebSocket 的主要 API</p>
+<h2 id="websockethandler"><strong>WebSocketHandler</strong></h2>
+<p>第一步首先实现 <code>WebSocketHandler</code> ，或者直接继承
+<code>TextWebSocketHandler</code> 或
+<code>BinaryWebSocketHandler</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyTextWebSocketHandler</span> <span class="keyword">extends</span> <span class="title class_">TextWebSocketHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">handleTextMessage</span><span class="params">(WebSocketSession session, TextMessage message)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="configure-a-websockethandler"><strong>Configure a
+WebSocketHandler</strong></h2>
+<p>将上面实现的 <code>WebSocketHandler</code> 映射到特定的 URL</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocket</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebSocketConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyTextWebSocketHandler myTextWebSocketHandler;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerWebSocketHandlers</span><span class="params">(WebSocketHandlerRegistry registry)</span> &#123;</span><br><span class="line">        registry.addHandler(myTextWebSocketHandler, <span class="string">&quot;/ws/test&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="websocket-handshake"><strong>WebSocket Handshake</strong></h2>
+<p>自定义初始 HTTP WebSocket 握手请求的最简单方法是通过
+<code>HandshakeInterceptor</code>，它暴露了握手相关的 before 和 after
+方法，例如有一个内置的拦截器用于将 HTTP session 属性传递给WebSocket
+session</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocket</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerWebSocketHandlers</span><span class="params">(WebSocketHandlerRegistry registry)</span> &#123;</span><br><span class="line">        registry.addHandler(<span class="keyword">new</span> <span class="title class_">MyHandler</span>(), <span class="string">&quot;/myHandler&quot;</span>)</span><br><span class="line">            .addInterceptors(<span class="keyword">new</span> <span class="title class_">HttpSessionHandshakeInterceptor</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者我们实现一个基于用户鉴权的拦截器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserVerifyHandshakeInterceptor</span> <span class="keyword">implements</span> <span class="title class_">HandshakeInterceptor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">beforeHandshake</span><span class="params">(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map&lt;String, Object&gt; attributes)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">ServletServerHttpRequest</span> <span class="variable">httpRequest</span> <span class="operator">=</span> (ServletServerHttpRequest) request;</span><br><span class="line">        List&lt;String&gt; headerUserId = httpRequest.getHeaders().get(<span class="string">&quot;USER-ID&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (headerUserId == <span class="literal">null</span> || headerUserId.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        attributes.put(<span class="string">&quot;USER-ID&quot;</span>, headerUserId.get(<span class="number">0</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterHandshake</span><span class="params">(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception)</span> &#123;</span><br><span class="line">        <span class="comment">// do nothing</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>拦截器返回 false，表示拒绝连接，在 HTTP Response 的
+<code>Status Code</code> 是 200，但不会在 Header 返回
+<code>Sec-WebSocket-Accept</code> 等进行 WebSocket 协议的相关属性</p>
+<p><strong>成功连接</strong></p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/%E6%88%90%E5%8A%9F%E8%BF%9E%E6%8E%A5.png" class="" title="成功连接">
+<p><strong>拦截器拒绝</strong></p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/%E6%8B%A6%E6%88%AA%E5%99%A8%E6%8B%92%E7%BB%9D.png" class="" title="拦截器拒绝">
+<h2 id="websockethandler-decoration">WebSocketHandler Decoration</h2>
+<p>对 <code>WebSocketHandler</code> 也提供了一系列装饰器，比如
+<code>ExceptionWebSocketHandlerDecorator</code> ，功能是如果在处理
+WebSocket Message 过程中遇到异常，则尝试关闭连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">session.close(CloseStatus.SERVER_ERROR);</span><br></pre></td></tr></table></figure>
+<h2 id="configuring-the-websocket-engine"><strong>Configuring the
+WebSocket Engine</strong></h2>
+<p>每个底层 WebSocket
+引擎都公开了控制运行时特性的配置属性，如消息缓冲区大小、空闲超时等</p>
+<p>对于 Tomcat、WildFly、GlassFish，将
+<code>ServletServerContainerFactoryBean</code> 添加到 WebSocket Java
+config 中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocket</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> ServletServerContainerFactoryBean <span class="title function_">createWebSocketContainer</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">ServletServerContainerFactoryBean</span> <span class="variable">container</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServletServerContainerFactoryBean</span>();</span><br><span class="line">        container.setMaxTextMessageBufferSize(<span class="number">8192</span>);</span><br><span class="line">        container.setMaxBinaryMessageBufferSize(<span class="number">8192</span>);</span><br><span class="line">        <span class="keyword">return</span> container;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="configuring-allowed-origins"><strong>Configuring allowed
+origins</strong></h2>
+<p>从 <code>Spring Framework 4.1.5</code> 开始，WebSocket 和 SockJS
+的默认行为是只接受同源（<em>same
+origin</em>）请求，也可以允许所有或指定的来源列表</p>
+<p>此检查主要是为浏览器客户端设计的，即</p>
+<ol type="1">
+<li>这里同源检查是一个服务端行为</li>
+<li>为浏览器客户端设计，如果自定义客户端修改了 Header 中的
+<code>Origin</code> ，该策略也无法感知</li>
+</ol>
+<p>三种可能的行为是：</p>
+<ul>
+<li>只允许同源请求（默认）</li>
+<li>允许指定的源列表：每个提供的允许源必须以 <code>http://</code> 或
+<code>https://</code> 开头</li>
+<li>允许所有源：要启用此模式，应该提供 <code>*</code>
+作为允许的源配置，在此模式下所有传输都可用</li>
+</ul>
+<h1 id="sockjs-fallback">SockJS Fallback</h1>
+<p>SockJS 是 WebSocket 的替代方案</p>
+<h1 id="stomp">STOMP</h1>
+<p>STOMP（<em>Streaming Text Orientated Message
+Protocol</em>）是流文本定向消息协议，设计的目的是为了面向消息中间件
+MOM（<em>Message Oriented
+Middleware</em>），面向消息的中间件)的简单文本协议</p>
+<p>所以相对 WebSocket 来说，STOMP
+是一个子协议（<em>High-Level</em>）</p>
+<h2 id="消息流程">消息流程</h2>
+<p>STOMP 端点暴露，Spring 应用程序就成为连接客户端的 STOMP Broker</p>
+<p><code>spring-messaging</code> 提供了对 messaging
+应用程序的基础支持，提供了如下抽象：</p>
+<ul>
+<li>Message：消息的简单定义，包括 header 和负载</li>
+<li>MessageHandler：消息处理器</li>
+<li>MessageChannel：用于发送消息的接口，解耦生产者和消费者</li>
+<li>SubscribableChannel：带有 <code>MessageHandler</code> 订阅者的
+<code>MessageChannel</code></li>
+<li>ExecutorSubscribableChannel：使用 <code>Executor</code> 传递消息的
+<code>SubscriableChannel</code></li>
+</ul>
+<p><strong>启用简单内置消息代理时使用的组件</strong></p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/SimpleBroker.png" class="" title="SimpleBroker">
+<p>上图中有三个 Channel：</p>
+<ul>
+<li>clientInboundChannel：用于传递从 WebSocket 客户端接收到的消息</li>
+<li>clientOutboundChannel：用于向 WebSocket 客户端发送服务器消息</li>
+<li>brokerChannel：用于从服务器端应用程序代码中向消息代理发送消息</li>
+</ul>
+<p><strong>下图显示了当配置了外部 Broker（如
+RabbitMQ）来管理订阅和广播消息时使用的组件</strong></p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket/MessageBroker.png" class="" title="MessageBroker">
+<p>当从 WebSocket 连接接收到消息时，它们将 STOMP frames 转换为 Spring
+<code>Message</code> 表示，并发送到 <code>clientInboundChannel</code>
+进行进一步处理</p>
+<ul>
+<li>例如，目标标头以 <code>/app</code> 开头的 STOMP
+消息可能会被路由到带注释的控制器中的 <code>@MessageMapping</code>
+方法，而 <code>/topic</code> 和 <code>/queue</code> 消息可能会直接路由到
+Message Broker</li>
+<li>处理来自客户端的 STOMP 消息的带注释的 <code>@Controller</code>
+可以通过 <code>brokerChannel</code> 向消息代理发送消息，代理通过
+<code>clientOutboundChannel</code> 将消息广播给匹配的订阅者</li>
+<li>同一个 Controller 也可以对 HTTP
+请求做出同样的响应，因此客户端可以执行 HTTP POST，然后
+<code>@PostMapping</code>
+方法可以向消息代理发送消息，以向订阅的客户端广播</li>
+</ul>
+<h2 id="simple-broker-示例">Simple Broker 示例</h2>
+<p>如下 set up 一个服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocketMessageBroker</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketMessageBrokerConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerStompEndpoints</span><span class="params">(StompEndpointRegistry registry)</span> &#123;</span><br><span class="line">		registry.addEndpoint(<span class="string">&quot;/portfolio&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureMessageBroker</span><span class="params">(MessageBrokerRegistry registry)</span> &#123;</span><br><span class="line">		registry.setApplicationDestinationPrefixes(<span class="string">&quot;/app&quot;</span>);</span><br><span class="line">		registry.enableSimpleBroker(<span class="string">&quot;/topic&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GreetingController</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@MessageMapping(&quot;/greeting&quot;)</span></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">handle</span><span class="params">(String greeting)</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;[&quot;</span> + getTimestamp() + <span class="string">&quot;: &quot;</span> + greeting;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>支持以下流程：</p>
+<ol type="1">
+<li>客户端连接 <code>localhost:8080/portfolio</code>，一旦建立了
+WebSocket 连接，STOMP frame 就开始进行流程</li>
+<li>客户端发送 SUBSCRIBE frame，其中 header 中的
+<code>destination</code> 为
+<code>/topic/greeting</code>，一旦被接收和解码，消息就会被发送到
+<code>clientInboundChannel</code>，然后被路由到存储客户端订阅的消息代理</li>
+<li>客户端向 <code>/app/greeting</code> 发送一个 SEND
+frame，<code>/app</code> 前缀将其路由到带注释的 Controller，去掉
+<code>/app</code> 前缀后，destination 剩余 <code>/agreeting</code>
+部分被映射到 <code>GreetingController</code> 中的
+<code>@MessageMapping</code> 方法</li>
+<li><code>GreetingController</code> 返回的值将转换为 Spring
+<code>Message</code>，其有效载荷基于返回值和默认的 destination header
+<code>/topic/heading</code>（从输入 destination 派生，将
+<code>/app</code> 替换为 <code>/topic</code>），生成的消息被发送到
+<code>brokerChannel</code>，并由消息 Broker 处理</li>
+<li>消息代理会找到所有匹配的订阅者，并通过
+<code>clientOutboundChannel</code> 发送一帧 <code>MESSAGE</code>
+给每个订阅者，消息会被编码为 STOMP frame 并通过 WebSocket 连接发送</li>
+</ol>
+<h2 id="controller-注解">Controller 注解</h2>
+<p>可以使用带注释的 <code>@Controller</code>
+类来处理来自客户端的消息，这些类可以声明<code>@MessageMapping</code>、<code>@SubscribeMapping</code>
+和 <code>@MessageExceptionHandler</code> 方法</p>
+<ul>
+<li>MessageMapping：映射消息处理</li>
+<li>SubscribeMapping：映射订阅</li>
+<li>MessageExceptionHandler：异常处理；全局可以使用
+<code>@ControllerAdvice</code>，和 MVC 其他支持</li>
+</ul>
+<h3 id="messagemapping">MessageMapping</h3>
+<p><code>@MessageMapping</code>
+用于根据消息地址路由消息，配置在类上时表示类下所有方法都共享的
+mapping</p>
+<p>默认情况下，映射值是 Ant 风格的路径模式，路径参数可以通过
+<code>@DestinationVariable</code> 方法参数引用，还可以切换到
+dot-separated 模式，见下文</p>
+<p>支持的方法参数：</p>
+<ul>
+<li>Message：完整消息</li>
+<li><span class="citation"
+data-cites="DestinationVariableMessageHeaders">@DestinationVariableMessageHeaders</span>：消息的
+headers</li>
+<li>MessageHeaderAccessor SimpMessageHeaderAccessor
+StompHeaderAccessor：通过类型访问器获取 headers</li>
+<li><span class="citation"
+data-cites="Payload">@Payload</span>：访问消息的 payload</li>
+<li><span class="citation"
+data-cites="Header">@Header</span>：访问特定的标头值；有必要可以使用
+<code>org.springframework.core.convert.converter.Converter</code></li>
+<li><span class="citation"
+data-cites="Headers">@Headers</span>：用于访问消息中的所有标头</li>
+<li><span class="citation"
+data-cites="DestinationVariable">@DestinationVariable</span>：路径参数</li>
+<li>java.security.Principal：WebSocket HTTP 握手时登录的用户</li>
+</ul>
+<p>返回值默认拼接 <code>/topic</code> 前缀，可以使用
+<code>@SendTo</code> 和 <code>@SendToUser</code>
+覆盖默认路径和类级别上的对应配置</p>
+<p>消息返回值可以异步处理，<code>ListenableFuture</code>、<code>CompletableFuture</code>、<code>CompletionStage</code></p>
+<p>对于更高级的场景，<code>@MessageMapping</code> 方法可以直接使用
+<code>SimpMessagingTemplate</code>
+，可以代替返回值，也可以作为返回值的补充</p>
+<h3 id="subscribemapping">SubscribeMapping</h3>
+<p>用来订阅消息时立即返回数据，常用于初始化消息或一次性消息；返回值会被放入
+<code>clientOutboundChannel</code>
+直接返回给当前客户端（一般用于确认订阅）而不是发送给 Broker</p>
+<p>但也可以使用 <code>@SendTo</code> 和 <code>@SendToUser</code>
+覆盖默认操作，使其发送给代理</p>
+<ul>
+<li>什么时候应该用？
+<ul>
+<li>消息代理和控制器映射到不同的前缀（例如 <code>/app</code> 和
+<code>/topic</code>、<code>/queue</code>），为了重复广播而设计的</li>
+<li>订阅某个 <code>/app</code> 地址，控制器可以在不涉及消息代理的情况下直接返回值，用于初始化消息</li>
+</ul></li>
+<li>什么时候不该用？
+<ul>
+<li>消息代理和控制器映射相同的前缀，他们会共同处理消息导致出现问题</li>
+</ul></li>
+</ul>
+<h2 id="发送消息">发送消息</h2>
+<p>使用 <code>SimpMessagingTemplate</code> 可以实现任何应用程序组件向
+<code>brokerChannel</code> 发送消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GreetingController</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> SimpMessagingTemplate template;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">public</span> <span class="title function_">GreetingController</span><span class="params">(SimpMessagingTemplate template)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.template = template;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@RequestMapping(path=&quot;/greetings&quot;, method=POST)</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">greet</span><span class="params">(String greeting)</span> &#123;</span><br><span class="line">		<span class="type">String</span> <span class="variable">text</span> <span class="operator">=</span> <span class="string">&quot;[&quot;</span> + getTimestamp() + <span class="string">&quot;]:&quot;</span> + greeting;</span><br><span class="line">		<span class="built_in">this</span>.template.convertAndSend(<span class="string">&quot;/topic/greetings&quot;</span>, text);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果存在另一个相同类型的 bean
+可以通过其名称（<code>brokerMessagingTemplate</code>）对其进行限定</p>
+<h2 id="broker">Broker</h2>
+<p>Spring WebSocket STOMP 可以使用简单 Broker 和外部 Broker</p>
+<ul>
+<li>简单 Broker 基于服务的内存</li>
+<li>外部 Broker 即功能齐全的 Broker（例如 RabbitMQ），可以实现
+ACK、集群等机制</li>
+</ul>
+<p>这里使用 Simple Broker 演示</p>
+<h3 id="配置">配置</h3>
+<ul>
+<li>endpoint：握手端点</li>
+<li>applicationDestinationPrefixes：应用路径前缀</li>
+<li>enableSimpleBroker：使用 SimpleBroker 并注册代理前缀</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.socket.config.annotation.StompEndpointRegistry;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocketMessageBroker</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketMessageBrokerConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerStompEndpoints</span><span class="params">(StompEndpointRegistry registry)</span> &#123;</span><br><span class="line">		registry.addEndpoint(<span class="string">&quot;/portfolio&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureMessageBroker</span><span class="params">(MessageBrokerRegistry config)</span> &#123;</span><br><span class="line">		config.setApplicationDestinationPrefixes(<span class="string">&quot;/app&quot;</span>);</span><br><span class="line">		config.enableSimpleBroker(<span class="string">&quot;/topic&quot;</span>, <span class="string">&quot;/queue&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="心跳">心跳</h3>
+<p>STOMP 也需要心跳支持 <a
+target="_blank" rel="noopener" href="https://stomp.github.io/stomp-specification-1.2.html#Heart-beating">STOMP
+heartbeats</a></p>
+<p>可以手动配置调度器，但是注意如果以使用
+<code>WebSocketMessageBrokerConfigurer</code> 中声明，需要
+<code>@Lazy</code> 来避免 WebSocket 配置和
+<code>WebSocketMessageBrokerConfigurer</code> 循环依赖</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocketMessageBroker</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketMessageBrokerConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> TaskScheduler messageBrokerTaskScheduler;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMessageBrokerTaskScheduler</span><span class="params">(<span class="meta">@Lazy</span> TaskScheduler taskScheduler)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.messageBrokerTaskScheduler = taskScheduler;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureMessageBroker</span><span class="params">(MessageBrokerRegistry registry)</span> &#123;</span><br><span class="line">		registry.enableSimpleBroker(<span class="string">&quot;/queue/&quot;</span>, <span class="string">&quot;/topic/&quot;</span>)</span><br><span class="line">				.setHeartbeatValue(<span class="keyword">new</span> <span class="title class_">long</span>[] &#123;<span class="number">10000</span>, <span class="number">20000</span>&#125;)</span><br><span class="line">				.setTaskScheduler(<span class="built_in">this</span>.messageBrokerTaskScheduler);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="消息有序">消息有序</h3>
+<p>Broker 会将消息发送至 <code>clientOutboundChannel</code>，Channel
+基于线程池实现，所以处理消息时是并发的；同理消息接收会被并发发送至
+<code>clientInboundChannel</code></p>
+<p>可以设置消息有序，代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocketMessageBroker</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketMessageBrokerConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configureMessageBroker</span><span class="params">(MessageBrokerRegistry registry)</span> &#123;</span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">		registry.setPreservePublishOrder(<span class="literal">true</span>);</span><br><span class="line">		registry.setPreserveReceiveOrder(<span class="literal">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="拦截器-鉴权">拦截器 &amp; 鉴权</h2>
+<p>可以注册 <code>ChannelInterceptor</code>
+来拦截处理流程中的每一条消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocketMessageBroker</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebSocketConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketMessageBrokerConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureClientInboundChannel</span><span class="params">(ChannelRegistration registration)</span> &#123;</span><br><span class="line">		registration.interceptors(<span class="keyword">new</span> <span class="title class_">MyChannelInterceptor</span>());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>自定义的 <code>ChannelInterceptor</code> 可以使用
+<code>StompHeaderAccessor</code> 或
+<code>SimpMessageHeaderAccessor</code> 来访问有关消息的信息</p>
+<blockquote>
+<p>Invoked inside the {<span class="citation"
+data-cites="link">@link</span> Runnable} submitted to the Executor just
+before calling the target MessageHandler to handle the message.</p>
+</blockquote>
+<p>还可以实现 <code>ExecutorChannelInterceptor</code>，这是
+<code>ChannelInterceptor</code>
+的一个子接口，每当一条消息被发送到通道时，<code>ChannelInterceptor</code> 都会被触发一次</p>
+<h3 id="stomp-headers-用于鉴权">STOMP Headers 用于鉴权</h3>
+<p>在 STOMP 消息协议级别使用 Headers 进行认证，需要两个步骤：</p>
+<ol type="1">
+<li>使用 STOMP 客户端在连接时传递认证 Headers</li>
+<li>使用 <code>ChannelInterceptor</code> 处理</li>
+</ol>
+<p>注意拦截器只需要认证并在 CONNECT 消息上设置用户头部。Spring
+会记录并保存认证用户，并将其与同一会话上的后续 STOMP 消息关联</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebSocketMessageBroker</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyConfig</span> <span class="keyword">implements</span> <span class="title class_">WebSocketMessageBrokerConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureClientInboundChannel</span><span class="params">(ChannelRegistration registration)</span> &#123;</span><br><span class="line">        registration.interceptors(<span class="keyword">new</span> <span class="title class_">ChannelInterceptor</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> Message&lt;?&gt; preSend(Message&lt;?&gt; message, MessageChannel channel) &#123;</span><br><span class="line">                <span class="type">StompHeaderAccessor</span> <span class="variable">accessor</span> <span class="operator">=</span></span><br><span class="line">                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);</span><br><span class="line">                <span class="keyword">if</span> (StompCommand.CONNECT.equals(accessor.getCommand())) &#123;</span><br><span class="line">                    <span class="type">Authentication</span> <span class="variable">user</span> <span class="operator">=</span> ... ; <span class="comment">// 从 headers 获取</span></span><br><span class="line">                    accessor.setUser(user);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> message;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此外需要注意当对消息使用 Spring Security 鉴权时，需要确保身份验证
+<code>ChannelInterceptor</code> 顺序早于 Spring Security；最好在
+<code>WebSocketMessageBrokerConfigurer</code>
+的自身实现中声明自定义拦截器，该拦截器标记为
+<code>@Order(Ordered.HIGHEST_PRECEDENCE+99)</code></p>
+<h1 id="补充">补充</h1>
+<h2 id="委派模式">委派模式</h2>
+<p>委派模式（Delegate Pattern）不属于常说的 Gang of Four 23
+设计模式之一，但其实开发过程中经常使用</p>
+<p>个人理解就是使用组合将受委托的实现放在委托对象内部，业务和委托对象交互，来达成解耦的目的；口语化表达就是：虽然调用的是我，但其实我<strong>再调用内部实例的方法来处理</strong>，双亲委派的委派也即是指的委派模式</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">业务 → 委托类 → 受委托类 <span class="number">1</span> ~ <span class="built_in">n</span></span><br></pre></td></tr></table></figure>
+<p>经常在策略模式中创建的类似 <code>Manager</code>、<code>Holder</code>
+等角色其实就是委派模式的实现</p>
+<p>委派角色提供以下能力：</p>
+<ul>
+<li>暴露统一入口方法</li>
+<li>管理受委托类</li>
+</ul>
+<p>对于如今 Spring 的 IOC
+机制来说，策略结合委派模式作用不大了，因为可以直接按类型注入集合</p>
+<p>但是 SpringBoot 的 stater 往往在很多场景基于 IOC
+和委派模式来实现灵活自动装配</p>
+<hr />
+<p>例如 <code>spring-websocket</code> 中的
+<code>@EnableWebSocketMessageBroker</code> 和
+<code>WebSocketMessageBrokerConfigurer</code> 配合来实现对
+WebSocketMessageBroker 的配置</p>
+<ol type="1">
+<li><code>@EnableWebSocketMessageBroker</code> import
+<code>DelegatingWebSocketMessageBrokerConfiguration</code></li>
+<li>从名字就可以看出
+<code>DelegatingWebSocketMessageBrokerConfiguration</code>
+是一个委派配置类</li>
+<li>以 <code>registerStompEndpoints</code> 方法为例，将其实现委派给 IOC
+注入的 <code>configurers</code> 来执行</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DelegatingWebSocketMessageBrokerConfiguration</span> <span class="keyword">extends</span> <span class="title class_">WebSocketMessageBrokerConfigurationSupport</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 受委托类</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> List&lt;WebSocketMessageBrokerConfigurer&gt; configurers = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">registerStompEndpoints</span><span class="params">(StompEndpointRegistry registry)</span> &#123;</span><br><span class="line">		<span class="comment">// 进行委派</span></span><br><span class="line">		<span class="keyword">for</span> (WebSocketMessageBrokerConfigurer configurer : <span class="built_in">this</span>.configurers) &#123;</span><br><span class="line">			configurer.registerStompEndpoints(registry);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就可以通过注解启动 Broker
+这一套流程，并且业务可以自定义配置实现类</p>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/reference/web/websocket.html">WebSockets
+:: Spring Framework</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8.html" rel="prev" title="LangChain 生态入门">
+      <i class="fa fa-chevron-left"></i> LangChain 生态入门
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#api-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">API 快速开始</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#websockethandler"><span class="nav-number">1.1.</span> <span class="nav-text">WebSocketHandler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#configure-a-websockethandler"><span class="nav-number">1.2.</span> <span class="nav-text">Configure a
+WebSocketHandler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#websocket-handshake"><span class="nav-number">1.3.</span> <span class="nav-text">WebSocket Handshake</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#websockethandler-decoration"><span class="nav-number">1.4.</span> <span class="nav-text">WebSocketHandler Decoration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#configuring-the-websocket-engine"><span class="nav-number">1.5.</span> <span class="nav-text">Configuring the
+WebSocket Engine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#configuring-allowed-origins"><span class="nav-number">1.6.</span> <span class="nav-text">Configuring allowed
+origins</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sockjs-fallback"><span class="nav-number">2.</span> <span class="nav-text">SockJS Fallback</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stomp"><span class="nav-number">3.</span> <span class="nav-text">STOMP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%B5%81%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">消息流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#simple-broker-%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.2.</span> <span class="nav-text">Simple Broker 示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#controller-%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.3.</span> <span class="nav-text">Controller 注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#messagemapping"><span class="nav-number">3.3.1.</span> <span class="nav-text">MessageMapping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#subscribemapping"><span class="nav-number">3.3.2.</span> <span class="nav-text">SubscribeMapping</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF"><span class="nav-number">3.4.</span> <span class="nav-text">发送消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#broker"><span class="nav-number">3.5.</span> <span class="nav-text">Broker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.5.1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%83%E8%B7%B3"><span class="nav-number">3.5.2.</span> <span class="nav-text">心跳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%9C%89%E5%BA%8F"><span class="nav-number">3.5.3.</span> <span class="nav-text">消息有序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%A6%E6%88%AA%E5%99%A8-%E9%89%B4%E6%9D%83"><span class="nav-number">3.6.</span> <span class="nav-text">拦截器 &amp; 鉴权</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#stomp-headers-%E7%94%A8%E4%BA%8E%E9%89%B4%E6%9D%83"><span class="nav-number">3.6.1.</span> <span class="nav-text">STOMP Headers 用于鉴权</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">4.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">委派模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">76</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:5px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+        </a>
+      </div>
+
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kugaaa.com" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket.html</loc>
+    <lastmod>2024-07-27</lastmod>
+  </url>
+  <url>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8.html</loc>
+    <lastmod>2024-07-17</lastmod>
+  </url>
+  <url>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/jenv%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8.html</loc>
+    <lastmod>2024-07-08</lastmod>
+  </url>
+  <url>
     <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangGraph/LangGraph%20-%20Plan-and-Execute%20Agent.html</loc>
     <lastmod>2024-06-26</lastmod>
   </url>
@@ -77,11 +89,11 @@
     <lastmod>2024-01-01</lastmod>
   </url>
   <url>
-    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20%E5%B0%8F%E5%BF%83%20FOR%20UPDATE%20%E7%9A%84%20Record%20%E9%94%81.html</loc>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%205.7%20%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%20-%20InnoDB%20%E5%BC%95%E6%93%8E.html</loc>
     <lastmod>2023-12-24</lastmod>
   </url>
   <url>
-    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%205.7%20%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%20-%20InnoDB%20%E5%BC%95%E6%93%8E.html</loc>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/DB/MySQL/MySQL%20%E5%B0%8F%E5%BF%83%20FOR%20UPDATE%20%E7%9A%84%20Record%20%E9%94%81.html</loc>
     <lastmod>2023-12-24</lastmod>
   </url>
   <url>
@@ -205,11 +217,11 @@
     <lastmod>2023-04-23</lastmod>
   </url>
   <url>
-    <loc>https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Maison%20Premiere%E2%80%99s%20Tom%20Collins.html</loc>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/GoogleCode%20ConcurrentLinkedHashMap.html</loc>
     <lastmod>2023-04-08</lastmod>
   </url>
   <url>
-    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/GoogleCode%20ConcurrentLinkedHashMap.html</loc>
+    <loc>https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/RECIPES%20-%20Maison%20Premiere%E2%80%99s%20Tom%20Collins.html</loc>
     <lastmod>2023-04-08</lastmod>
   </url>
   <url>
@@ -257,11 +269,11 @@
     <lastmod>2022-12-26</lastmod>
   </url>
   <url>
-    <loc>https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92.html</loc>
+    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html</loc>
     <lastmod>2022-12-24</lastmod>
   </url>
   <url>
-    <loc>https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F%20-%20Bridge.html</loc>
+    <loc>https://www.kugaaa.com/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/%E7%B2%BE%E9%85%BF%E5%95%A4%E9%85%92.html</loc>
     <lastmod>2022-12-24</lastmod>
   </url>
   <url>

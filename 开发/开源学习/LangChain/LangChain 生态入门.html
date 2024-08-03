@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.svg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.svg">
+  <link rel="mask-icon" href="/images/air.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kugaaa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="LangChain 生态入门  LangChain 生态下面都有哪些库和服务  LangChain：开发由大型语言模型（LLM）应用程序的框架  langchain-core 基础抽象和 LCEL（LangChain Expression Language） langchain-community 三方集成；例如 ****langchain-openai langchain-e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 生态入门">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="LangChain 生态入门  LangChain 生态下面都有哪些库和服务  LangChain：开发由大型语言模型（LLM）应用程序的框架  langchain-core 基础抽象和 LCEL（LangChain Expression Language） langchain-community 三方集成；例如 ****langchain-openai langchain-e">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/%E5%B7%A5%E7%A8%8B%E4%B8%80%E8%A7%88.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/%E7%B1%BB%E5%9B%BE.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/Chat-LangChain.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/format.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/Agent1.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/Agent2.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/LangGraoh%20Cloud.gif">
+<meta property="article:published_time" content="2024-07-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-17T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="LangChain">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/%E5%B7%A5%E7%A8%8B%E4%B8%80%E8%A7%88.png">
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LangChain 生态入门 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">贫瘠之地</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">华北无浪漫，死海扬起帆<br>多少个夜晚，独自望着天</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LangChain 生态入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-18 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-18T00:00:00+08:00">2024-07-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+                </span>
+                  >
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/" itemprop="url" rel="index"><span itemprop="name">LangChain</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="langchain-生态入门">LangChain 生态入门</h1>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/%E5%B7%A5%E7%A8%8B%E4%B8%80%E8%A7%88.png" class="" title="工程一览">
+<p><strong>LangChain 生态下面都有哪些库和服务</strong></p>
+<ul>
+<li><strong>LangChain</strong>：开发由大型语言模型（LLM）应用程序的框架
+<ul>
+<li><code>langchain-core</code> 基础抽象和 LCEL（LangChain Expression
+Language）</li>
+<li><code>langchain-community</code> 三方集成；例如
+****<code>langchain-openai</code>
+<code>langchain-elasticsearch</code></li>
+<li><code>langchain</code> Chains  Agents  retrieval strategies</li>
+</ul></li>
+<li><strong>LangGraph</strong>：使用 LLM
+构建健壮且有状态的多参与者应用程序（multi actor），与 LangChain
+平滑集成，但也可以在没有 LangChain 的情况下使用</li>
+<li><strong>LangSmith</strong>：开发者平台，用于调试、测试、评估、监控
+LLM 应用</li>
+<li><strong>LangServer</strong>：部署 LangChain 的 chains 作为 REST
+API</li>
+</ul>
+<h1 id="langchain">LangChain</h1>
+<h2 id="简介">简介</h2>
+<p>LangChain 是对各种组件的抽象，以及 LCEL 支持</p>
+<p>因为 LangChain
+是整个生态最基础的库，并且社区迭代了很长时间，其拥有的功能非常庞杂，这里简要整理其功能</p>
+<ul>
+<li><strong>LCEL：</strong>创建任意自定义 Chain 的方法（框架）</li>
+<li><strong>组件</strong>
+<ul>
+<li><strong>PromptTemplate：</strong>Prompt 模板，占位符快速 build
+Prompt messages
+<ul>
+<li>few shot examples template</li>
+<li>messages placeholder</li>
+</ul></li>
+<li><strong>Example selectors：</strong>examples 选择的抽象和封装</li>
+<li><strong>Chat models：</strong>LLM
+<ul>
+<li><strong>LLMs：</strong>LangChain 中这是 LLM
+的早期封装，当时还没有聊天模式，和 LLM
+主要的交互模式是输入字符串、输出字符串</li>
+</ul></li>
+<li><strong>Messages：</strong>LLM 输出的 Message
+封装；包括对历史消息的操作，我理解替代了 v0.1 的 memory
+<ul>
+<li>MessageType</li>
+<li>trim 修剪</li>
+<li>filter 过滤</li>
+<li>merge 合并</li>
+</ul></li>
+<li><strong>Output parsers：</strong>负责获取 LLM
+的输出并解析为更结构化的格式
+<ul>
+<li>JSON</li>
+<li>XML</li>
+<li>enums</li>
+<li>retry and fix</li>
+</ul></li>
+<li><strong>Text splitters：</strong>将文档拆分为块便于检索</li>
+<li><strong>Embedding models：</strong>对 Embedding models 的抽象</li>
+<li><strong>Vector stores：</strong>对向量数据库的抽象</li>
+<li><strong>Retrievers：</strong>查询并返回相关文档
+<ul>
+<li>上下文压缩检索器</li>
+<li>时间权重检索器</li>
+<li>元数据过滤检索器（metadata filter）</li>
+<li>重排序减轻 lost in the middle 影响</li>
+</ul></li>
+<li><strong>Index：</strong>用于同步向量存储和底层数据源（文档），处理文档哪些内容变更了、哪些需要向量化、哪些需要存储
+<ul>
+<li>Incremental</li>
+<li>Full</li>
+</ul></li>
+<li><strong>Tools：</strong>LLM 工具执行封装
+<ul>
+<li>内置 toolkit</li>
+<li>人工干预</li>
+<li>错误处理</li>
+</ul></li>
+<li><strong>Multimodal：</strong>多模态 API 封装</li>
+<li><strong>Agents：</strong>Agent 主要迁移到 LangGraph 实现了，不需要在
+LangChain 这里关注</li>
+<li><strong>Callbacks：</strong>LLM 执行各个阶段的钩子</li>
+</ul></li>
+</ul>
+<h2 id="举例">举例</h2>
+<h3 id="llm-async-stream">LLM Async &amp; Stream</h3>
+<aside>
+<p>💡 演示</p>
+</aside>
+<p>LangChain 中的 LLM 实现了异步、Streaming
+模式的相关接口，并且还进行了扩展</p>
+<p><a
+target="_blank" rel="noopener" href="https://api.python.langchain.com/en/latest/runnables/langchain_core.runnables.base.Runnable.html#langchain_core.runnables.base.Runnable">langchain_core.runnables.base.Runnable
+— 🦜🔗 LangChain 0.2.12</a></p>
+<p>A unit of work that can be invoked, batched, streamed, transformed
+and composed.</p>
+<ul>
+<li><strong>invoke/ainvoke</strong>: Transforms a single input into an
+output.</li>
+<li><strong>batch/abatch</strong>: Efficiently transforms multiple
+inputs into outputs.</li>
+<li><strong>stream/astream</strong>: Streams output from a single input
+as it’s produced.</li>
+<li><strong>astream_log</strong>: Streams output and selected
+intermediate results from an input.</li>
+</ul>
+<p>Built-in optimizations:</p>
+<ul>
+<li><strong>Batch: By default, batch runs invoke() in parallel using a
+thread pool executor.</strong>Override to optimize batching.</li>
+<li><strong>Async: Methods with “a” suffix are asynchronous. By default,
+they execute</strong>the sync counterpart using asyncio’s thread pool.
+Override for native async.</li>
+</ul>
+<h3 id="lcel-runnable">LCEL &amp; Runnable</h3>
+<aside>
+<p>💡 演示</p>
+</aside>
+<p>LCEL 是 <strong>LangChain Expression Language</strong></p>
+<p>它用于快速构建自定义的 chain（将 LangChain 的组件包装起来），基于
+<code>Runnable</code> 协议（这个 <code>Runnable</code> 是 LangChain
+定义的结构）</p>
+<p>我觉得可以将 LCEL 理解为简易的流程引擎，实际上构造 chain
+的过程和和构造一个流程一致，<code>Runnable</code> 实际上就是流程节点</p>
+<p>在 LCEL
+出现之前，组件之间的组装是通过参数进行赋值的，并且一般需要在外部包装一个外部对象（例如
+<code>Chain</code>），有了 LCEL 之后可读性、易用性、灵活性都有了提高</p>
+<p>例如如下代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># example 1</span></span><br><span class="line">chain = prompt | llm</span><br><span class="line"></span><br><span class="line"><span class="comment"># example 2</span></span><br><span class="line">retrieval_chain = (</span><br><span class="line">    &#123;<span class="string">&quot;context&quot;</span>: retriever, <span class="string">&quot;question&quot;</span>: RunnablePassthrough()&#125;</span><br><span class="line">    | prompt</span><br><span class="line">    | model</span><br><span class="line">    | StrOutputParser()</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># example 3</span></span><br><span class="line">joke_chain = </span><br><span class="line">	ChatPromptTemplate.from_template(<span class="string">&quot;tell me a joke about &#123;topic&#125;&quot;</span>) | model</span><br><span class="line">poem_chain =</span><br><span class="line">    ChatPromptTemplate.from_template(<span class="string">&quot;write a 2-line poem about &#123;topic&#125;&quot;</span>) | model</span><br><span class="line"></span><br><span class="line">map_chain = RunnableParallel(joke=joke_chain, poem=poem_chain)</span><br></pre></td></tr></table></figure>
+<h3 id="序列化">序列化</h3>
+<aside>
+<p>🤔 设计离线任务服务时，如何序列化是一个难题（A server → B
+server）</p>
+<p>LLM
+调用的业务多变，需要一个顶层的抽象才能做到满足绝大多数业务的序列化机制，LangChain
+在这方面是已经实现了的</p>
+</aside>
+<aside>
+<p>💡 演示</p>
+</aside>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/%E7%B1%BB%E5%9B%BE.png" class="" title="类图">
+<p>LangChain
+下的所有对象都可以序列化（JSON），包括消息、文档对象（例如，从检索器返回的对象）和大多数
+Runnables，如 Chat Model、检索器和用 LECL 实现的 Chain</p>
+<h2 id="use-case">Use Case</h2>
+<aside>
+<p>💡 演示</p>
+</aside>
+<p>演示一下官方文档中的 RAG Q&amp;A <a
+target="_blank" rel="noopener" href="https://python.langchain.com/v0.2/docs/how_to/qa_chat_history_how_to/">How
+to add chat history | 🦜️🔗 LangChain</a></p>
+<h2 id="补充">补充</h2>
+<h3 id="chat-langchain">Chat LangChain</h3>
+<aside>
+<p>💡 演示</p>
+</aside>
+<p>LangChain 的官网有一个有意思的产品</p>
+<p><a target="_blank" rel="noopener" href="https://chat.langchain.com/">Chat LangChain</a></p>
+<p>可以和 LLM 交互来询问文档使用的问题（我理解是一个 RAG
+Q&amp;A），例如</p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/Chat-LangChain.png" class="" title="Chat-LangChain">
+<h3 id="langchain-的-azureopenai-接入了-response_format-了吗">LangChain
+的 AzureOpenAI 接入了 <strong>response_format</strong> 了吗</h3>
+<p>起码最新版的 <code>langchain-openai 0.1.14</code> 还没有接入</p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/format.png" class="" title="format">
+<p>关于 <strong>response_format</strong></p>
+<p><a
+target="_blank" rel="noopener" href="https://platform.openai.com/docs/api-reference/chat/create">OpenAI
+Platform</a></p>
+<blockquote>
+<p>指定模型必须输出的格式对象，兼容 GPT-4 Turbo 和大于
+<code>gpt-3.5-turbo-1106</code> 版本的 GPT-3.5 Turbo 设置为
+<code>&#123;"type":"json_object"&#125;</code> 可以启用 JSON
+模式，从而保证模型生成的消息是有效的 JSON</p>
+<p>需要注意： 当使用 JSON
+模式时必须在系统或用户消息中提供结构，否则模型可能会一直输出空白流直到达到
+token 限制，导致该请求长时间运行且看起来 “卡住” 还要注意如果
+<code>finish_reason="length"</code>
+，则消息内容可能会被部分切断，这表示生成超过了 <code>max_tokens</code>
+或会话超过了最大上下文长度</p>
+<p><strong>type</strong> string Optional Defaults to text Must be one
+of <code>text</code> or <code>json_object</code></p>
+</blockquote>
+<h1 id="langchain-integrations">LangChain Integrations</h1>
+<p>LangChain
+同时提供了非常多的集成，所有定义的组件都提供了三方集成方便使用</p>
+<p><a
+target="_blank" rel="noopener" href="https://platform.openai.com/docs/api-reference/chat/create">OpenAI
+Platform</a></p>
+<ul>
+<li>LLM 90+
+<ul>
+<li>OpenAI</li>
+<li>AzureOpenAI</li>
+<li>Llama</li>
+<li>AWS Bedrock</li>
+<li>Baidu Qianfan</li>
+<li>QianWen</li>
+<li>...</li>
+</ul></li>
+<li>Embedding models 75+</li>
+<li>Document loaders 150+</li>
+<li>Vector stores 100+</li>
+<li>Retrievers 50+</li>
+<li>Tool 70+</li>
+<li>Toolkit 30+</li>
+<li>…</li>
+</ul>
+<h1 id="langchain-hub">LangChain Hub</h1>
+<p>LangChain Hub 是一个 Prompt 管理社区</p>
+<ul>
+<li>Prompt 分享</li>
+<li>类似 Git commit 的机制，管理 Prompt 的版本</li>
+<li>在 Prompt Playground 快速调试</li>
+</ul>
+<h1 id="langgraph">LangGraph</h1>
+<h2 id="简介-1">简介</h2>
+<p>LangGraph 是 LangChain
+社区下的新框架，主要用于构建<strong>基于状态的</strong>、<strong>多行动者</strong>的
+LLM 应用，应用于 Agent 和复合 Agent 工作流</p>
+<p>其核心功能</p>
+<ul>
+<li>循环和分支：在应用程序中实现循环和条件</li>
+<li>持续：每个步骤后自动保存状态，随时暂停、恢复流程图执行</li>
+<li>人工循环：中断流程图执行以批准或编辑代理计划的下一个操作</li>
+<li>流式传输支持：流式传输每个节点产生的输出（包括令牌流）</li>
+<li>和 LangChain 集成：和 LangChain 及 LangSmith 无缝集成</li>
+</ul>
+<aside>
+<p>🤔 我理解有了 LangGraph 后，LangChain 的一些实现就可以被切换到
+LangGraph 了 例如 LangChain 中早期 Agent 的实现</p>
+<p>Chain 其实也可以使用 LangGraph 实现，相比 Chain 中的
+RouterRunnable，LangGraph 的条件边更加灵活</p>
+</aside>
+<h2 id="快速开始">快速开始</h2>
+<aside>
+<p>💡 演示</p>
+</aside>
+<p><a
+target="_blank" rel="noopener" href="https://www.notion.so/LangGraph-d5f3d7627b53404f94937a18eae47863?pvs=21">LangGraph
+- 快速开始</a></p>
+<h2 id="补充-1">补充</h2>
+<h3 id="agent-设计模式">Agent 设计模式</h3>
+<p>LangGraph 的官方文档整理了当前常见的 Agent 设计思想，可以了解一下</p>
+<p><a
+target="_blank" rel="noopener" href="https://langchain-ai.github.io/langgraph/tutorials/multi_agent/multi-agent-collaboration/">Collaboration
+(langchain-ai.github.io)</a></p>
+<ul>
+<li>RAG
+<ul>
+<li>自适应 RAG（Adaptive）：查询、分析后执行自校正 RAG</li>
+<li>代理 RAG（Agentic）</li>
+<li>自校正 RAG（Corrective）：对检索的文档进行分级和评估</li>
+<li>自我 RAG（Self-RAG）：对检索的文档进行分级和反思</li>
+</ul></li>
+<li>Agnet
+<ul>
+<li>复合
+<ul>
+<li>合作：分而治之（LLM 职责拆分）</li>
+<li>监督委派：使用 LLM 来协调不同的代理（加一层）</li>
+<li>分级团队：工作分层分布（再加一层）</li>
+</ul></li>
+<li>计划
+<ul>
+<li>计划执行（Plan-and-Execute）：先拆分计划再执行</li>
+<li>无观察推理（Reasoning without Observation）：由下一步 Action
+进行观察</li>
+<li>LLM 编译器（LLMCompiler）：基于 Planner 和 Jointer，让 LLM 生成一个
+DAG 来处理可以并发执行的任务提高效率</li>
+</ul></li>
+<li>反思 &amp; 评审
+<ul>
+<li>基础反思（Basic Reflection）：强调观察、评估后再采取行动</li>
+<li>反射（Reflexion）：强调矫正，反思包括有没有漏掉（missing）或者重复（Superfluous），然后回答问题，回答之后再有针对性的修改（Revise）</li>
+<li>搜索树（Tree Search）：ToT 对树状结果进行打分</li>
+<li>自发现（Self-Discover）：选择反省方式、进行反省、反省后重新输出</li>
+</ul></li>
+</ul></li>
+</ul>
+<p>推荐一下 LangGraph 画的图，非常便于理解</p>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/Agent1.png" class="" title="Agent1">
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/Agent2.png" class="" title="Agent2">
+<h3 id="langgraph-cloud">LangGraph <strong>Cloud</strong></h3>
+<p>截止目前 LangGraph Cloud 是一款仅限邀请阶段的开源付费产品</p>
+<ul>
+<li>部署和托管 LangGraph 应用程序的托管服务，快速部署服务提供 API</li>
+<li>与 LangSmith 无缝集成</li>
+</ul>
+<img src="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/LangChain%20%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8/LangGraoh%20Cloud.gif" class="" title="LangGraoh Cloud">
+<h1 id="langsmith">LangSmith</h1>
+<aside>
+<p>💡 演示</p>
+</aside>
+<p>LangSmith 的核心能力 <a target="_blank" rel="noopener" href="https://smith.langchain.com/">LangSmith
+(langchain.com)</a></p>
+<ul>
+<li>Tracing</li>
+<li>数据集管理</li>
+<li>评估</li>
+<li>人工反馈</li>
+<li>监控 &amp; 自动化</li>
+<li>Prompt 管理 &amp; 简便调试</li>
+</ul>
+<h1 id="参考">参考</h1>
+<p><a target="_blank" rel="noopener" href="https://python.langchain.com/v0.2/docs/how_to/">How-to
+guides | 🦜️🔗 LangChain</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://python.langchain.com/v0.2/docs/introduction/">Introduction
+| 🦜️🔗 LangChain</a></p>
+<p><a target="_blank" rel="noopener" href="https://langchain-ai.github.io/langgraph/">🦜🕸️LangGraph
+(langchain-ai.github.io)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/LangChain/" rel="tag"># LangChain</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/jenv%20%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8.html" rel="prev" title="jenv 工具使用">
+      <i class="fa fa-chevron-left"></i> jenv 工具使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket.html" rel="next" title="Spring Framework - WebSocket">
+      Spring Framework - WebSocket <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#langchain-%E7%94%9F%E6%80%81%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">LangChain 生态入门</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#langchain"><span class="nav-number">2.</span> <span class="nav-text">LangChain</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">举例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#llm-async-stream"><span class="nav-number">2.2.1.</span> <span class="nav-text">LLM Async &amp; Stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lcel-runnable"><span class="nav-number">2.2.2.</span> <span class="nav-text">LCEL &amp; Runnable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">2.2.3.</span> <span class="nav-text">序列化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#use-case"><span class="nav-number">2.3.</span> <span class="nav-text">Use Case</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">2.4.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#chat-langchain"><span class="nav-number">2.4.1.</span> <span class="nav-text">Chat LangChain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#langchain-%E7%9A%84-azureopenai-%E6%8E%A5%E5%85%A5%E4%BA%86-response_format-%E4%BA%86%E5%90%97"><span class="nav-number">2.4.2.</span> <span class="nav-text">LangChain
+的 AzureOpenAI 接入了 response_format 了吗</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#langchain-integrations"><span class="nav-number">3.</span> <span class="nav-text">LangChain Integrations</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#langchain-hub"><span class="nav-number">4.</span> <span class="nav-text">LangChain Hub</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#langgraph"><span class="nav-number">5.</span> <span class="nav-text">LangGraph</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B-1"><span class="nav-number">5.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B"><span class="nav-number">5.2.</span> <span class="nav-text">快速开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85-1"><span class="nav-number">5.3.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#agent-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.3.1.</span> <span class="nav-text">Agent 设计模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#langgraph-cloud"><span class="nav-number">5.3.2.</span> <span class="nav-text">LangGraph Cloud</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#langsmith"><span class="nav-number">6.</span> <span class="nav-text">LangSmith</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">76</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <div>
+      <div style="margin-top:5px">
+        <a href="https://github.com/Kugaaa" target="_blank">
+          <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+        </a>
+      </div>
+
+      <div style="margin-top:15px">
+        <a href="https://www.foreverblog.cn/go.html" target="_blank">
+          <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+        </a>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="https://bjcp.kugaaa.com" target="_blank">
+          <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+        </a>
+      </div>
+
+      <div style="margin-top:20px">
+          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-solid fa-user-secret"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuga</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>
