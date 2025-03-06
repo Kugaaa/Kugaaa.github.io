@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.png">
+  <link rel="mask-icon" href="/images/air.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-flat-top.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.kugaaa.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"flat","show_result":true},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":2,"unescape":false,"preload":true}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="混淆矩阵 Confusion Matrix 什么是混淆矩阵 混淆矩阵是通过将预测标签与真实标签进行比较来总结分类模型性能的表格，它显示了模型预测的真正例（TP）、真负例（TN）、假正例（FP）和假负例（FN）的数量  分类模型 Classification models">
+<meta property="og:type" content="article">
+<meta property="og:title" content="准确率、精确率和召回率">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="混淆矩阵 Confusion Matrix 什么是混淆矩阵 混淆矩阵是通过将预测标签与真实标签进行比较来总结分类模型性能的表格，它显示了模型预测的真正例（TP）、真负例（TN）、假正例（FP）和假负例（FN）的数量  分类模型 Classification models">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image0.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image1.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image2.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image3.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image4.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image5.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image6.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image7.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image8.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image9.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image10.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image11.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image12.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image13.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image14.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image15.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image16.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image17.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image18.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image19.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image20.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image21.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image22.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image23.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image24.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image25.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image26.png">
+<meta property="article:published_time" content="2024-10-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-20T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="统计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image0.png">
+
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87.html","path":"开发/AI/准确率、精确率和召回率.html","title":"准确率、精确率和召回率"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>准确率、精确率和召回率 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">贫瘠之地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">出来混最重要的是什么？是出来</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5-confusion-matrix"><span class="nav-number">1.</span> <span class="nav-text">混淆矩阵 Confusion Matrix</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="nav-number">1.1.</span> <span class="nav-text">什么是混淆矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B-classification-models"><span class="nav-number">1.1.1.</span> <span class="nav-text">分类模型 Classification
+models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E9%80%BB%E8%BE%91"><span class="nav-number">1.1.2.</span> <span class="nav-text">混淆矩阵逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="nav-number">1.1.3.</span> <span class="nav-text">阅读混淆矩阵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%B1%BB%E7%9A%84%E8%B4%A8%E9%87%8F%E6%8C%87%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">分类的质量指标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%88%86%E7%B1%BB%E7%9A%84%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="nav-number">1.3.</span> <span class="nav-text">多分类的混淆矩阵</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E6%A0%87"><span class="nav-number">2.</span> <span class="nav-text">指标</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E7%A1%AE%E7%8E%87-accuracy"><span class="nav-number">2.1.</span> <span class="nav-text">准确率 Accuracy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E5%9B%BE%E7%A4%BA"><span class="nav-number">2.1.1.</span> <span class="nav-text">混淆矩阵图示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.1.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">2.1.3.</span> <span class="nav-text">优缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B2%BE%E7%A1%AE%E7%8E%87-precision"><span class="nav-number">2.2.</span> <span class="nav-text">精确率 Precision</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E5%9B%BE%E7%A4%BA-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">混淆矩阵图示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">优缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AC%E5%9B%9E%E7%8E%87-recall"><span class="nav-number">2.3.</span> <span class="nav-text">召回率 Recall</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E5%9B%BE%E7%A4%BA-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">混淆矩阵图示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-2"><span class="nav-number">2.3.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-2"><span class="nav-number">2.3.3.</span> <span class="nav-text">优缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E7%B1%BB%E5%88%AB%E5%B9%B3%E8%A1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">注意类别平衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E8%AF%AF%E5%88%A4%E7%9A%84%E6%88%90%E6%9C%AC"><span class="nav-number">3.2.</span> <span class="nav-text">注意误判的成本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E5%86%B3%E7%AD%96%E9%98%88%E5%80%BC"><span class="nav-number">3.3.</span> <span class="nav-text">注意决策阈值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+<div>
+  <div style="margin-top:5px">
+    <a href="https://github.com/Kugaaa" target="_blank">
+      <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+    </a>
+  </div>
+
+  <div style="margin-top:15px">
+    <a href="https://www.foreverblog.cn/go.html" target="_blank">
+      <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+    </a>
+  </div>
+
+  <div style="margin-top:10px">
+    <a href="https://bjcp.kugaaa.com" target="_blank">
+      <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+    </a>
+  </div>
+
+  <div style="margin-top:20px">
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+  </div>
+</div>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="准确率、精确率和召回率 | 贫瘠之地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          准确率、精确率和召回率
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-10-21 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-21T00:00:00+08:00">2024-10-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="混淆矩阵-confusion-matrix">混淆矩阵 Confusion Matrix</h1>
+<h2 id="什么是混淆矩阵">什么是混淆矩阵</h2>
+<p>混淆矩阵是通过将预测标签与真实标签进行比较来总结分类模型性能的表格，它显示了模型预测的真正例（TP）、真负例（TN）、假正例（FP）和假负例（FN）的数量</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image0.png" class="" title="image0">
+<h3 id="分类模型-classification-models">分类模型 <strong>Classification
+models</strong></h3>
+<p>分类模型是一种机器学习模型，它为新的输入数据分配预定义的类别或标签</p>
+<p>如果只有两个类别，则该分类是 binary 的；如果有多个类，则这是一个
+multi-class 问题</p>
+<h3 id="混淆矩阵逻辑">混淆矩阵逻辑</h3>
+<p>创建一个混淆矩阵首先需要给出输入，模型给出预测的后给出实际标签</p>
+<p>这样就可以判断出模型预测的正确性</p>
+<p>一旦知道了实际的标签，就可以计算模型正确或错误的次数</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image1.png" class="" title="image1">
+<p><strong>错误类型</strong></p>
+<p>可以计算出不同错误类型的数量</p>
+<ul>
+<li>误报 false alarm，将普通交易标记为欺诈</li>
+<li>错过 miss，将欺诈交易标记为普通交易</li>
+</ul>
+<p>第一种错误被称为 FP，第二种错误被称为 FN</p>
+<div class="note info"><p><strong>positive 和 negative</strong></p>
+<p>positive 和 negative 针对的是目标和非目标分类</p>
+<p>在上面例子中，交易欺骗是我们的目标分类，所以我们将交易欺骗认为是
+positive</p>
+</div>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image2.png" class="" title="image2">
+<p>之所以要区分两种不同的错误类型，是因为在一些业务中两种错误的后果危害性不同</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image3.png" class="" title="image3">
+<p><strong>正确类型</strong></p>
+<p>同时也有两种不同的正确类型</p>
+<ul>
+<li>检测出实际的欺骗行为</li>
+<li>正确标记正常行为</li>
+</ul>
+<p>第一种类型称为 TP，第二种行为称为 TN</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image4.png" class="" title="image4">
+<p>检测出不同的正确类型是必要的，因为业务可能更感兴趣的是模型识别欺骗交易的能力，而不是模型总体正确的频率</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image5.png" class="" title="image5">
+<p>总之对于一个预测模型，其得出的结果是如下四种之一</p>
+<ul>
+<li>真正例（<em>True
+Positive, <strong>TP</strong></em>）：被模型预测为正的正样本</li>
+<li>假正例（<em>False Positive,
+<strong>FP</strong></em>）：被模型预测为正的负样本</li>
+<li>假负例（<em>False Negative,
+<strong>FN</strong></em>）：被模型预测为负的正样本</li>
+<li>真负例（<em>True Negative,
+<strong>TN</strong></em>）：被模型预测为负的负样本</li>
+</ul>
+<p>于是可以根据上述结果绘制出混淆矩阵，横坐标代表预期分类，纵坐标代表实际分类</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image6.png" class="" title="image6">
+<h3 id="阅读混淆矩阵">阅读混淆矩阵</h3>
+<p>用一个场景举例，垃圾邮件分类；这是一个二元分类模型，可以得出
+“是垃圾邮件” 和 “非垃圾邮件” 的分类</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image7.png" class="" title="image7">
+<p>TP</p>
+<ul>
+<li>左上角绿色区域</li>
+</ul>
+<p>TN</p>
+<ul>
+<li>右下角绿色区域</li>
+</ul>
+<p>FP</p>
+<ul>
+<li>右上角红色区域</li>
+</ul>
+<p>FN</p>
+<ul>
+<li>左下角红色区域</li>
+</ul>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image8.png" class="" title="image8">
+<h2 id="分类的质量指标">分类的质量指标</h2>
+<p>混淆矩阵可以给出预测正确、错误的绝对值（absolute
+number），但有时会希望衡量模型效果的相对值（relative）</p>
+<p>以下是一些常用的指标来衡量分类模型的性能</p>
+<ul>
+<li>准确率 Accuracy：模型总体上正确的比率</li>
+<li>精确率 Precision：预测正例中正确的比率</li>
+<li>召回率 Recall 或 true positive rate (TPR)：预期正例中正确的比率</li>
+</ul>
+<h2 id="多分类的混淆矩阵">多分类的混淆矩阵</h2>
+<p>多类分类也遵循同样的逻辑，在这种情况下矩阵将会有两个以上的行和列</p>
+<p>假设将用户评论分为三类：“负面”、“正面” 和
+“中性”，下面是该问题的混淆矩阵示例</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image9.png" class="" title="image9">
+<p>如何阅读</p>
+<ul>
+<li>对角线代表正确分类的数据</li>
+<li>第一行，模型正确地标记了 700 条（共 1000 条）负面评论，将 300
+条错误地归类为中心评论</li>
+<li>第二行，该模型正确地标记了 8300 条（共 8600 条）中性评论，但错误地将
+200 条归类为负面评论，100 条归类为正面评论</li>
+<li>第三行，该模型正确预测了 300 条（共 400 条）正面评论，但将 100
+条错误地归类为中性评论</li>
+</ul>
+<h1 id="指标">指标</h1>
+<h2 id="准确率-accuracy">准确率 <strong>Accuracy</strong></h2>
+<p><em>模型正确的比率有多高</em></p>
+<p><em>How often the model is right</em></p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image10.png" class="" title="image10">
+<h3 id="混淆矩阵图示">混淆矩阵图示</h3>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image11.png" class="" title="image11">
+<h3 id="示例">示例</h3>
+<p>有以下数据</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image12.png" class="" title="image12">
+<p>获取到预测结果后可以标注出正确性</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image13.png" class="" title="image13">
+<p>可以简单地计算模型正确的次数，然后除以预测的总数</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image14.png" class="" title="image14">
+<p>直观来看，准确性是判断模型质量的直接方法，它表示了模型整体的正确性，易于沟通</p>
+<p>事实上这种措施并不总是有效，因为 accuracy paradox 准确性悖论存在</p>
+<h3 id="优缺点">优缺点</h3>
+<ul>
+<li>优点
+<ul>
+<li>当关注<strong>平衡类别</strong>（balanced
+classes）并且关心整体模型的 “正确性”
+而不是预测特定类别的能力时，是一个有用的指标</li>
+<li><strong>易于解释</strong></li>
+</ul></li>
+<li>缺点
+<ul>
+<li>如果类别不均衡，准确率的用处就会降低，因为它对模型预测所有类别的能力给予了同等的权重；在这种情况下，传达准确性<strong>可能会产生误导</strong>，并掩盖目标类别上的低性能</li>
+</ul></li>
+</ul>
+<h2 id="精确率-precision">精确率 P<strong>recision</strong></h2>
+<p><em>多少正例的预测是正确的</em></p>
+<p><em>How often the positive predictions are correct</em></p>
+<p>预测为正样本的结果中，真正为正样本的比例</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image15.png" class="" title="image15">
+<h3 id="混淆矩阵图示-1">混淆矩阵图示</h3>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image16.png" class="" title="image16">
+<h3 id="示例-1">示例</h3>
+<p>邮件示例中假设有一个不平衡问题，只有 5% 的邮件是垃圾邮件</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image17.png" class="" title="image17">
+<p>假设预测所有电子邮件都是非垃圾邮件</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image18.png" class="" title="image18">
+<p>此时准确率为 95%（60 个 cases，模型有 57 个是准确的），但是精确率却为
+0%</p>
+<p>为了计算精确率，我们必须用 <strong>正确预测的垃圾邮件数量</strong>
+除以 <strong>垃圾邮件总数</strong>；然而正确识别的垃圾邮件数量为
+0，数据集中有 3
+封垃圾邮件，但模型全部错过了，所有正确的预测都是关于非垃圾邮件的，精确率指标纠正了准确率的主要缺点</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image19.png" class="" title="image19">
+<p>假设我们又训练了一个模型，得到的结果如上</p>
+<p>此时准确率依然为 95%</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image20.png" class="" title="image20">
+<p>而精确率为 50%，该模型将 6
+封电子邮件标记为垃圾邮件，并且有一半的时间是正确的。在标记为垃圾邮件的 6
+封电子邮件中，实际上有 3 封是垃圾邮件（真正的阳性），另外 3
+封是错误标记（假阳性）</p>
+<h3 id="优缺点-1">优缺点</h3>
+<p>什么时候精确率是一个适合关注的指标？</p>
+<p>以下是精确率指标的优点：</p>
+<ul>
+<li>对于<strong>类别不平衡</strong>的问题效果很好，因为它显示了模型在识别目标类别时的正确性</li>
+<li>当<strong>误报成本</strong>很高时，精确率很有用。在这种情况下，即使遗漏了一些（或很多）实例，你通常也希望对识别目标类别有信心</li>
+</ul>
+<p>假设这样一个产品需求，作为垃圾邮件检测功能的产品经理，认为误报错误的成本很高；可以将错误成本解释为由于错误预测而导致的负面用户体验；希望确保用户永远不会因为重要邮件被错误标记为垃圾邮件而错过它，这是一种<strong>错误最小化</strong>的需求，<strong>精确率</strong>是一个很好的评估和优化指标</p>
+<p>较高的精确率得分表明模型做出的误报预测更少</p>
+<p>在这种情况下，一些垃圾邮件可能会未被检测到并进入用户的收件箱，此时会认为这种类型的错误（漏报）的成本更可容忍，用户仍然可以手动将这些邮件标记为垃圾邮件，但是每当自动将邮件放入垃圾邮件文件夹并对用户隐藏时，它们最好确实是垃圾邮件</p>
+<p>当然精确率也有缺点：</p>
+<ul>
+<li>精确率不考虑<strong>假阴性</strong>，即它没有考虑我们错过目标事件的情况</li>
+</ul>
+<p>这就是为什么需要另一个指标来平衡精确率：召回率</p>
+<h2 id="召回率-recall">召回率 R<strong>ecall</strong></h2>
+<p><em>模型是否能够识别出所有的正例</em></p>
+<p>所有正样本中，被正确预测为正例的比例，考虑了假阴性</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image21.png" class="" title="image21">
+<p>可以在 0 到 1
+的范围内或用百分比来衡量召回率；召回率越高越好，当模型能够在数据集中找到目标类的所有实例时，可以实现完美召回率为
+1.0</p>
+<p>召回率也可以称为<strong>敏感度</strong>或<strong>真正例率</strong>。“敏感度”
+一词在医学和生物学研究中比在机器学习中更常用；例如，可以参考医学诊断测试的敏感度来解释其正确揭示大多数真正例的能力，概念是相同的</p>
+<h3 id="混淆矩阵图示-2">混淆矩阵图示</h3>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image22.png" class="" title="image22">
+<h3 id="示例-2">示例</h3>
+<p>依然用识别垃圾邮件举例</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image23.png" class="" title="image23">
+<p>如之前的模拟情况为例，此时我们知道准确率为 95%，精确率为 50%</p>
+<p>要计算召回率，我们必须用<strong>已发现的垃圾邮件数量</strong>除以<strong>数据集中垃圾邮件的总数</strong></p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image24.png" class="" title="image24">
+<p>召回率为 100%。数据集中有 3 封垃圾邮件，模型找到了所有这些邮件</p>
+<p>这样，召回率展现了模型质量的又一个维度；总之这个虚构的模型具有 95%
+的准确率、50% 的精确率和 100% 的召回率</p>
+<h3 id="优缺点-2">优缺点</h3>
+<ul>
+<li>优点
+<ul>
+<li>它对于具有<strong>类别不平衡</strong>的问题很有效，因为它专注于模型找到目标类对象的能力</li>
+<li>当<strong>假阴性成本</strong>很高时，召回率很有用；在这种情况下，通常希望找到<strong>目标类的所有对象</strong>，即使这会导致一些误报（当实际上为阴性时预测为阳性）</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>它没有考虑<strong>误报</strong>（false positives）的成本
+误报的成本可能仍然很高。在极端情况下，如果需要审查的决策过多且精度较低，它们可能会使模型变得毫无用处</li>
+<li></li>
+</ul></li>
+</ul>
+<p>召回率的极端情况与准确率悖论相反：如果想实现
+“完全召回”，可以将每个对象都标记为可疑</p>
+<p>例如可以将每封电子邮件都标记为垃圾邮件，这样就实现了 100%
+的召回率，但绝大多数预测将是误报，从而使模型变得毫无用处</p>
+<p>没有单一的指标是完美的，因此同时考虑多个指标并在精度和召回率之间确定适当的平衡是有意义的</p>
+<h1 id="实践">实践</h1>
+<p>由于没有一个指标能反映出衡量模型质量的 “绝对最佳”
+方法，因此通常需要<strong>综合考虑这些指标</strong>，或者<strong>有意识地选择更适合特定场景的指标</strong></p>
+<p>在确定哪种指标更合适时，这里有一些需要牢记的注意事项</p>
+<h2 id="注意类别平衡">注意类别平衡</h2>
+<p>在解释精确率、召回率和准确率时，评估类别比例并记住每个指标在处理不平衡类别时的表现是有意义的。一些指标（如准确率）可能看起来具有误导性地好，并掩盖重要少数类别的性能</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image25.png" class="" title="image25">
+<h2 id="注意误判的成本">注意误判的成本</h2>
+<p>精度是在分配正类时更关心 “正确分类” 而非 “全部检测出”
+的情况下的一个合适指标</p>
+<p>召回率指标则相反</p>
+<h2 id="注意决策阈值">注意决策阈值</h2>
+<p>在精度和召回率之间找到正确平衡的另一种方法是手动为概率分类设置不同的决策阈值</p>
+<img src="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87/image26.png" class="" title="image26">
+<p>决策阈值是一个值，当输入值高于该值时，输入被分类为属于特定类别；当输入值低于该值时，输入被分类为属于不同类别</p>
+<p>例如，当预测概率为 0.5 时，可以将预测分配给特定类别，或者将其调整为
+0.8</p>
+<p>如果目标是最小化误报（最大化精确率），那么较高的决策阈值可能更合适；另一方面，如果目标是最小化漏报（最大化召回率），那么较低的决策阈值可能更合适</p>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://www.evidentlyai.com/classification-metrics">Evidently AI -
+Classification metrics guide</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://www.evidentlyai.com/classification-metrics/accuracy-precision-recall#what-is-precision">Accuracy
+vs. precision vs. recall in machine learning: what's the
+difference?</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"><i class="fa fa-tag"></i> AI</a>
+              <a href="/tags/%E7%BB%9F%E8%AE%A1/" rel="tag"><i class="fa fa-tag"></i> 统计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/Spring%20Framework%20-%20WebSocket.html" rel="prev" title="Spring Framework - WebSocket">
+                  <i class="fa fa-angle-left"></i> Spring Framework - WebSocket
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/SpringBoot2%20%E5%8D%87%E7%BA%A7%20Starter%20%E5%BD%B1%E5%93%8D.html" rel="next" title="SpringBoot2 升级 Starter 影响">
+                  SpringBoot2 升级 Starter 影响 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-solid fa-user-secret"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Kuga</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/kugaaa" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js","integrity":"sha256-G8ouPAnw4zzMbnAenHnVz6h9XpKbNdOkrqTh7AadyHs="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+
+  
+
+
+
+
+
+</body>
+</html>

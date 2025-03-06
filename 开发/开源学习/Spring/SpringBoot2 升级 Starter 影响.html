@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.png">
+  <link rel="mask-icon" href="/images/air.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-flat-top.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.kugaaa.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"flat","show_result":true},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":2,"unescape":false,"preload":true}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="背景 升级 SpringBoot2，对于 starter 是否有不兼容的地方 升级指南 Spring Boot 2.0 Migration Guide · spring-projects&#x2F;spring-boot Wiki 官方给出的迁移指南，这里选取一些常见的、可能存在影响的改动点陈列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot2 升级 Starter 影响">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/SpringBoot2%20%E5%8D%87%E7%BA%A7%20Starter%20%E5%BD%B1%E5%93%8D.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="背景 升级 SpringBoot2，对于 starter 是否有不兼容的地方 升级指南 Spring Boot 2.0 Migration Guide · spring-projects&#x2F;spring-boot Wiki 官方给出的迁移指南，这里选取一些常见的、可能存在影响的改动点陈列">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-05T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/SpringBoot2%20%E5%8D%87%E7%BA%A7%20Starter%20%E5%BD%B1%E5%93%8D.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/SpringBoot2%20%E5%8D%87%E7%BA%A7%20Starter%20%E5%BD%B1%E5%93%8D.html","path":"开发/开源学习/Spring/SpringBoot2 升级 Starter 影响.html","title":"SpringBoot2 升级 Starter 影响"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SpringBoot2 升级 Starter 影响 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">贫瘠之地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">出来混最重要的是什么？是出来</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%87%E7%BA%A7%E6%8C%87%E5%8D%97"><span class="nav-number">2.</span> <span class="nav-text">升级指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%89%88%E6%9C%AC"><span class="nav-number">2.1.</span> <span class="nav-text">依赖版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">2.2.1.</span> <span class="nav-text">动态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">事件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">外部配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%91%E5%AE%9A%E6%94%B6%E7%B4%A7"><span class="nav-number">2.3.1.</span> <span class="nav-text">绑定收紧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#configurationproperties-%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.3.2.</span> <span class="nav-text">@ConfigurationProperties
+校验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web-%E5%BA%94%E7%94%A8"><span class="nav-number">2.4.</span> <span class="nav-text">Web 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jackson"><span class="nav-number">2.4.1.</span> <span class="nav-text">Jackson</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-mvc-%E8%B7%AF%E5%BE%84%E5%8C%B9%E9%85%8D"><span class="nav-number">2.4.2.</span> <span class="nav-text">Spring MVC 路径匹配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">2.5.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mockito-1.x"><span class="nav-number">2.5.1.</span> <span class="nav-text">Mockito 1.x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#environmenttestutils"><span class="nav-number">2.5.2.</span> <span class="nav-text">EnvironmentTestUtils</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-auto-configuration"><span class="nav-number">2.6.</span> <span class="nav-text">自定义
+Auto-configuration</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#conditionalonbean-%E8%AF%AD%E6%84%8F%E5%8F%98%E6%9B%B4"><span class="nav-number">2.6.1.</span> <span class="nav-text">@ConditionalOnBean 语意变更</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text">文档</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D-bean"><span class="nav-number">3.1.</span> <span class="nav-text">理解自动装配 bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%BD%8D%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%80%99%E9%80%89"><span class="nav-number">3.2.</span> <span class="nav-text">定位自动装配候选</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.3.</span> <span class="nav-text">条件注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">3.4.</span> <span class="nav-text">测试自动装配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">3.5.</span> <span class="nav-text">自定义自动装配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E5%90%8D"><span class="nav-number">3.5.1.</span> <span class="nav-text">命名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%94%AE"><span class="nav-number">3.5.2.</span> <span class="nav-text">配置键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D-module"><span class="nav-number">3.5.3.</span> <span class="nav-text">自动装配 Module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#starter-module"><span class="nav-number">3.5.4.</span> <span class="nav-text">Starter Module</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BA%90%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+<div>
+  <div style="margin-top:5px">
+    <a href="https://github.com/Kugaaa" target="_blank">
+      <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+    </a>
+  </div>
+
+  <div style="margin-top:15px">
+    <a href="https://www.foreverblog.cn/go.html" target="_blank">
+      <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+    </a>
+  </div>
+
+  <div style="margin-top:10px">
+    <a href="https://bjcp.kugaaa.com" target="_blank">
+      <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+    </a>
+  </div>
+
+  <div style="margin-top:20px">
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+  </div>
+</div>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/SpringBoot2%20%E5%8D%87%E7%BA%A7%20Starter%20%E5%BD%B1%E5%93%8D.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SpringBoot2 升级 Starter 影响 | 贫瘠之地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot2 升级 Starter 影响
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2025-03-06T00:00:00+08:00">2025-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="背景">背景</h1>
+<p>升级 SpringBoot2，对于 starter 是否有不兼容的地方</p>
+<h1 id="升级指南">升级指南</h1>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide">Spring
+Boot 2.0 Migration Guide · spring-projects/spring-boot Wiki</a></p>
+<p>官方给出的迁移指南，这里选取一些常见的、可能存在影响的改动点陈列</p>
+<h2 id="依赖版本">依赖版本</h2>
+<p>SpringBoot2 的依赖表 <a
+target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.0.x/reference/html/appendix-dependency-versions.html">Appendix
+F. Dependency versions</a></p>
+<p>其中 Spring 框架的版本升级到了 5.x，所以对于 Java 6 和 7
+不再支持了</p>
+<p>Maven 插件相关的命名和 Surefire 使用方式</p>
+<p>以下库的最低支持版本已经更改</p>
+<ul>
+<li>Elasticsearch 5.6</li>
+<li>Gradle 4</li>
+<li>Hibernate 5.2</li>
+<li>Jetty 9.4</li>
+<li>Spring Framework 5</li>
+<li>Spring Security 5</li>
+<li>Tomcat 8.5</li>
+</ul>
+<h2 id="特性">特性</h2>
+<h3 id="动态代理">动态代理</h3>
+<p>默认使用 CGLIB 实现，如果需要使用 JDK 基于接口的动态代理实现</p>
+<p>设置配置 <code>spring.aop.proxy-target-class</code> 为
+<code>false</code></p>
+<h3 id="事件">事件</h3>
+<p>新增了事件</p>
+<p><code>ApplicationStartedEvent</code>
+在上下文刷新后，但在调用任何应用程序和命令行运行器之前</p>
+<p><code>ApplicationReadyEvent</code>
+在任何应用程序和命令行运行器被调用后</p>
+<p><strong>ApplicationRunner 和 CommandLineRunner</strong></p>
+<p>当需要执行特殊逻辑在 Application 启动（started）后，可以实现
+<code>ApplicationRunner</code> 或 <code>CommandLineRunner</code>
+接口，提供的 <code>run</code> 方法会在
+<code>SpringApplication.run(…)</code> 完成之前被调用</p>
+<p>非常适合在应用程序启动后但在开始接收流量之前运行的任务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.boot.CommandLineRunner;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyCommandLineRunner</span> <span class="keyword">implements</span> <span class="title class_">CommandLineRunner</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">(String... args)</span> &#123;</span><br><span class="line">		<span class="comment">// Do something...</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="外部配置">外部配置</h2>
+<h3 id="绑定收紧">绑定收紧</h3>
+<p>有关宽松绑定的规则变得更加严格，假设有一个
+<code>acme.my-project.my-name</code> 属性</p>
+<ol type="1">
+<li>前缀必须是烤串命名；<code>acme.myProject</code> 或
+<code>acme.my_project</code> 是无效的</li>
+<li>属性名可以使用烤串、驼峰或者蛇形命名</li>
+<li>环境属性必须使用常规的大写下划线格式；例如
+<code>ACME_MYPROJECT_MYNAME</code></li>
+</ol>
+<p>概括起来是 prefix 严格，属性宽松</p>
+<h3 id="configurationproperties-校验"><strong><span class="citation"
+data-cites="ConfigurationProperties">@ConfigurationProperties</span>
+校验</strong></h3>
+<p>如果要打开校验，需要在 <code>@ConfigurationProperties</code>
+对象上添加注解 <code>@Validated</code></p>
+<h2 id="web-应用">Web 应用</h2>
+<h3 id="jackson">Jackson</h3>
+<p>修改了 Jackson 配置默认值，将 JSR-310 日期写成 ISO-8601 字符串</p>
+<p>设置
+<code>pring.jackson.serialization.write-dates-as-timestamps</code> 为
+<code>true</code> 可以使用旧配置</p>
+<p><code>spring-boot-starter-json</code> 这个新的 starter 整合了读写
+JSON 的必要部分，提供了 Jackson
+使用的相关模块依赖，如果之前手动依赖这些模块，现在可以改为依赖这个新的
+starter</p>
+<h3 id="spring-mvc-路径匹配"><strong>Spring M</strong>VC 路径匹配</h3>
+<p>禁用了后缀匹配</p>
+<p><code>GET /projects/spring-boot.json</code> 不会匹配到
+<code>@GetMapping("/projects/spring-boot")</code></p>
+<h2 id="测试">测试</h2>
+<h3 id="mockito-1.x"><strong>Mockito 1.x</strong></h3>
+<p>Mockito 1.x 不再支持 <code>@MockBean</code> 和 <code>@SpyBean</code>
+了</p>
+<p>如果没有使用 <code>spring-boot-starter-test</code>
+管理依赖，需要升级到 Mockito 2.x</p>
+<h3 id="environmenttestutils"><strong>EnvironmentTestUtils</strong></h3>
+<p><code>EnvironmentTestUtils</code> 弃用了，使用
+<code>TestPropertyValues</code> 提供更强大的能力</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TestPropertyValues.of(<span class="string">&quot;acme.first=1&quot;</span>, <span class="string">&quot;acme.second=2&quot;</span>)</span><br><span class="line">        .and(<span class="string">&quot;acme.third=3&quot;</span>)</span><br><span class="line">        .applyTo(<span class="built_in">this</span>.environment);</span><br></pre></td></tr></table></figure>
+<h2 id="自定义-auto-configuration">自定义
+<strong>Auto-configuration</strong></h2>
+<h3 id="conditionalonbean-语意变更"><span class="citation"
+data-cites="ConditionalOnBean">@ConditionalOnBean</span> 语意变更</h3>
+<p><code>@ConditionalOnBean</code> 不再表达候选 bean <code>或</code>
+的含义，而是 <code>与</code> 的含义，即多个条件满足才生效</p>
+<p>如果需要保持存在任何目标 bean 的条件，可以考虑使用如以下示例所示的
+<code>AnyNestedCondition</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ThisOrThatCondition</span> <span class="keyword">extends</span> <span class="title class_">AnyNestedCondition</span> &#123;</span><br><span class="line"></span><br><span class="line">	ThisOrThatCondition() &#123;</span><br><span class="line">		<span class="built_in">super</span>(ConfigurationPhase.REGISTER_BEAN);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@ConditionalOnBean(This.class)</span></span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">ThisCondition</span> &#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@ConditionalOnBean(That.class)</span></span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">ThatCondition</span> &#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="文档">文档</h1>
+<p>从升级指南来看，涉及 starter 调整的只有
+<code>@ConditionalOnBean</code>
+语意变化一点，所以还是回归开发文档，看下相关章节</p>
+<p><a
+target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/features.html#features.developing-auto-configuration">Core
+Features</a></p>
+<h2 id="理解自动装配-bean">理解自动装配 bean</h2>
+<p>实现自动配置的类使用 <code>@AutoConfiguration</code> （SpringBoot2
+才有）进行注解，这个注解本身又被 <code>@Configuration</code>
+进行元注解，使得自动配置成为标准的 <code>@Configuration</code>
+类；额外的 <code>@Conditional</code> 注解用于约束自动配置何时应用</p>
+<p>可以参考 <a
+target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-boot/blob/v2.7.18/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports">spring-boot/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+at v2.7.18 · spring-projects/spring-boot</a></p>
+<h2 id="定位自动装配候选">定位自动装配候选</h2>
+<p>SpringBoot 会检查已发布的 jar 包中是否存在一个名为
+<code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>
+的文件</p>
+<p>该文件应当列出你的配置类，每行一个类名，如下例所示</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">com<span class="selector-class">.mycorp</span><span class="selector-class">.libx</span><span class="selector-class">.autoconfigure</span><span class="selector-class">.LibXAutoConfiguration</span></span><br><span class="line">com<span class="selector-class">.mycorp</span><span class="selector-class">.libx</span><span class="selector-class">.autoconfigure</span>.LibXWebAutoConfiguration</span><br></pre></td></tr></table></figure>
+<p>如果自动装配类需要特定顺序应用，可以使用
+<code>@AutoConfiguration</code>
+注解的<code>before</code>, <code>beforeName</code>, <code>after</code> and <code>afterName</code>
+属性，或者专有的 <code>@AutoConfigureBefore</code> 和
+<code>@AutoConfigureAfter</code> 注解；举个例子，如果希望提供 Web
+特殊的装配，那么这个类可能需要在 <code>WebMvcAutoConfiguration</code>
+之后被应用（applied）</p>
+<p>如果想要对某些不相互直接了解的自动配置进行排序，也可以使用<code>@AutoConfigureOrder</code>；该注解与常规的
+<code>@Order</code>
+注解具有相同的语义，但为自动配置类提供了专用的排序</p>
+<p>和标准的 <code>@Configuration</code> 类一样，顺序只影响 beans
+之间的应用，不影响其创建的顺序；创建的顺序由每个 bean 的依赖关系和任何
+<code>@DependsOn</code> 关系决定</p>
+<h2 id="条件注解">条件注解</h2>
+<p>对自动装配生效的规则控制</p>
+<ul>
+<li><strong>Class Conditions</strong>：ASM 解析运行中的类
+<ul>
+<li><span class="citation"
+data-cites="ConditionalOnClass">@ConditionalOnClass</span>：存在类</li>
+<li><span class="citation"
+data-cites="ConditionalOnMissingClass">@ConditionalOnMissingClass</span>：不存在类</li>
+</ul></li>
+<li><strong>Bean Conditions</strong>：扫描 beans，可以使用
+<code>search</code> 参数指定目标层级
+<ul>
+<li><span class="citation"
+data-cites="ConditionalOnBean">@ConditionalOnBean</span>：存在 bean</li>
+<li><span class="citation"
+data-cites="ConditionalOnMissingBean">@ConditionalOnMissingBean</span>：不存在
+bean</li>
+</ul></li>
+<li><strong>Property Conditions</strong>
+<ul>
+<li><span class="citation"
+data-cites="ConditionalOnProperty">@ConditionalOnProperty</span>：检查属性；更多规则使用
+<code>havingValue</code> 和 <code>matchIfMissing</code> 参数</li>
+</ul></li>
+<li><strong>Resource Conditions</strong>
+<ul>
+<li><span class="citation"
+data-cites="ConditionalOnResource">@ConditionalOnResource</span>：资源可以使用常见的
+Spring 约定来指定，如以下示例所示
+<code>file:/home/user/test.dat</code></li>
+</ul></li>
+<li><strong>Web Application Conditions</strong>
+<ul>
+<li><span class="citation"
+data-cites="ConditionalOnWebApplication">@ConditionalOnWebApplication</span>：Web
+应用</li>
+<li><span class="citation"
+data-cites="ConditionalOnNotWebApplication">@ConditionalOnNotWebApplication</span>：非
+Web 应用</li>
+</ul></li>
+<li><strong>SpEL Expression Conditions</strong>
+<ul>
+<li><span class="citation"
+data-cites="ConditionalOnExpression">@ConditionalOnExpression</span>：使用
+SpEL 检查配置</li>
+</ul></li>
+</ul>
+<h2 id="测试自动装配">测试自动装配</h2>
+<p>自动装配会受到很多因素影响，比如配置文件、条件环境（依赖库）等等因素；所以通常来说，每个测试应该创建一个完整定义的
+<code>ApplicationContext</code>，它代表了这些定制的组合，<code>ApplicationContextRunner</code>
+提供了一种良好的实现方式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">ApplicationContextRunner</span> <span class="variable">contextRunner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ApplicationContextRunner</span>()</span><br><span class="line">    .withConfiguration(AutoConfigurations.of(MyServiceAutoConfiguration.class));</span><br></pre></td></tr></table></figure>
+<p>每个测试都可以使用运行器来表示特定的用例。例如，下面的示例调用用户配置（<code>UserConfiguration</code>）并检查自动配置是否正确回退</p>
+<p>调用 <code>run</code> 提供了一个回调上下文，可以与
+<code>Assert</code> 一起使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">defaultServiceBacksOff</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.contextRunner.withUserConfiguration(UserConfiguration.class).run((context) -&gt; &#123;</span><br><span class="line">        assertThat(context).hasSingleBean(MyService.class);</span><br><span class="line">        assertThat(context).getBean(<span class="string">&quot;myCustomService&quot;</span>).isSameAs(context.getBean(MyService.class));</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">UserConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    MyService <span class="title function_">myCustomService</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MyService</span>(<span class="string">&quot;mine&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>自定义 <code>Environment</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">serviceNameCanBeConfigured</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.contextRunner.withPropertyValues(<span class="string">&quot;user.name=test123&quot;</span>).run((context) -&gt; &#123;</span><br><span class="line">        assertThat(context).hasSingleBean(MyService.class);</span><br><span class="line">        assertThat(context.getBean(MyService.class).getName()).isEqualTo(<span class="string">&quot;test123&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 <code>FilteredClassLoader</code> 过滤类路径来测试类相关条件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">serviceIsIgnoredIfLibraryIsNotPresent</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.contextRunner.withClassLoader(<span class="keyword">new</span> <span class="title class_">FilteredClassLoader</span>(MyService.class))</span><br><span class="line">        .run((context) -&gt; assertThat(context).doesNotHaveBean(<span class="string">&quot;myService&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="自定义自动装配">自定义自动装配</h2>
+<h3 id="命名">命名</h3>
+<p>不要以 <code>spring-boot</code> 开头，因为未来可能被官方收录</p>
+<p>应该以业务名称开头，例如 <code>acme-spring-boot-starter</code></p>
+<h3 id="配置键">配置键</h3>
+<p>不要使用官方的命名空间避免冲突，应该使用业务命名例如
+<code>acme</code></p>
+<p>确保通过为每个属性添加字段 JavaDoc 来记录配置键</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ConfigurationProperties(&quot;acme&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AcmeProperties</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Whether to check the location of acme resources.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> <span class="variable">checkLocation</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Timeout for establishing a connection to the acme server.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">Duration</span> <span class="variable">loginTimeout</span> <span class="operator">=</span> Duration.ofSeconds(<span class="number">3</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一些建议</p>
+<ul>
+<li>不要以 The 或 A 开头来写描述</li>
+<li>对于 <code>boolean</code> 类型描述为 “是否” 或者 “启用”</li>
+<li>对于集合类型，以 “逗号分隔列表” 为描述开头</li>
+<li>使用 <code>java.time.Duration</code> 而不是 <code>long</code>
+类型，并在默认单位与毫秒不同时描述该默认单位，例如
+“如果未指定持续时间后缀，则将使用秒”</li>
+<li>除非在运行时必须确定默认值，否则不要在描述中提供默认值</li>
+</ul>
+<h3 id="自动装配-module">自动装配 Module</h3>
+<p>SpringBoot
+使用一个注解处理器在元数据文件（<code>META-INF/spring-autoconfigure-metadata.properties</code>）中收集自动配置上的条件，如果该文件存在，它将用于快速过滤不匹配的自动配置，这将提高启动时间</p>
+<p>使用 Maven 进行构建时，建议在包含自动配置的模块中添加以下依赖项</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-autoconfigure-processor<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果直接在项目中定义了自动装配，确保配置了
+<code>spring-boot-maven-plugin</code> 防止<code>repackage</code>
+目标将依赖项添加到 fat jar 中（避免把条件中的 class 打入 jar）</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">project</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">excludes</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">exclude</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-autoconfigure-processor<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">excludes</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="starter-module">Starter Module</h3>
+<ul>
+<li>SpringBoot starter 是一个空
+jar（不包含业务逻辑），用于提供一组默认依赖</li>
+<li>应该包含所有必要依赖，但避免包含可选依赖；不能预设使用方的依赖情况</li>
+<li>必须直接或间接依赖 <code>spring-boot-starter</code>，以确保
+SpringBoot 核心功能可用</li>
+<li>通常与自动配置结合使用，提供开箱即用的功能</li>
+</ul>
+<h1 id="源码">源码</h1>
+<p>spring-boot 2.7.x</p>
+<p>org.springframework.boot.autoconfigure.AutoConfigurationImportSelector#getCandidateConfigurations
+的 Doc 直接就标明了</p>
+<blockquote>
+<p>返回应被考虑的自动配置类名称。默认情况下，此方法将使用 <code>ImportCandidates</code> 和 <code>getSpringFactoriesLoaderFactoryClass()</code> 加载候选类。为了向后兼容，它还会考虑 <code>SpringFactoriesLoader</code> 和 <code>getSpringFactoriesLoaderFactoryClass()</code></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> List&lt;String&gt; <span class="title function_">getCandidateConfigurations</span><span class="params">(AnnotationMetadata metadata, AnnotationAttributes attributes)</span> &#123;</span><br><span class="line">	<span class="comment">// SpringFactoriesLoader @since 3.2</span></span><br><span class="line">	List&lt;String&gt; configurations = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(</span><br><span class="line">			SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// ImportCandidates @since 2.7.0</span></span><br><span class="line">	ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader()).forEach(configurations::add);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// assert</span></span><br><span class="line">	Assert.notEmpty(configurations,</span><br><span class="line">			<span class="string">&quot;No auto configuration classes found in META-INF/spring.factories nor in META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you &quot;</span></span><br><span class="line">					+ <span class="string">&quot;are using a custom packaging, make sure that file is correct.&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> configurations;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide">Spring
+Boot 2.0 Migration Guide · spring-projects/spring-boot Wiki</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/features.html#features.developing-auto-configuration">Core
+Features</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-boot/tree/2.7.x">spring-projects/spring-boot
+at 2.7.x</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"><i class="fa fa-tag"></i> Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%BC%80%E5%8F%91/AI/%E5%87%86%E7%A1%AE%E7%8E%87%E3%80%81%E7%B2%BE%E7%A1%AE%E7%8E%87%E5%92%8C%E5%8F%AC%E5%9B%9E%E7%8E%87.html" rel="prev" title="准确率、精确率和召回率">
+                  <i class="fa fa-angle-left"></i> 准确率、精确率和召回率
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-solid fa-user-secret"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Kuga</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/kugaaa" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js","integrity":"sha256-G8ouPAnw4zzMbnAenHnVz6h9XpKbNdOkrqTh7AadyHs="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+
+  
+
+
+
+
+
+</body>
+</html>
