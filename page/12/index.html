@@ -53,6 +53,7 @@
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
 <link rel="alternate" href="/atom.xml" title="贫瘠之地" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="贫瘠之地" type="application/rss+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
@@ -152,13 +153,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -189,7 +190,7 @@
   </div>
 
   <div style="margin-top:10px;">
-    <a target="_blank" href="atom.xml" style="color:#F99000;font-size:20px;">
+    <a target="_blank" href="rss2.xml" style="color:#F99000;font-size:20px;">
       <span class="icon">
         <i class="fa-solid fa-square-rss"></i>
       </span>
@@ -212,6 +213,108 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/ES/ES%20%E7%9A%84%E9%99%90%E5%88%B6%E3%80%81%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 贫瘠之地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/%E5%BC%80%E5%8F%91/ES/ES%20%E7%9A%84%E9%99%90%E5%88%B6%E3%80%81%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98.html" class="post-title-link" itemprop="url">ES 的限制和疑难问题</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-12-31 00:00:00" itemprop="dateCreated datePublished" datetime="2022-12-31T00:00:00+08:00">2022-12-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/ES/" itemprop="url" rel="index"><span itemprop="name">ES</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p><strong><em>Programmers know the benefits of everything and the
+tradeoffs of nothing.</em></strong></p>
+<p><em>程序员知道任何事情的收益，却不去权衡利弊</em></p>
+<p><a target="_blank" rel="noopener" href="https://www.simplethread.com/relational-databases-arent-dinosaurs-theyre-sharks/">Relational
+Databases Aren’t Dinosaurs, They’re Sharks - Simple Thread</a></p>
+</blockquote>
+<h1 id="背景">背景</h1>
+<p>使用关系型数据的思想去操作 ES，会发现很多功能的实现和想象中有出入</p>
+<p>或者 ES
+能够实现很多操作，但同时又有很多限制，在解决了一些问题基础上（天然分布式适合大数据量、top
+hit 这种方便的功能、模糊搜索分词器），是否也引入了一些新问题</p>
+<p>记录下 ES
+难以处理的问题以及当前的处理方法，是否可以有更好的处理方式，或者选型中避免处理此类问题</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/ES/ES%20%E7%9A%84%E9%99%90%E5%88%B6%E3%80%81%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -699,106 +802,8 @@ Martini）和泥石流（Mudslide）相似，但对于滑雪小镇居民而言�
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 贫瘠之地">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html" class="post-title-link" itemprop="url">布隆 & 布谷鸟过滤器</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-12-11 00:00:00" itemprop="dateCreated datePublished" datetime="2022-12-11T00:00:00+08:00">2022-12-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-        </span>
-          >
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">结构算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="背景">背景</h1>
-<p><strong>特征 or 全部</strong></p>
-<p>在实际需求中，往往存在类似需求：</p>
-<ul>
-<li>黑白名单；例如手机号、网站等，需要过滤掉在黑名单中的数据，或者放行在白名单中的数据</li>
-<li>推荐去重；首页新闻、视频等资源已经给用户推荐过的不进行重复推送</li>
-<li>缓存穿透；保证缓存层能正常工作，不被特殊请求大量造成缓存穿透</li>
-</ul>
-<p>最容易想到的，就是通过一个集合例如 Map、List
-等结构将数据存储起来，判断是否存在于集合中</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/%E5%B8%83%E9%9A%86%20&%20%E5%B8%83%E8%B0%B7%E9%B8%9F%E8%BF%87%E6%BB%A4%E5%99%A8.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/11/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/13/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/11/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/13/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>

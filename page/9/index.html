@@ -53,6 +53,7 @@
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
 <link rel="alternate" href="/atom.xml" title="贫瘠之地" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="贫瘠之地" type="application/rss+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
@@ -152,13 +153,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -189,7 +190,7 @@
   </div>
 
   <div style="margin-top:10px;">
-    <a target="_blank" href="atom.xml" style="color:#F99000;font-size:20px;">
+    <a target="_blank" href="rss2.xml" style="color:#F99000;font-size:20px;">
       <span class="icon">
         <i class="fa-solid fa-square-rss"></i>
       </span>
@@ -212,6 +213,105 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LiteFlow/LiteFlow%20-%20WhenCondition%20%E5%92%8C%E5%BC%82%E6%AD%A5%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 贫瘠之地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LiteFlow/LiteFlow%20-%20WhenCondition%20%E5%92%8C%E5%BC%82%E6%AD%A5%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6.html" class="post-title-link" itemprop="url">LiteFlow - WhenCondition 和异步超时机制</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-07-08 00:00:00" itemprop="dateCreated datePublished" datetime="2023-07-08T00:00:00+08:00">2023-07-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">开源学习</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LiteFlow/" itemprop="url" rel="index"><span itemprop="name">LiteFlow</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="whencondition">WhenCondition</h1>
+<p>对应 EL 规则中的 <code>WHEN</code> 关键字，会被包装为
+<code>WhenCondition</code> 组件</p>
+<p>主要的并发编排逻辑主要由 <code>WhenCondition</code>
+的实现方法执行</p>
+<h2 id="属性">属性</h2>
+<p><code>WHEN</code> 关键字支持的属性：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LiteFlow/LiteFlow%20-%20WhenCondition%20%E5%92%8C%E5%BC%82%E6%AD%A5%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -691,105 +791,8 @@ GraphQL，2016 年谷歌紧随其后发布了 gRPC</p>
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%20-%20State.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Kuga">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="贫瘠之地">
-      <meta itemprop="description" content="欢迎来到知识的荒漠">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 贫瘠之地">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%20-%20State.html" class="post-title-link" itemprop="url">状态模式 - State</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-04-29 00:00:00" itemprop="dateCreated datePublished" datetime="2023-04-29T00:00:00+08:00">2023-04-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
-        </span>
-          >
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="背景">背景</h1>
-<p>状态模式基于<strong>有限状态机</strong>（FSM finite state
-machine）的概念，主要思想是程序在任意时刻一定处于 N
-种有限数量的状态中，并且在特定状态中执行特定状态的操作并可以流转至下一状态（也可不变）</p>
-<p>这些数量有限且预先定义的状态切换规则被称为 <em>状态流转</em></p>
-<p><strong>目的</strong>
-将状态以及状态行为等属性和业务对象解耦，是一种基于组合模式进行逻辑委托的行为模式</p>
-<p><strong>现实世界类比</strong>
-地铁电动闸门会根据当前状态和用户行为进行不同的操作并且流转为下一状态：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%20-%20State.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
