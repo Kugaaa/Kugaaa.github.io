@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.png">
+  <link rel="mask-icon" href="/images/air.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-flat-top.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.kugaaa.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github-dark-dimmed","dark":"github-dark-dimmed"},"prism":{"light":"base16/materia","dark":"base16/materia"},"copy_button":{"enable":true,"style":"flat","show_result":true},"fold":{"enable":false,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":2,"unescape":false,"preload":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="背景 实例状态、服务状态、Spring MVC 接口等相关监控打点看板基本都由架构、运维实现 但业务中会存在和业务数据更密切的监控需求，一般也使用 Prometheus 或类似的数据库来实现 对于 Prometheus 的函数选择存在一些疑问，所以写了这边文档，着重关注 rate 和 irate 的实现原理和实践方法，可以解释以下问题  为什么一个 QPS 看板缩小时间窗口后，某">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prometheus rate &amp; irate">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="背景 实例状态、服务状态、Spring MVC 接口等相关监控打点看板基本都由架构、运维实现 但业务中会存在和业务数据更密切的监控需求，一般也使用 Prometheus 或类似的数据库来实现 对于 Prometheus 的函数选择存在一些疑问，所以写了这边文档，着重关注 rate 和 irate 的实现原理和实践方法，可以解释以下问题  为什么一个 QPS 看板缩小时间窗口后，某">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/samples.drawio.png">
+<meta property="article:published_time" content="2025-04-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-29T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="Prometheus">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png">
+
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate.html","path":"开发/杂项/Prometheus rate & irate.html","title":"Prometheus rate & irate"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Prometheus rate & irate | 贫瘠之地</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script><script src="/js/pjax.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.5.0/mermaid.min.js","integrity":"sha256-2obLuIPcceEhkE3G09G33hBdmE55ivVcZUlcKcGNHjU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="贫瘠之地" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="贫瘠之地" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">贫瘠之地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">出来混最重要的是什么？是出来</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#rate"><span class="nav-number">2.1.</span> <span class="nav-text">rate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E5%99%A8%E9%87%8D%E7%BD%AE"><span class="nav-number">2.1.1.</span> <span class="nav-text">计数器重置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E6%8E%A8"><span class="nav-number">2.1.2.</span> <span class="nav-text">外推</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%86%85%E7%9A%84%E6%89%80%E6%9C%89%E7%82%B9"><span class="nav-number">2.1.3.</span> <span class="nav-text">窗口内的所有点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irate"><span class="nav-number">2.2.</span> <span class="nav-text">irate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E4%B8%A4%E4%B8%AA%E7%82%B9"><span class="nav-number">2.2.1.</span> <span class="nav-text">最后两个点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E5%99%A8%E9%87%8D%E7%BD%AE-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">计数器重置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%A4%BA"><span class="nav-number">2.3.</span> <span class="nav-text">图示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A5%E9%95%BF%E5%92%8C%E6%97%B6%E9%97%B4%E7%AA%97%E5%8F%A3"><span class="nav-number">3.</span> <span class="nav-text">步长和时间窗口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%87%BD%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">其他函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">向量函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.</span> <span class="nav-text">聚合函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E4%BA%8E%E6%97%B6%E9%97%B4%E7%AA%97%E5%8F%A3%E7%9A%84%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">对于时间窗口的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.1.</span> <span class="nav-text">存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rate_over_delta-%E7%9A%84%E6%8F%90%E5%87%BA"><span class="nav-number">5.2.</span> <span class="nav-text">rate_over_delta
+的提出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+<div>
+  <div style="margin-top:5px">
+    <a href="https://github.com/Kugaaa" target="_blank">
+      <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+    </a>
+  </div>
+
+  <div style="margin-top:15px">
+    <a href="https://www.foreverblog.cn/go.html" target="_blank">
+      <img alt="穿梭虫洞" src="https://img.foreverblog.cn/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+    </a>
+  </div>
+
+  <div style="margin-top:10px">
+    <a href="https://bjcp.kugaaa.com" target="_blank">
+      <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+    </a>
+  </div>
+
+  <div style="margin-top:10px;">
+    <a target="_blank" href="atom.xml" style="color:#F99000;font-size:20px;">
+      <span class="icon">
+        <i class="fa-solid fa-square-rss"></i>
+      </span>
+      <span>RSS</span>
+    </a>
+  </div>
+
+  <div style="margin-top:13px">
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+  </div>
+</div>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Prometheus rate &amp; irate | 贫瘠之地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Prometheus rate & irate
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-30 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-30T00:00:00+08:00">2025-04-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/" itemprop="url" rel="index"><span itemprop="name">杂项</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="背景">背景</h1>
+<p>实例状态、服务状态、Spring MVC
+接口等相关监控打点看板基本都由架构、运维实现</p>
+<p>但业务中会存在和业务数据更密切的监控需求，一般也使用 Prometheus
+或类似的数据库来实现</p>
+<p>对于 Prometheus 的函数选择存在一些疑问，所以写了这边文档，着重关注
+<code>rate</code> 和 <code>irate</code>
+的实现原理和实践方法，可以解释以下问题</p>
+<ul>
+<li>为什么一个 QPS 看板缩小时间窗口后，某个点的 QPS 会上升</li>
+<li><code>rate</code> 和 <code>irate</code> 的区别和实现方式是什么；以及
+<code>increase</code> 和 <code>delta</code></li>
+<li>时间窗口内数据 range-vector 和步长 step Interval 之间的关系</li>
+<li>如何选择合适的函数</li>
+<li>聚合函数和时间向量函数的区别</li>
+</ul>
+<h1 id="实现">实现</h1>
+<h2 id="rate">rate</h2>
+<p><code>rate</code> 方法用于计算一组向量之间的速率</p>
+<ul>
+<li>筛选时间窗口内样本，选择首尾两个样本计算速率</li>
+<li>窗口外推</li>
+<li>兼容计数器重置</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ... 兼容计数器重制</span></span><br><span class="line"><span class="comment">// ... 外推计算</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 外推值</span></span><br><span class="line">factor := extrapolateToInterval / sampledInterval</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> isRate &#123;</span><br><span class="line">	<span class="comment">// rate 计算</span></span><br><span class="line">	factor /= ms.Range.Seconds()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="计数器重置">计数器重置</h3>
+<blockquote>
+<p>通过将之前的值加到累积的结果中来保持连续性</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Handle counter resets:</span></span><br><span class="line">prevValue := samples.Floats[<span class="number">0</span>].F</span><br><span class="line"><span class="keyword">for</span> _, currPoint := <span class="keyword">range</span> samples.Floats[<span class="number">1</span>:] &#123;</span><br><span class="line">	<span class="keyword">if</span> currPoint.F &lt; prevValue &#123;</span><br><span class="line">		resultFloat += prevValue</span><br><span class="line">	&#125;</span><br><span class="line">	prevValue = currPoint.F</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于普通浮点数值的计数器，当检测到当前值小于前一个值时（表示计数器重置），会将前一个值加到最终结果中</p>
+<h3 id="外推">外推</h3>
+<blockquote>
+<p>外推的本意是避免某个窗口内样本过少造成的数据波动</p>
+</blockquote>
+<p>如果样本足够接近范围的（下限或上限）边界，会将速率一直外推至该边界，足够接近的定义是<em>不超过范围内样本间平均持续时间的
+10%</em></p>
+<p>如果小于阈值，则只外推一半</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Duration between first/last samples and boundary of range.</span></span><br><span class="line">durationToStart := <span class="type">float64</span>(firstT-rangeStart) / <span class="number">1000</span></span><br><span class="line">durationToEnd := <span class="type">float64</span>(rangeEnd-lastT) / <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">sampledInterval := <span class="type">float64</span>(lastT-firstT) / <span class="number">1000</span></span><br><span class="line">averageDurationBetweenSamples := sampledInterval / <span class="type">float64</span>(numSamplesMinusOne)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 阈值</span></span><br><span class="line">extrapolationThreshold := averageDurationBetweenSamples * <span class="number">1.1</span></span><br><span class="line">extrapolateToInterval := sampledInterval</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> durationToStart &gt;= extrapolationThreshold &#123;</span><br><span class="line">	durationToStart = averageDurationBetweenSamples / <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 外推开始时间</span></span><br><span class="line">extrapolateToInterval += durationToStart</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> durationToEnd &gt;= extrapolationThreshold &#123;</span><br><span class="line">	durationToEnd = averageDurationBetweenSamples / <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 外推结束时间</span></span><br><span class="line">extrapolateToInterval += durationToEnd</span><br></pre></td></tr></table></figure>
+<p>这里省略了外推计算时间窗口时对于 Counter 值为 0 的兼容</p>
+<h3 id="窗口内的所有点">窗口内的所有点</h3>
+<blockquote>
+<p>last - first</p>
+</blockquote>
+<p><code>rate</code> 方法计算窗口内所有点的平均变化率</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sampledInterval := <span class="type">float64</span>(lastT-firstT) / <span class="number">1000</span></span><br></pre></td></tr></table></figure>
+<p>体现了其特点</p>
+<ul>
+<li>观察较长时间的趋势，提供更平滑的曲线</li>
+<li>有助于减少短期波动引起的噪音</li>
+</ul>
+<h2 id="irate">irate</h2>
+<p><code>irate</code> 和 <code>rate</code> 的区别是其只取最后的 2
+个点</p>
+<ul>
+<li>筛选时间窗口内样本，选择最后的 2 个点</li>
+<li>处理计数器重置</li>
+</ul>
+<h3 id="最后两个点">最后两个点</h3>
+<blockquote>
+<p>index 1 - index 0</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resultSample.F = ss[<span class="number">1</span>].F - ss[<span class="number">0</span>].F</span><br><span class="line">resultSample.F /= <span class="type">float64</span>(sampledInterval) / <span class="number">1000</span></span><br></pre></td></tr></table></figure>
+<p>体现了其特点</p>
+<ul>
+<li>提供瞬时变化率，对短期变化更敏感</li>
+<li>计数器重置处理更简单，忽略变化结果，因为不重视整体趋势</li>
+<li>需要较小的时间窗口和步长配合，否则可能会导致数据失真</li>
+</ul>
+<h3 id="计数器重置-1">计数器重置</h3>
+<blockquote>
+<p>直接选择最后一个点的值</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> ss[<span class="number">1</span>].H == <span class="literal">nil</span> &amp;&amp; ss[<span class="number">0</span>].H == <span class="literal">nil</span>:</span><br><span class="line">		<span class="keyword">if</span> !isRate || !(ss[<span class="number">1</span>].F &lt; ss[<span class="number">0</span>].F) &#123;</span><br><span class="line">			<span class="comment">// Gauge, or counter without reset, or counter with NaN value.</span></span><br><span class="line">			resultSample.F = ss[<span class="number">1</span>].F - ss[<span class="number">0</span>].F</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// In case of a counter reset, we leave resultSample at</span></span><br><span class="line">		<span class="comment">// its current value, which is already ss[1].</span></span><br><span class="line"><span class="comment">// ... 这里只考虑 counter 浮点数计算</span></span><br></pre></td></tr></table></figure>
+<p>如果没有重置，则将 <code>resultSample.F</code> 值置为两个点差值</p>
+<p>如果重置，则忽略，此时值已经是 <code>ss[1]</code></p>
+<h2 id="图示">图示</h2>
+<p>借用 <a
+target="_blank" rel="noopener" href="https://techannotation.wordpress.com/2021/07/19/irate-vs-rate-whatre-they-telling-you/">irate()
+vs rate() – What’re they telling you? – Tech Annotation</a></p>
+<p>提供的示意图</p>
+<p>假设一组数据，每 10s 进行一次打点</p>
+<p>这是 <code>irate</code> 方法的计算，每 20s 作为窗口计算其速率，步长为
+10s</p>
+<img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png" class="" title="image.png">
+<img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png" class="image%201.png">
+<p>这是 <code>rate</code> 方法的计算，每 40s 作为窗口计算其速率，步长为
+10s</p>
+<img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png" class="image%202.png">
+<img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png" class="image%203.png">
+<p>比较其曲线</p>
+<img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/image.png" class="image%204.png">
+<h2 id="总结">总结</h2>
+<p><code>rate</code> 函数注重整体趋势，适用于</p>
+<ul>
+<li>平滑稳定的指标观察
+<ul>
+<li>服务稳定的 QPS</li>
+<li>网络流量的整体变化趋势</li>
+<li>错误率的整体评估</li>
+</ul></li>
+<li>长期趋势的监控
+<ul>
+<li>每日 / 每周 / 每月的业务增长情况</li>
+<li>服务容量规划和扩展需求</li>
+<li>长期可用性、性能等指标计算</li>
+</ul></li>
+<li>报警
+<ul>
+<li>需要避免短期波动导致的误报</li>
+</ul></li>
+<li>容量规划
+<ul>
+<li>资源使用趋势分析</li>
+<li>预测未来负载增长</li>
+</ul></li>
+</ul>
+<p><code>irate</code> 函数注重短时间内的变化，适用于</p>
+<ul>
+<li>实时监控
+<ul>
+<li>快速检测突发问题</li>
+<li>实时监控系统状态变化</li>
+<li>实时资源使用可视化</li>
+</ul></li>
+<li>高变化率指标的观察
+<ul>
+<li>CPU 使用率的瞬时波动</li>
+<li>服务响应时间的实时变化</li>
+</ul></li>
+<li>系统负载变化实时响应
+<ul>
+<li>自动扩缩容触发条件监控</li>
+<li>流量突变的即时检测</li>
+</ul></li>
+</ul>
+<h1 id="步长和时间窗口">步长和时间窗口</h1>
+<p>除了打点数据和其时间窗口，Dashboard 的绘制还需要通过步长 Interval
+来确定窗口移动的速度</p>
+<p>这个值应该和时间窗口符合一定的匹配关系</p>
+<p>例如在 Grafana 中</p>
+<ul>
+<li><code>Min interval</code>
+用于为查询间隔设置一个最小值；建议将其设置为数据写入频率，例如如果数据每分钟写入一次，则设置为
+1m</li>
+<li><code>Interval</code>
+为计算后步长间隔，<code>Max data points / time range</code>
+此值会作为步长用于实际查询</li>
+<li><code>Max data points</code>
+限制了点的最大数量，同时影响步长的计算；其默认最大值受 Grafana
+图标的像素宽度影响</li>
+</ul>
+<p>步长和时间窗口之间应该合理搭配，假设一个步长大于时间窗口，则会造成数据缺失</p>
+<p>有了步长后，就可以按照步长推进时间窗口</p>
+<img src="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate/samples.drawio.png" class="" title="samples.drawio.png">
+<p>假设如上一组数据，通过图示可以看出</p>
+<ul>
+<li>5s 一次采样</li>
+<li>一共采样了 15 个点</li>
+<li>时间窗口为 30s</li>
+<li>步长为 10s</li>
+</ul>
+<p>开始的两组数据平稳增长，<code>rate</code> 和 <code>irate</code>
+结果一致；而后到了第三组有一个 105 → 150 的突变，此时体现到
+<code>irate</code> 的变化更大；对于最后一组数据，<code>rate</code>
+对边界进行了外推，补充了缺失的窗口数据，得出了 3.19 的结果</p>
+<h1 id="其他函数">其他函数</h1>
+<h2 id="向量函数">向量函数</h2>
+<p>对于时间向量相关的函数，还有诸如 <code>delta</code>
+、<code>increase</code> 等</p>
+<p>实际在 Prometheus 的源码中，它们都与 <code>rate</code>
+复用了大部分代码</p>
+<p>底层方法和其业务函数</p>
+<ul>
+<li>extrapolatedRate
+<ul>
+<li>rate</li>
+<li>delta</li>
+<li>increase</li>
+</ul></li>
+<li>instantValue
+<ul>
+<li>irate</li>
+<li>idelta</li>
+</ul></li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// === delta(Matrix parser.ValueTypeMatrix) (Vector, Annotations) ===</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">funcDelta</span><span class="params">(vals []parser.Value, args parser.Expressions, enh *EvalNodeHelper)</span></span> (Vector, annotations.Annotations) &#123;</span><br><span class="line">	<span class="keyword">return</span> extrapolatedRate(vals, args, enh, <span class="literal">false</span>, <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// === rate(node parser.ValueTypeMatrix) (Vector, Annotations) ===</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">funcRate</span><span class="params">(vals []parser.Value, args parser.Expressions, enh *EvalNodeHelper)</span></span> (Vector, annotations.Annotations) &#123;</span><br><span class="line">	<span class="keyword">return</span> extrapolatedRate(vals, args, enh, <span class="literal">true</span>, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// === increase(node parser.ValueTypeMatrix) (Vector, Annotations) ===</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">funcIncrease</span><span class="params">(vals []parser.Value, args parser.Expressions, enh *EvalNodeHelper)</span></span> (Vector, annotations.Annotations) &#123;</span><br><span class="line">	<span class="keyword">return</span> extrapolatedRate(vals, args, enh, <span class="literal">true</span>, <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中不同的参数是第 4 和 5，它们分别为</p>
+<p>第 4 个 <code>isCounter</code> ；如果为
+<code>true</code>，则允许处理计数器重置</p>
+<p>第 5 个 <code>isRate</code>；如果为
+<code>true</code>，则返回为每秒值，否则返回的是总值</p>
+<p>由此可见</p>
+<ul>
+<li><code>delta</code>
+强调双向变化（Gauge），负值或数值降低有其业务含义</li>
+<li><code>increase</code> 用于计算总值，所以不需要处以时间</li>
+</ul>
+<h2 id="聚合函数">聚合函数</h2>
+<p>Prometheus
+支持以下内置聚合运算符，这些运算符可用于聚合单个瞬时向量的元素，从而生成一个元素更少且具有聚合值的新向量</p>
+<ul>
+<li><code>sum</code> (calculate sum over dimensions)</li>
+<li><code>avg</code> (calculate the arithmetic average over
+dimensions)</li>
+<li><code>min</code> (select minimum over dimensions)</li>
+<li><code>max</code> (select maximum over dimensions)</li>
+<li><code>bottomk</code> (smallest <em>k</em> elements by sample
+value)</li>
+<li><code>topk</code> (largest <em>k</em> elements by sample value)</li>
+<li>…</li>
+</ul>
+<p>这些运算符既可以用于对<strong>所有</strong>标签维度进行聚合，也可以通过包含
+<code>without</code> 或 <code>by</code> 子句来保留不同的维度</p>
+<p>可以用在表达式之前或之后</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">aggr-op</span>&gt;</span> [without|by (<span class="tag">&lt;<span class="name">label</span> <span class="attr">list</span>&gt;</span>)] ([parameter,] <span class="tag">&lt;<span class="name">vector</span> <span class="attr">expression</span>&gt;</span>)</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">aggr-op</span>&gt;</span>([parameter,] <span class="tag">&lt;<span class="name">vector</span> <span class="attr">expression</span>&gt;</span>) [without|by (<span class="tag">&lt;<span class="name">label</span> <span class="attr">list</span>&gt;</span>)]</span><br></pre></td></tr></table></figure>
+<h1 id="对于时间窗口的优化">对于时间窗口的优化</h1>
+<p>参考了公司的一篇文章，讲解了现在的 VictoriaMetrics 对于
+<code>Delta</code> 类型数据计算 QPS 不友好之处</p>
+<p>看起来和 Promethues
+的实现类似；其本质上是现有计算逻辑对于稀疏打点的结果无法准确表达；虽然
+<code>Counter</code> 在 Prometheus 中是以 <code>Cumulative</code>
+方式实现的，这里作为参考</p>
+<ul>
+<li><code>increase</code>
+的效果是计算区间内的最新一个点和最老一个点的差值</li>
+<li><code>rate</code>
+的效果是计算区间内的最新一个点和最老一个点的差值，再除以两者之间的时间间隔</li>
+</ul>
+<h2 id="存在的问题">存在的问题</h2>
+<p>如下场景可能出现对应问题</p>
+<ul>
+<li>时间窗口小于采样间隔；导致折线图无法连接（采样率太低）</li>
+<li>上报的指标数据的间隔不固定，计算出来的数据和真实值的差距会非常大（稀疏）</li>
+<li>绘图的时间窗口无法被查询的时间范围整除，或者最后一段的数据还没完全到达（被平滑或外推）</li>
+<li>计算时间窗口和数据采样之间的 offset 误差</li>
+</ul>
+<h2 id="rate_over_delta-的提出"><strong>rate_over_delta
+的提出</strong></h2>
+<p><code>rate_over_delta</code> 函数的核心思想是
+<strong>利用时间窗口内的数据除以数据的真实增长时间间隔</strong>，而非除以时间窗口</p>
+<p><strong>新的概念</strong></p>
+<ul>
+<li>Counter 类型的数据进行一次 <code>rollup</code>
+收集数据，<code>as_count</code>
+基于收集的数据做求和运算；<code>as_rate</code> 是基于收集的数据计算
+QPS，解决现有的问题</li>
+<li>效果类似于
+<code>as_rate(rollup(container.cpu.time, default, 1m))</code></li>
+</ul>
+<p><strong>可能产生的问题</strong></p>
+<ul>
+<li><code>as_rate</code> 和 <code>as_count</code>
+不再具有转化关系，在查询使用的时间范围很短并且数据上报不均匀的时候，<code>as_rate</code>
+和 <code>as_count / window</code> 的差值会比较大</li>
+<li><code>as_rate</code> 和 <code>as_count</code>
+不适合放在聚合函数之后；因为真实的计算逻辑是先计算出 QPS
+或者增量，再使用聚合函数进行计算</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Prometheus rate</span></span><br><span class="line"><span class="built_in">sum</span>(rate(infra_rpc_server_request_duration_seconds_count&#123;region=~<span class="string">&quot;<span class="variable">$region</span>&quot;</span>, se</span><br><span class="line">rvice=<span class="string">&quot;<span class="variable">$service</span>&quot;</span>&#125;[2m])) by(key)</span><br><span class="line"></span><br><span class="line"><span class="comment"># as_rate</span></span><br><span class="line">as_rate(<span class="built_in">sum</span>(tutor_exp_tts_starter_request_count&#123;<span class="variable">$serverName</span>, <span class="variable">$bizName</span>, <span class="variable">$facadeName</span>&#125;) by (bizName))</span><br></pre></td></tr></table></figure>
+<p>相关 PR</p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/VictoriaMetrics/VictoriaMetrics/pull/6699">ADD:
+add <code>rate_over_delta</code> support for Counters reported by delta
+types by changshun-shi · Pull Request #6699 ·
+VictoriaMetrics/VictoriaMetrics</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/VictoriaMetrics/metricsql/pull/32">ADD:
+add <code>rate</code> support for delta counters by changshun-shi · Pull
+Request #32 · VictoriaMetrics/metricsql</a></p>
+<h1 id="参考">参考</h1>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/prometheus/prometheus">prometheus/prometheus:
+The Prometheus monitoring system and time series database.</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://prometheus.io/docs/prometheus/latest/querying/functions/#rate">Query
+functions | Prometheus</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators">Operators
+| Prometheus</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://techannotation.wordpress.com/2021/07/19/irate-vs-rate-whatre-they-telling-you/">irate()
+vs rate() – What’re they telling you? – Tech Annotation</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Prometheus/" rel="tag"><i class="fa fa-tag"></i> Prometheus</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/SpringBoot2%20%E5%8D%87%E7%BA%A7%20Starter%20%E5%BD%B1%E5%93%8D.html" rel="prev" title="SpringBoot2 升级 Starter 影响">
+                  <i class="fa fa-angle-left"></i> SpringBoot2 升级 Starter 影响
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-solid fa-user-secret"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Kuga</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/kugaaa" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
