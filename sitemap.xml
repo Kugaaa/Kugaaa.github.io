@@ -767,6 +767,55 @@
 
   
   <url>
+    <loc>https://www.kugaaa.com/tags/%E7%94%B5%E5%90%89%E4%BB%96/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/RocketMQ/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/RAG/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/AI/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/Prompt/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/%E7%BB%9F%E8%AE%A1/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/Python/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kugaaa.com/tags/%E9%B8%A1%E5%B0%BE%E9%85%92/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -788,112 +837,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Prompt/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/AI/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/RAG/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kugaaa.com/tags/%E5%90%83%E5%96%9D%E7%8E%A9%E4%B9%90/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/Elasticsearch/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/ES-%E7%A2%8E%E7%89%87/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/%E7%BB%9F%E8%AE%A1/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/Java/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/%E7%94%B5%E5%90%89%E4%BB%96/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/%E7%BF%BB%E8%AF%91/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/%E7%BD%91%E7%BB%9C/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/Python/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/JVM/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/RocketMQ/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/GitHub/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -914,6 +858,48 @@
   </url>
   
   <url>
+    <loc>https://www.kugaaa.com/tags/Java/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/JVM/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/Elasticsearch/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/ES-%E7%A2%8E%E7%89%87/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/GitHub/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kugaaa.com/tags/Prometheus/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -921,14 +907,14 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</loc>
+    <loc>https://www.kugaaa.com/tags/%E7%BF%BB%E8%AF%91/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <loc>https://www.kugaaa.com/tags/%E7%BD%91%E7%BB%9C/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -949,7 +935,14 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Redis-%E8%84%9A%E6%9C%AC/</loc>
+    <loc>https://www.kugaaa.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -963,6 +956,20 @@
   </url>
   
   <url>
+    <loc>https://www.kugaaa.com/tags/MySQL/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/tags/Redis-%E8%84%9A%E6%9C%AC/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kugaaa.com/tags/Vector-DB/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -970,7 +977,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/MySQL/</loc>
+    <loc>https://www.kugaaa.com/tags/LangChain4j/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -991,21 +998,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/tags/Spring/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kugaaa.com/tags/LiteFlow/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/tags/LangChain4j/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1018,17 +1011,17 @@
     <priority>0.2</priority>
   </url>
   
-
-  
   <url>
-    <loc>https://www.kugaaa.com/categories/%E4%BA%BA%E7%94%9F/</loc>
+    <loc>https://www.kugaaa.com/tags/Spring/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
+
+  
   <url>
-    <loc>https://www.kugaaa.com/categories/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/</loc>
+    <loc>https://www.kugaaa.com/categories/%E4%BA%BA%E7%94%9F/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1049,7 +1042,21 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/Python/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/MQ/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/categories/%E4%BA%BA%E7%94%9F/%E5%AE%BF%E9%86%89/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1063,14 +1070,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/ES/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1084,14 +1084,21 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/MQ/RocketMQ/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%B9%B6%E5%8F%91/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/ES/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1105,14 +1112,21 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E7%BB%93%E6%9E%84%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/Python/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1126,7 +1140,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/MQ/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/MySQL/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1147,21 +1161,7 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/DB/MySQL/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/MQ/RocketMQ/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1175,13 +1175,6 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/</loc>
-    <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LiteFlow/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -1189,7 +1182,14 @@
   </url>
   
   <url>
-    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain4j/</loc>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/LangChain/</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kugaaa.com/categories/%E5%BC%80%E5%8F%91/%E5%BC%80%E6%BA%90%E5%AD%A6%E4%B9%A0/Spring/</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
