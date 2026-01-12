@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/air.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/air.png">
+  <link rel="mask-icon" href="/images/air.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-flat-top.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.kugaaa.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"github-dark-dimmed","dark":"github-dark-dimmed"},"prism":{"light":"base16/materia","dark":"base16/materia"},"copy_button":{"enable":true,"style":"flat","show_result":true},"fold":{"enable":false,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":2,"unescape":false,"preload":true}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="推理  The year of “reasoning”   OpenAI 于 2024 年 9 月发布了 o1，开启了“推理” 又称基于可验证奖励的强化学习（RLVR）的革命。 推理几乎成为所有其他主要人工智能实验室模型的标志性特征。 推理能力的真正突破在于驱动工具，能够使用工具的推理模型可以规划、分析、更新计划，从而更好的实现预期目标。 推理模型在代码生成和调试方面也表现出色。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025 LLM 总结">
+<meta property="og:url" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93.html">
+<meta property="og:site_name" content="贫瘠之地">
+<meta property="og:description" content="推理  The year of “reasoning”   OpenAI 于 2024 年 9 月发布了 o1，开启了“推理” 又称基于可验证奖励的强化学习（RLVR）的革命。 推理几乎成为所有其他主要人工智能实验室模型的标志性特征。 推理能力的真正突破在于驱动工具，能够使用工具的推理模型可以规划、分析、更新计划，从而更好的实现预期目标。 推理模型在代码生成和调试方面也表现出色。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93/%E9%95%BF%E4%BB%BB%E5%8A%A1.png">
+<meta property="article:published_time" content="2026-01-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-11T16:00:00.000Z">
+<meta property="article:author" content="Kuga">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93/%E9%95%BF%E4%BB%BB%E5%8A%A1.png">
+
+
+<link rel="canonical" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93.html","path":"开发/AI/2025 LLM 总结.html","title":"2025 LLM 总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>2025 LLM 总结 | 贫瘠之地</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script><script src="/js/pjax.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.5.0/mermaid.min.js","integrity":"sha256-2obLuIPcceEhkE3G09G33hBdmE55ivVcZUlcKcGNHjU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="贫瘠之地" type="application/atom+xml">
+<link rel="alternate" href="/rss2.xml" title="贫瘠之地" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">贫瘠之地</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">出来混最重要的是什么？是出来</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">推理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#agent"><span class="nav-number">2.</span> <span class="nav-text">Agent</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#coding-agent-claude-code"><span class="nav-number">3.</span> <span class="nav-text">Coding Agent &amp; Claude
+Code</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C-llm"><span class="nav-number">4.</span> <span class="nav-text">命令行 LLM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#yolo-%E4%B8%8E%E5%BC%82%E5%B8%B8%E6%AD%A3%E5%B8%B8%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">YOLO 与异常正常化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AF%8F%E6%9C%88-200-%E5%88%80"><span class="nav-number">6.</span> <span class="nav-text">每月 200 刀</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%AD%E5%9B%BD%E5%90%8D%E5%88%97%E5%89%8D%E8%8C%85%E7%9A%84%E5%BC%80%E6%BA%90%E6%9D%83%E9%87%8D%E6%A8%A1%E5%9E%8B"><span class="nav-number">7.</span> <span class="nav-text">中国名列前茅的开源权重模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%95%BF%E4%BB%BB%E5%8A%A1"><span class="nav-number">8.</span> <span class="nav-text">长任务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BF%AE%E6%94%B9%E5%9B%BE"><span class="nav-number">9.</span> <span class="nav-text">文修改图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%A6%E6%9C%AF%E7%AB%9E%E8%B5%9B%E8%8D%A3%E8%8E%B7%E9%87%91%E5%A5%96"><span class="nav-number">10.</span> <span class="nav-text">学术竞赛荣获金奖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openai-%E5%A4%B1%E5%8E%BB%E9%A2%86%E5%85%88%E5%9C%B0%E4%BD%8D"><span class="nav-number">11.</span> <span class="nav-text">OpenAI 失去领先地位</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gemini"><span class="nav-number">12.</span> <span class="nav-text">Gemini</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B0%9B%E5%9B%B4%E7%BC%96%E7%A8%8B"><span class="nav-number">13.</span> <span class="nav-text">氛围编程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mcp"><span class="nav-number">14.</span> <span class="nav-text">MCP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A4%E4%BA%BA%E6%8B%85%E5%BF%A7%E7%9A%84-ai-%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="nav-number">15.</span> <span class="nav-text">令人担忧的 AI 浏览器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%94%E6%B0%B4"><span class="nav-number">16.</span> <span class="nav-text">泔水</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">17.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Kuga</p>
+  <div class="site-description" itemprop="description">欢迎来到知识的荒漠</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>
+<div>
+  <div style="margin-top:5px">
+    <a href="https://github.com/Kugaaa" target="_blank">
+      <img alt="Not by AI" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/Written-By-Human-Not-By-AI-Badge-white.svg" style="width:auto;height:40px;" title="Not by AI">
+    </a>
+  </div>
+
+  <div style="margin-top:15px">
+    <a href="https://www.foreverblog.cn/go.html" target="_blank">
+      <img alt="穿梭虫洞" src="https://foreverblog.cn/assets/logo/wormhole_2_tp.gif" style="width:auto;height:38px;" title="穿梭虫洞 - 随机访问十年之约友链博客">
+    </a>
+  </div>
+
+  <div style="margin-top:10px">
+    <a href="https://bjcp.kugaaa.com" target="_blank">
+      <img alt="BJCP Hub" src="https://kuga-pic-1258855810.cos.ap-beijing.myqcloud.com/bjcp_hub_logo.png" style="width:auto;height:30px;" title="BJCP Hub">
+    </a>
+  </div>
+
+  <div style="margin-top:10px;">
+    <a target="_blank" href="atom.xml" style="color:#F99000;font-size:20px;">
+      <span class="icon">
+        <i class="fa-solid fa-square-rss"></i>
+      </span>
+      <span>RSS</span>
+    </a>
+  </div>
+
+  <div style="margin-top:13px">
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=370 src="//music.163.com/outchain/player?type=0&id=7776310945&auto=0&height=430"></iframe>
+  </div>
+</div>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.kugaaa.com/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Kuga">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="贫瘠之地">
+      <meta itemprop="description" content="欢迎来到知识的荒漠">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="2025 LLM 总结 | 贫瘠之地">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025 LLM 总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-12 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-12T00:00:00+08:00">2026-01-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">开发</span></a>
+        </span>
+          >
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BC%80%E5%8F%91/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="推理">推理</h1>
+<blockquote>
+<p>The year of “reasoning”</p>
+</blockquote>
+<ul>
+<li>OpenAI 于 2024 年 9 月发布了 o1，开启了“推理”
+又称基于可验证奖励的强化学习（RLVR）的革命。</li>
+<li>推理几乎成为所有其他主要人工智能实验室模型的标志性特征。</li>
+<li>推理能力的真正突破在于驱动工具，能够使用工具的推理模型可以规划、分析、更新计划，从而更好的实现预期目标。</li>
+<li>推理模型在代码生成和调试方面也表现出色。推理技巧意味着它们可以从错误入手，逐步深入代码库的多个不同层级，最终找到根本原因。</li>
+</ul>
+<h1 id="agent">Agent</h1>
+<blockquote>
+<p>The year of agents</p>
+</blockquote>
+<ul>
+<li>2024
+年全年，人人都谈论代理人，但几乎没有实际案例，更令人困惑的是，每个人对“代理人”一词的定义似乎都略有不同。</li>
+<li>如果你将 Agent
+定义为可以<strong>通过多个步骤调用工具来执行有用工作</strong>的 LLM
+系统，那么 Agent 就存在了，并且它们正在证明自己非常有用。</li>
+<li>Agent 现应用的两大场景是 Coding 和搜索</li>
+<li>Coding Agent 模式意义重大</li>
+</ul>
+<h1 id="coding-agent-claude-code">Coding Agent &amp; <strong>Claude
+Code</strong></h1>
+<blockquote>
+<p>The year of coding agents and Claude Code</p>
+</blockquote>
+<ul>
+<li>2025 年最具影响力的事件发生在 2 月，那就是 Claude Code
+的悄然发布。</li>
+<li>Claude Code 是我所说的 Coding Agent 的最突出例子——LLM
+系统可以编写代码、执行代码、检查结果，然后进一步迭代。</li>
+<li>它们完美地解决了在个人笔记本电脑上运行任意代码所带来的安全挑战，而且能够同时启动多个任务（通常是通过我的手机），并在几分钟后获得不错的结果。</li>
+</ul>
+<h1 id="命令行-llm">命令行 LLM</h1>
+<blockquote>
+<p>The year of LLMs on the command-line</p>
+</blockquote>
+<ul>
+<li>Claude Code
+和他的朋友们已经充分证明，只要模型足够强大，并且有合适的工具，开发人员就会接受命令行中的
+LLM。</li>
+<li>截至 12 月 2 日 ，Anthropic 公司宣布 Claude Code 的年化收入已达 10
+亿美元 ！我没想到一款命令行工具能达到如此高的成就。</li>
+</ul>
+<h1 id="yolo-与异常正常化">YOLO 与异常正常化</h1>
+<blockquote>
+<p>The year of YOLO and the Normalization of Deviance</p>
+</blockquote>
+<ul>
+<li>大多数编码代理的默认设置是几乎对用户执行的每个操作都要求确认。</li>
+<li>任何尝试过使用自动确认（又称 YOLO 模式）运行 Agent
+的人都体验过这种权衡：使用没有安全机制的代理感觉就像是完全不同的产品</li>
+<li>像 Claude Code for web 和 Codex Cloud
+这样的异步编码代理的一大好处是，它们默认可以在 YOLO
+模式下运行，因为没有个人电脑会损坏。</li>
+<li>异常正常化是指<strong>反复接触危险行为而没有产生负面后果，导致个人和组织接受这种危险行为是正常的</strong>。</li>
+<li>如果我们继续以本质上不安全的方式运行这些系统，离灾难就越近。</li>
+</ul>
+<h1 id="每月-200-刀">每月 200 刀</h1>
+<blockquote>
+<p>The year of $200/month subscriptions</p>
+</blockquote>
+<ul>
+<li>ChatGPT Plus 最初的定价为每月 20
+美元，此后，这个价格一直保持不变。</li>
+<li>今年出现了一个新的定价先例：Claude Pro Max 20x 套餐，每月 200
+美元。</li>
+<li>OpenAI 也提供类似的 200 美元套餐，名为 ChatGPT Pro。Gemini 的 Google
+AI Ultra 套餐每月 249 美元。</li>
+<li>像 Claude Code 和 Codex CLI
+这样的工具，一旦你开始给它们布置更复杂的任务，就会消耗大量的代币，以至于每月
+200 美元的套餐反而能提供相当可观的折扣。</li>
+</ul>
+<h1 id="中国名列前茅的开源权重模型">中国名列前茅的开源权重模型</h1>
+<blockquote>
+<p>The year of top-ranked Chinese open weight models</p>
+</blockquote>
+<ul>
+<li>2024 年，中国人工智能实验室展现出一些早期活力，主要体现在 Qwen 2.5
+和早期的 DeepSeek 上。它们都是不错的模型，但还称不上世界一流。</li>
+<li>DeepSeek 于 1 月 20 日发布了 DeepSeek R1 ，随即引发了一场大规模的
+AI/半导体抛售潮 ：英伟达市值蒸发约 5930 亿美元，投资者恐慌地认为 AI
+或许并非美国垄断。</li>
+<li>这些模型大多不仅是开放的，而且是根据 OSI
+批准的许可证完全开源的。</li>
+<li>它们中的一些甚至可以与 Claude 4 Sonnet 和 GPT-5 相媲美！</li>
+<li>遗憾的是，中国实验室都没有公布完整的训练数据或用于训练模型的代码，但他们发表了详细的研究论文，这有助于推动技术进步，尤其是在高效训练和推理方面。</li>
+</ul>
+<h1 id="长任务">长任务</h1>
+<blockquote>
+<p>The year of long tasks</p>
+</blockquote>
+<img src="/%E5%BC%80%E5%8F%91/AI/2025%20LLM%20%E6%80%BB%E7%BB%93/%E9%95%BF%E4%BB%BB%E5%8A%A1.png" class="" title="长任务">
+<ul>
+<li>2025 年取得了巨大的进步，GPT-5、GPT-5.1 Codex Max 和 Claude Opus 4.5
+能够完成人类需要花费数小时才能完成的任务——而 2024
+年的最佳模型也仅能完成不到 30 分钟的任务。</li>
+<li>METR 的结论是 “人工智能能够执行的任务长度每 7 个月翻一番”。</li>
+<li>我并不认为这种趋势会持续下去，但这确实是一种引人注目的方式来展示当前智能体能力的发展趋势。</li>
+</ul>
+<h1 id="文修改图">文修改图</h1>
+<blockquote>
+<p>The year of prompt-driven image editing</p>
+</blockquote>
+<ul>
+<li>其关键特性是用户可以上传自己的图像，并使用提示来告诉它如何修改这些图像。</li>
+<li>图像生成领域更大的新闻来自谷歌，他们推出了可通过 Gemini 平台获取的
+<strong>Nano Banana</strong> 模型。</li>
+<li>Nano Banana
+之所以能引起人们的注意，是因为<em>它能够生成有用的文本</em>
+！而且，它在执行图像编辑指令方面也明显是表现最好的模型。</li>
+<li>Nano Banana Pro
+正迅速证明，对于任何从事演示文稿或其他视觉材料制作的人来说，它都极具价值。</li>
+</ul>
+<h1 id="学术竞赛荣获金奖">学术竞赛<strong>荣获金奖</strong></h1>
+<blockquote>
+<p>The year models won gold in academic competitions</p>
+</blockquote>
+<ul>
+<li>国际数学奥林匹克竞赛（IMO）的挑战题目都是专门为该赛事设计的。这些题目绝不可能出现在训练数据中！</li>
+<li>值得注意的是，这两个模型都无法使用工具——它们的解决方案完全来自它们的内部知识和基于令牌的推理能力。</li>
+<li>事实证明，足够高级的 LLM 其实也能做数学！</li>
+</ul>
+<h1 id="openai-失去领先地位">OpenAI 失去领先地位</h1>
+<blockquote>
+<p>The year that OpenAI lost their lead</p>
+</blockquote>
+<ul>
+<li>去年，OpenAI 仍然是 LLM 领域无可争议的领导者，尤其是考虑到 o1 和 o3
+推理模型的预览版。</li>
+<li>在图像模型方面，他们仍然落后于 Nano Banana
+Pro。在代码方面，许多开发者认为 Opus 4.5 略胜 GPT-5.2 Codex 一筹。</li>
+<li>OpenAI 的优势在于赢得了消费者的认可。虽然没人知道 “LLM”
+是什么，但几乎每个人都听说过 ChatGPT。</li>
+</ul>
+<h1 id="gemini">Gemini</h1>
+<blockquote>
+<p>The year of Gemini</p>
+</blockquote>
+<ul>
+<li>2025 年，他们推出了 Gemini 2.0、Gemini 2.5 和 Gemini
+3.0——每个型号系列都支持音频/视频/图像/文本输入。</li>
+<li>发布了 Gemini CLI、Jules、AI Studio 的持续改进、Nano Banana
+图像模型、用于视频生成的 Veo 3、有前途的 Gemma 3 系列开源权重模型。</li>
+<li>谷歌最大的优势在于其底层技术。几乎所有其他人工智能实验室都使用英伟达的
+GPU 进行训练，而英伟达 GPU 的高额利润支撑了该公司数万亿美元的估值。</li>
+<li>谷歌 Gemini
+的产品名称完美地体现了公司的内部组织结构，这一点一直让我觉得很有趣——它之所以叫
+Gemini，是因为它是由谷歌的 DeepMind 和 Google Brain
+团队合并而成的（就像双胞胎一样）。</li>
+</ul>
+<h1 id="氛围编程">氛围编程</h1>
+<blockquote>
+<p>The year of vibe coding</p>
+</blockquote>
+<ul>
+<li>关键思想是
+“忘记代码的存在”——直觉编码捕捉到了一种新的、有趣的软件原型设计方式，这种设计仅通过提示就能“基本有效”。</li>
+<li>我这辈子好像从来没见过哪个新词流行起来——或者被曲解得这么快。</li>
+<li>并非所有人工智能辅助编程都是基于直觉的编程。</li>
+<li>专业的软件开发就是编写能够证明其有效性的代码，无论你是如何构建的。</li>
+</ul>
+<h1 id="mcp">MCP</h1>
+<blockquote>
+<p>The (only?) year of MCP</p>
+</blockquote>
+<ul>
+<li>2025 年初，MCP 迅速走红 。在 5 月份， OpenAI 、 Anthropic 和 Mistral
+三家公司在短短八天内相继推出了对 MCP 的 API 级支持！</li>
+<li>MCP
+的发布恰逢模型在工具调用方面终于变得稳定可靠，以至于很多人似乎误以为 MCP
+支持是模型使用工具的先决条件。</li>
+<li>我认为 MCP 可能只是昙花一现的原因在于 Coding Agent
+的爆炸式增长。似乎在任何情况下，Bash 都是最佳工具——如果你的 Agent
+能够运行任意 shell
+命令，它就能完成任何可以通过在终端输入命令完成的操作。</li>
+<li>Anthropic 公司似乎也意识到了这一点，并在当年晚些时候发布了出色的
+Skills 机制。</li>
+</ul>
+<h1 id="令人担忧的-ai-浏览器">令人担忧的 AI 浏览器</h1>
+<blockquote>
+<p>The year of alarmingly AI-enabled browsers</p>
+</blockquote>
+<ul>
+<li>尽管存在非常明显的安全风险，但似乎每个人都想在浏览器中安装
+LLM。</li>
+<li>我的浏览器可以访问我最敏感的数据，并控制着我的大部分数字生活。针对浏览器代理的即时注入攻击，如果能够窃取或修改这些数据，后果不堪设想。</li>
+<li>它们对于解决那些无法通过 API 解决的问题非常有用。</li>
+</ul>
+<h1 id="泔水">泔水</h1>
+<blockquote>
+<p>The year of slop</p>
+</blockquote>
+<ul>
+<li><strong>slop</strong> (<em>noun</em>)：低劣数字内容（ <em>名词</em>
+）：通常通过 AI 大量生产的低质量数字内容</li>
+<li>互联网上<strong>一直充斥</strong>着大量低质量内容。挑战依然在于如何找到并推广优质内容。</li>
+<li>很可能，泔水问题正像一股不断蔓延的浪潮，而我却浑然不觉。</li>
+</ul>
+<h1 id="参考">参考</h1>
+<p>https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-agents</p>
+<p>https://simonwillison.net/2025/Sep/18/agents/</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"><i class="fa fa-tag"></i> AI</a>
+              <a href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag"><i class="fa fa-tag"></i> 翻译</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%BC%80%E5%8F%91/%E6%9D%82%E9%A1%B9/Prometheus%20rate%20&%20irate.html" rel="prev" title="Prometheus rate &amp; irate">
+                  <i class="fa fa-angle-left"></i> Prometheus rate & irate
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-solid fa-user-secret"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Kuga</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/kugaaa" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
